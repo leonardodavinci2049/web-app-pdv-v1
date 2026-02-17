@@ -148,39 +148,6 @@ const data = {
       icon: MapIcon,
     },
   ],
-  admin: [
-    {
-      name: "Organização 1",
-      url: "/dashboard/admin/organization1",
-      icon: Frame,
-    },
-    {
-      name: "Organização 2",
-      url: "/dashboard/admin/organization1/caixa-fechada",
-      icon: Frame,
-    },
-    {
-      name: "Organização 3",
-      url: "/dashboard/admin/organization2",
-      icon: Frame,
-    },
-    {
-      name: "Usuários",
-      url: "/dashboard/admin/users",
-      icon: PieChart,
-    },
-
-    {
-      name: "Profile",
-      url: "/dashboard/admin/profile",
-      icon: PieChart,
-    },
-    {
-      name: "Regras",
-      url: "#",
-      icon: MapIcon,
-    },
-  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -192,7 +159,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
-        <NavProjects projects={data.admin} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

@@ -152,7 +152,6 @@ function handleModifyError(error: unknown, operation: string): ModifyResponse {
 /**
  * Finds a user by ID
  *
- * Replaces: prisma.user.findUnique({ where: { id } })
  *
  * @example
  * ```typescript
@@ -203,7 +202,6 @@ async function findUserById(params: {
 /**
  * Finds all users excluding specific IDs
  *
- * Replaces: prisma.user.findMany({ where: { id: { notIn: excludeIds } } })
  *
  * @example
  * ```typescript
@@ -272,7 +270,6 @@ async function findUsersExcludingIds(params: {
 /**
  * Finds all members of an organization
  *
- * Replaces: prisma.member.findMany({ where: { organizationId } })
  *
  * @example
  * ```typescript

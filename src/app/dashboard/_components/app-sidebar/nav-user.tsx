@@ -8,7 +8,6 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -39,7 +38,6 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const router = useRouter();
 
   const handleLogout = async () => {
     try {
@@ -47,7 +45,7 @@ export function NavUser({
         fetchOptions: {
           onSuccess: () => {
             toast.success("Logged out successfully");
-            router.push("/sign-in");
+            window.location.href = "/sign-in";
           },
         },
       });
