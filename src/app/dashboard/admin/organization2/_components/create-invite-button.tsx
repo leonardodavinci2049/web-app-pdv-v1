@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import z from "zod";
+import { z } from "zod/v3";
 import { LoadingSwap } from "@/components/auth/loading-swap";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +35,7 @@ import {
 import { authClient } from "@/lib/auth/auth-client";
 
 const createInviteSchema = z.object({
-  email: z.email().min(1).trim(),
+  email: z.string().email().min(1).trim(),
   role: z.enum(["customer", "salesperson"]),
 });
 

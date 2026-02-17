@@ -1,12 +1,31 @@
-export default function HomePage() {
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200">
-        Welcome to Next.js with Better-Auth!
-      </h1>
-      <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-        This is a simple starter template.
-      </p>
-    </div>
-  );
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { connection } from "next/server";
+import { auth } from "@/lib/auth/auth";
+
+export default async function HomePage() {
+  await connection();
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    // Se usuário está logado E tem sessão válida
+    if (session?.user) {
+      redirect("/dashboard");
+    }
+
+    // Se não está logado OU sessão inválida
+    redirect("/sign-in");
+  } catch (error) {
+    // Se for um redirect, deixa passar (comportamento normal do Next.js)
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
+    // Em caso de erro real na validação, redireciona para login
+    console.error("Session validation error:", error);
+    redirect("/sign-in");
+  }
 }
