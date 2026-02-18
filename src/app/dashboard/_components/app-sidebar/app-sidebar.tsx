@@ -35,7 +35,7 @@ const data = {
   },
   teams: [
     {
-      name: "Caixa Fechada",
+      name: "WinERP",
       logo: GalleryVerticalEnd,
       plan: "Distribuidora",
     },

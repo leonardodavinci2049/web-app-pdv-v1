@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 export default function ModeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Only show the theme toggle after mounting to avoid hydration mismatch
@@ -36,17 +36,20 @@ export default function ModeToggle() {
     );
   }
 
+  // Use resolvedTheme to handle system theme correctly
+  const isDark = resolvedTheme === "dark";
+
   return (
     <Button
       variant="ghost"
       className="rounded-full w-10"
       aria-label="Toggle Theme"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
     >
-      {theme === "dark" ? (
+      {isDark ? (
         <Sun className="size-5 text-yellow-500" />
       ) : (
-        <Moon className="size-5  text-black" />
+        <Moon className="size-5 text-black dark:text-white" />
       )}
     </Button>
 
