@@ -11,7 +11,7 @@ export default function HeaderAuth() {
         <Link href="/" aria-label="Home">
           <Logo />
         </Link>
-        
+
         <ModeToggle />
       </div>
     </header>
