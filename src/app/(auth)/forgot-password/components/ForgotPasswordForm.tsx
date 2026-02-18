@@ -6,7 +6,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-//import { authClient } from "@/lib/auth/auth-client";
+import { authClient } from "@/lib/auth/auth-client";
 import { cn } from "@/lib/utils";
 import {
   type ForgotPasswordFormData,
@@ -69,19 +69,14 @@ export function ForgotPasswordForm({
     }
 
     try {
-      const error = null;
-      /*       const { error } = await authClient.requestPasswordReset({
+      const { error } = await authClient.requestPasswordReset({
         email: validation.data.email,
         redirectTo: "/reset-password",
       });
 
-      // SEGURANÇA: Sempre mostrar a mesma mensagem de sucesso
-      // independente do email existir ou não, para evitar enumeração de usuários
       if (error) {
-        // Log do erro no servidor para monitoramento, mas não expor ao usuário
         console.error("Forgot password error:", error);
 
-        // Para erros de rede ou sistema, mostrar erro genérico
         if (
           !error.message?.includes("User not found") &&
           !error.message?.includes("Email not found")
@@ -91,14 +86,12 @@ export function ForgotPasswordForm({
         }
       }
 
-      // Sempre mostrar mensagem de sucesso (mesmo se email não existir)
       toast.success(
         "Se este email estiver registrado, você receberá instruções de recuperação em breve.",
       );
 
-      // Limpar o formulário sempre
       (event.target as HTMLFormElement).reset();
-    } catch (error) { */
+    } catch (error) {
       console.error("Forgot password error:", error);
       toast.error("Erro interno do sistema. Tente novamente mais tarde.");
     } finally {
