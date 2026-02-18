@@ -1,6 +1,6 @@
 "use client";
 
-import { Phone } from "lucide-react";
+import { Info, MessageCircle, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
@@ -18,73 +18,40 @@ export default function CompanyFooter() {
   // Formatar número do WhatsApp para link (remover caracteres especiais)
   const whatsappNumber = envs.NEXT_PUBLIC_COMPANY_WHATSAPP;
   const whatsappLink = `https://wa.me/${whatsappNumber}`;
+  const companyPhone = envs.NEXT_PUBLIC_COMPANY_PHONE;
 
   return (
     <footer className="bg-background/50 border-t">
-      <div className="py-4 lg:py-4">
-        {/* Layout responsivo: 1 coluna no mobile, 3 colunas centralizadas na tela */}
-        <div className="mx-auto grid max-w-3xl gap-8 px-4 md:grid-cols-3 lg:gap-8">
-          {/* Coluna 1: Logo, Nome da Empresa e WhatsApp */}
-          <div className="flex flex-col items-start space-y-4">
-            <div className="flex items-center space-x-3">
-              <Image
-                src="/images/logo/logo-footer.png"
-                alt="Logo"
-                width={40}
-                height={40}
-                className="h-10 w-10"
-              />
-              <h3 className="text-foreground text-lg font-semibold">
-                {envs.NEXT_PUBLIC_COMPANY_NAME}
+      <div className="py-8 lg:py-10">
+        <div className="mx-auto grid max-w-5xl gap-8 px-6 md:grid-cols-2 lg:gap-12 items-center">
+          {/* Coluna 1: Informações do Sistema */}
+          <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3">
+            <div className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-blue-500" />
+              <h3 className="text-lg font-semibold">
+                Saiba mais sobre esse sistema
               </h3>
             </div>
 
-            <Link
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground flex items-center space-x-2 text-sm transition-colors hover:text-green-600"
-            >
-              <Phone className="h-4 w-4" />
-              <span>{envs.NEXT_PUBLIC_COMPANY_PHONE}</span>
-            </Link>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              O sistema <strong>{envs.NEXT_PUBLIC_COMPANY_NAME}</strong> oferece
+              as melhores soluções para o gerenciamento do seu negócio.
+              Simplifique processos e aumente sua produtividade conosco.
+            </p>
           </div>
 
-          {/* Coluna 2: Menu de Navegação */}
-          <div className="flex flex-col items-start space-y-4">
-            <nav className="flex flex-col space-y-3">
-              <Link
-                href="/sobre"
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-              >
-                Sobre
-              </Link>
-              <Link
-                href="/contato"
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-              >
-                Contato
-              </Link>
-              <Link
-                href="/privacidade"
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-              >
-                Privacidade
-              </Link>
-            </nav>
-          </div>
-
-          {/* Coluna 3: Desenvolvedor */}
-          <div className="flex flex-col items-start space-y-4">
-            <div>
-              <p className="text-muted-foreground mb-3 text-xs">
+          {/* Coluna 2: Desenvolvedor e Contato */}
+          <div className="flex flex-col items-center md:items-end space-y-4 text-center md:text-right">
+            <div className="flex flex-col items-center md:items-end gap-2">
+              <span className="text-sm font-medium">
                 Sistema Desenvolvido Por:
-              </p>
+              </span>
+
               <Link
                 href={envs.NEXT_PUBLIC_DEVELOPER_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex flex-col space-y-2 transition-opacity hover:opacity-80"
+                className="transition-opacity hover:opacity-80"
               >
                 <Image
                   src={
@@ -93,26 +60,45 @@ export default function CompanyFooter() {
                       : "/images/developer/logo-developer-light.png"
                   }
                   alt={envs.NEXT_PUBLIC_DEVELOPER_NAME}
-                  width={120}
-                  height={30}
-                  className="h-6 w-auto transition-transform group-hover:scale-105"
+                  width={140}
+                  height={40}
+                  className="h-8 w-auto"
                 />
               </Link>
+            </div>
+
+            <div className="flex flex-col items-center md:items-end gap-1">
+              <span className="text-xs text-muted-foreground">
+                Entre em contato:
+              </span>
+              <div className="flex items-center gap-3">
+                <Link
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-green-600 transition-colors"
+                  title="WhatsApp"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                </Link>
+                {companyPhone && (
+                  <span className="text-muted-foreground text-sm flex items-center gap-1">
+                    <Phone className="h-4 w-4" />
+                    {companyPhone}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Linha divisória e copyright - também centralizados na tela */}
-        <div className="mt-8 pt-6">
-          <div className="mx-auto max-w-3xl px-4">
-            <div className="border-t pt-6">
-              <div className="text-center">
-                <p className="text-muted-foreground text-xs">
-                  © {new Date().getFullYear()} {envs.NEXT_PUBLIC_COMPANY_NAME}.
-                  Todos os direitos reservados.
-                </p>
-              </div>
-            </div>
+        {/* Linha divisória e copyright */}
+        <div className="mt-8 border-t pt-6">
+          <div className="mx-auto max-w-5xl px-6 text-center">
+            <p className="text-muted-foreground text-xs">
+              © {new Date().getFullYear()} {envs.NEXT_PUBLIC_COMPANY_NAME}.
+              Todos os direitos reservados.
+            </p>
           </div>
         </div>
       </div>

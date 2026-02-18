@@ -17,14 +17,14 @@ export default function LoginPage() {
         <div className="p-6 md:p-10">
           <div className="relative h-full w-full overflow-hidden rounded-lg">
             <Image
-              src="/images/auth/logo-auth-white.png"
+              src="/images/auth/banner-auth-v2.png"
               alt="Dashboard Background"
               fill
               className="object-contain object-left dark:hidden"
               priority
             />
             <Image
-              src="/images/auth/logo-auth-dark.png"
+              src="/images/auth/banner-auth-v2.png"
               alt="Dashboard Background"
               fill
               className="hidden object-contain object-left dark:block"
