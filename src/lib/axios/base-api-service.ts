@@ -2,59 +2,64 @@ import "server-only";
 
 import type { AxiosResponse } from "axios";
 import { AxiosError } from "axios";
-import {
-  API_STATUS_CODES,
-  isApiError,
-  isApiSuccess,
-} from "@/core/constants/api-constants";
+import { API_STATUS_CODES, isApiSuccess } from "@/core/constants/api-constants";
 import serverAxiosClient from "./server-axios-client";
 
 /**
  * Custom API Error classes for better error handling
  */
-export class ApiConnectionError extends Error {
-  constructor(message = "Não foi possível conectar à API") {
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly userMessage: string = "Ocorreu um erro na comunicação com o servidor",
+    public readonly statusCode?: number,
+    public readonly data?: unknown,
+  ) {
     super(message);
-    this.name = "ApiConnectionError";
-    Object.setPrototypeOf(this, ApiConnectionError.prototype);
+    this.name = "ApiError";
+    Object.setPrototypeOf(this, ApiError.prototype);
   }
 }
 
-export class ApiValidationError extends Error {
+export class ApiConnectionError extends ApiError {
+  constructor(message = "Não foi possível conectar à API") {
+    super(message, "Erro de conexão. Verifique sua internet.");
+    this.name = "ApiConnectionError";
+  }
+}
+
+export class ApiValidationError extends ApiError {
   constructor(
     message = "Parâmetros inválidos",
     public readonly validationErrors?: Record<string, string[]>,
   ) {
-    super(message);
+    super(message, "Dados inválidos. Por favor, verifique os campos.");
     this.name = "ApiValidationError";
-    Object.setPrototypeOf(this, ApiValidationError.prototype);
   }
 }
 
-export class ApiAuthenticationError extends Error {
+export class ApiAuthenticationError extends ApiError {
   constructor(message = "Não autorizado") {
-    super(message);
+    super(message, "Sessão expirada ou acesso negado. Faça login novamente.");
     this.name = "ApiAuthenticationError";
-    Object.setPrototypeOf(this, ApiAuthenticationError.prototype);
   }
 }
 
-export class ApiNotFoundError extends Error {
+export class ApiNotFoundError extends ApiError {
   constructor(message = "Recurso não encontrado") {
-    super(message);
+    super(message, "O item solicitado não foi encontrado.");
     this.name = "ApiNotFoundError";
-    Object.setPrototypeOf(this, ApiNotFoundError.prototype);
   }
 }
 
-export class ApiServerError extends Error {
-  constructor(
-    message = "Erro interno do servidor",
-    public readonly statusCode?: number,
-  ) {
-    super(message);
+export class ApiServerError extends ApiError {
+  constructor(message = "Erro interno do servidor", statusCode?: number) {
+    super(
+      message,
+      "Erro temporário no servidor. Tente novamente mais tarde.",
+      statusCode,
+    );
     this.name = "ApiServerError";
-    Object.setPrototypeOf(this, ApiServerError.prototype);
   }
 }
 
@@ -172,52 +177,11 @@ export abstract class BaseApiService {
   }
 
   /**
-   * Verifica se a resposta tem a estrutura esperada da API
-   */
-  private isApiResponse<T>(data: unknown): data is ApiResponse<T> {
-    return (
-      data !== null &&
-      typeof data === "object" &&
-      "statusCode" in data &&
-      "message" in data &&
-      typeof (data as Record<string, unknown>).statusCode === "number" &&
-      typeof (data as Record<string, unknown>).message === "string"
-    );
-  }
-
-  /**
    * Trata resposta da API
    */
   private handleResponse<T>(response: AxiosResponse<T>): T {
-    // Verifica se a resposta tem a estrutura esperada da API
-    if (this.isApiResponse<T>(response.data)) {
-      const apiResponse = response.data;
-
-      // Para casos especiais como "not found" mas com dados válidos
-      if (
-        apiResponse.message &&
-        (apiResponse.message.includes("not found") ||
-          apiResponse.message.includes("não encontrado")) &&
-        apiResponse.data &&
-        Array.isArray(apiResponse.data) &&
-        apiResponse.data.length > 0
-      ) {
-        // Retorna a resposta mesmo com mensagem "not found" se há dados
-        return response.data;
-      }
-
-      // Para código 100422 (Product not found), permite que o serviço específico trate
-      if (apiResponse.statusCode === API_STATUS_CODES.NOT_FOUND) {
-        // Retorna a resposta para que o serviço específico possa tratar
-        return response.data;
-      }
-
-      // Verifica se o statusCode indica sucesso usando função utilitária
-      if (isApiError(apiResponse.statusCode)) {
-        throw new Error(apiResponse.message || "Erro na resposta da API");
-      }
-    }
-
+    // O tratamento de status codes customizados (100XXX) é de responsabilidade do serviço específico.
+    // O BaseApiService trata apenas erros de nível HTTP (4xx, 5xx) no método handleError.
     return response.data;
   }
 
@@ -329,5 +293,33 @@ export abstract class BaseApiService {
    */
   protected extractMessage<T>(response: ApiResponse<T>): string {
     return response.message || "";
+  }
+
+  /**
+   * Normaliza uma resposta vazia ou não encontrada para um formato padrão de sucesso sem dados.
+   * Útil para evitar lançar erros em buscas que simplesmente não retornaram resultados.
+   */
+  protected normalizeEmptyResponse<T extends ApiResponse>(
+    response: T,
+    emptyMessage = "Nenhum resultado encontrado",
+  ): T {
+    if (
+      response.statusCode === API_STATUS_CODES.EMPTY_RESULT ||
+      response.statusCode === API_STATUS_CODES.NOT_FOUND ||
+      response.statusCode === API_STATUS_CODES.UNPROCESSABLE
+    ) {
+      // Retorna uma estrutura de sucesso mas com dados vazios
+      return {
+        ...response,
+        statusCode: API_STATUS_CODES.SUCCESS,
+        quantity: 0,
+        data: [
+          [],
+          [{ sp_return_id: 0, sp_message: emptyMessage, sp_error_id: 0 }],
+        ],
+      } as unknown as T;
+    }
+
+    return response;
   }
 }

@@ -22,7 +22,6 @@ import type {
   ProductWebSectionItem,
   ProductWebSectionsRequest,
   ProductWebSectionsResponse,
-  StoredProcedureResponse,
 } from "./types/product-types";
 import {
   ProductWebError,
@@ -36,8 +35,14 @@ import {
 
 const logger = createLogger("ProductWebService");
 
+/**
+ * Serviço para integração com a API de Produtos Web
+ */
 export class ProductWebServiceApi extends BaseApiService {
-  private static buildBasePayload(
+  /**
+   * Monta o payload base com as credenciais do sistema
+   */
+  private buildBasePayload(
     additionalData: Record<string, unknown> = {},
   ): Record<string, unknown> {
     return {
@@ -45,14 +50,17 @@ export class ProductWebServiceApi extends BaseApiService {
       pe_system_client_id: envs.SYSTEM_CLIENT_ID,
       pe_store_id: envs.STORE_ID,
       pe_organization_id: envs.ORGANIZATION_ID,
-      pe_member_id: envs.MEMBER_ID,
       pe_user_id: envs.USER_ID,
+      pe_member_role: envs.MEMBER_ROLE,
       pe_person_id: envs.PERSON_ID,
       ...additionalData,
     };
   }
 
-  static async findProductById(
+  /**
+   * Busca produto por ID ou Slug
+   */
+  async findProductById(
     params: Partial<ProductWebFindByIdRequest> &
       Pick<ProductWebFindByIdRequest, "pe_id_produto" | "pe_slug_produto">,
   ): Promise<ProductWebFindByIdResponse> {
@@ -65,20 +73,21 @@ export class ProductWebServiceApi extends BaseApiService {
 
       const validatedParams = ProductWebFindByIdSchema.parse(payloadInput);
 
-      const instance = new ProductWebServiceApi();
-      const requestBody = ProductWebServiceApi.buildBasePayload({
+      const requestBody = this.buildBasePayload({
         ...validatedParams,
       });
 
-      const response = await instance.post<ProductWebFindByIdResponse>(
+      const response = await this.post<ProductWebFindByIdResponse>(
         PRODUCT_WEB_ENDPOINTS.FIND_BY_ID,
         requestBody,
       );
 
+      // Trata erro de negócio (Produto não encontrado)
       if (response.statusCode === API_STATUS_CODES.NOT_FOUND) {
         throw new ProductWebNotFoundError(validatedParams);
       }
 
+      // Trata outros erros de negócio da API
       if (isApiError(response.statusCode)) {
         throw new ProductWebError(
           response.message || "Erro ao buscar produto web por ID",
@@ -101,64 +110,54 @@ export class ProductWebServiceApi extends BaseApiService {
     }
   }
 
-  static async findProducts(
+  /**
+   * Busca lista de produtos com filtros
+   */
+  async findProducts(
     params: Partial<ProductWebFindRequest> = {},
   ): Promise<ProductWebFindResponse> {
     try {
-      const validatedParams = ProductWebServiceApi.validateSearchParams(params);
+      const validatedParams = this.validateSearchParams(params);
+      const requestBody = this.buildSearchPayload(validatedParams);
 
-      const requestBody =
-        ProductWebServiceApi.buildSearchPayload(validatedParams);
-
-      /*
-      logger.debug("Payload de busca de produtos", {
-        payload: requestBody,
-        timestamp: new Date().toISOString(),
-      });
-      */
-
-      const instance = new ProductWebServiceApi();
-      const response = await instance.post<ProductWebFindResponse>(
+      const response = await this.post<ProductWebFindResponse>(
         PRODUCT_WEB_ENDPOINTS.FIND,
         requestBody,
       );
 
-      return ProductWebServiceApi.handleSearchResponse(response);
+      return this.normalizeEmptyResponse(response, "Nenhum produto encontrado");
     } catch (error) {
       logger.error("Erro no serviço de produto web (busca)", error);
       throw error;
     }
   }
 
-  static async findProductWebSections(
+  /**
+   * Busca seções de produtos web
+   */
+  async findProductWebSections(
     params: Partial<ProductWebSectionsRequest> = {},
   ): Promise<ProductWebSectionsResponse> {
     try {
-      const validatedParams =
-        ProductWebServiceApi.validateSectionsParams(params);
+      const validatedParams = this.validateSectionsParams(params);
+      const requestBody = this.buildSectionsPayload(validatedParams);
 
-      const requestBody =
-        ProductWebServiceApi.buildSectionsPayload(validatedParams);
-
-      /*       logger.debug("Payload de busca de seções de produtos", {
-        payload: requestBody,
-        timestamp: new Date().toISOString(),
-      }); */
-
-      const instance = new ProductWebServiceApi();
-      const response = await instance.post<ProductWebSectionsResponse>(
+      const response = await this.post<ProductWebSectionsResponse>(
         PRODUCT_WEB_ENDPOINTS.SECTIONS,
         requestBody,
       );
 
-      return ProductWebServiceApi.handleSectionsResponse(response);
+      return this.normalizeEmptyResponse(
+        response,
+        "Nenhuma seção de produto encontrada",
+      );
     } catch (error) {
       logger.error("Erro no serviço de seções web de produtos", error);
       throw error;
     }
   }
 
-  private static validateSearchParams(
+  private validateSearchParams(
     params: Partial<ProductWebFindRequest>,
   ): Partial<ProductWebFindRequest> {
     try {
@@ -172,10 +171,10 @@ export class ProductWebServiceApi extends BaseApiService {
     }
   }
 
-  private static buildSearchPayload(
+  private buildSearchPayload(
     params: Partial<ProductWebFindRequest>,
   ): Record<string, unknown> {
-    return ProductWebServiceApi.buildBasePayload({
+    return this.buildBasePayload({
       pe_id_taxonomy: params.pe_id_taxonomy ?? 0,
       pe_slug_taxonomy: params.pe_slug_taxonomy ?? "",
       pe_id_produto: params.pe_id_produto ?? 0,
@@ -189,7 +188,7 @@ export class ProductWebServiceApi extends BaseApiService {
     });
   }
 
-  private static validateSectionsParams(
+  private validateSectionsParams(
     params: Partial<ProductWebSectionsRequest>,
   ): Partial<ProductWebSectionsRequest> {
     try {
@@ -203,10 +202,10 @@ export class ProductWebServiceApi extends BaseApiService {
     }
   }
 
-  private static buildSectionsPayload(
+  private buildSectionsPayload(
     params: Partial<ProductWebSectionsRequest>,
   ): Record<string, unknown> {
-    return ProductWebServiceApi.buildBasePayload({
+    return this.buildBasePayload({
       pe_id_taxonomy: params.pe_id_taxonomy ?? 0,
       pe_id_marca: params.pe_id_marca ?? 0,
       pe_id_tipo: params.pe_id_tipo ?? 0,
@@ -220,131 +219,39 @@ export class ProductWebServiceApi extends BaseApiService {
     });
   }
 
-  private static handleSearchResponse(
-    response: ProductWebFindResponse,
-  ): ProductWebFindResponse {
-    if (
-      response.statusCode === API_STATUS_CODES.EMPTY_RESULT ||
-      response.statusCode === API_STATUS_CODES.NOT_FOUND ||
-      response.statusCode === API_STATUS_CODES.UNPROCESSABLE
-    ) {
-      const defaultFeedback: [StoredProcedureResponse] = [
-        {
-          sp_return_id: 0,
-          sp_message: "Nenhum produto encontrado",
-          sp_error_id: 0,
-        },
-      ];
+  // ============================================================================
+  // Métodos Utilitários (Extração de dados)
+  // ============================================================================
 
-      return {
-        ...response,
-        statusCode: API_STATUS_CODES.SUCCESS,
-        quantity: 0,
-        data: [
-          [],
-          response.data?.[1] ?? defaultFeedback,
-          {
-            fieldCount: 0,
-            affectedRows: 0,
-            insertId: 0,
-            info: "",
-            serverStatus: 0,
-            warningStatus: 0,
-            changedRows: 0,
-          },
-        ],
-      };
-    }
-
-    if (isApiError(response.statusCode)) {
-      throw new ProductWebError(
-        response.message || "Erro ao listar produtos web",
-        "PRODUCT_WEB_FIND_ERROR",
-        response.statusCode,
-      );
-    }
-
-    return response;
-  }
-
-  private static handleSectionsResponse(
-    response: ProductWebSectionsResponse,
-  ): ProductWebSectionsResponse {
-    if (
-      response.statusCode === API_STATUS_CODES.EMPTY_RESULT ||
-      response.statusCode === API_STATUS_CODES.NOT_FOUND ||
-      response.statusCode === API_STATUS_CODES.UNPROCESSABLE
-    ) {
-      const defaultFeedback: [StoredProcedureResponse] = [
-        {
-          sp_return_id: 0,
-          sp_message: "Nenhuma seção de produto encontrada",
-          sp_error_id: 0,
-        },
-      ];
-
-      return {
-        ...response,
-        statusCode: API_STATUS_CODES.SUCCESS,
-        quantity: 0,
-        data: [
-          [],
-          response.data?.[1] ?? defaultFeedback,
-          {
-            fieldCount: 0,
-            affectedRows: 0,
-            insertId: 0,
-            info: "",
-            serverStatus: 0,
-            warningStatus: 0,
-            changedRows: 0,
-          },
-        ],
-      };
-    }
-
-    if (isApiError(response.statusCode)) {
-      throw new ProductWebError(
-        response.message || "Erro ao buscar seções web de produtos",
-        "PRODUCT_WEB_SECTIONS_ERROR",
-        response.statusCode,
-      );
-    }
-
-    return response;
-  }
-
-  static extractProduct(
+  extractProduct(
     response: ProductWebFindByIdResponse,
   ): ProductWebDetail | null {
     return response.data?.[0]?.[0] ?? null;
   }
 
-  static extractTaxonomies(
+  extractTaxonomies(
     response: ProductWebFindByIdResponse,
   ): ProductWebRelatedTaxonomy[] {
     return response.data?.[1] ?? [];
   }
 
-  static extractRelatedProducts(
+  extractRelatedProducts(
     response: ProductWebFindByIdResponse,
   ): ProductWebRelatedItem[] {
     return response.data?.[2] ?? [];
   }
 
-  static extractProductList(
-    response: ProductWebFindResponse,
-  ): ProductWebListItem[] {
+  extractProductList(response: ProductWebFindResponse): ProductWebListItem[] {
     return response.data?.[0] ?? [];
   }
 
-  static extractProductSections(
+  extractProductSections(
     response: ProductWebSectionsResponse,
   ): ProductWebSectionItem[] {
     return response.data?.[0] ?? [];
   }
 
-  static isValidProductDetail(response: ProductWebFindByIdResponse): boolean {
+  isValidProductDetail(response: ProductWebFindByIdResponse): boolean {
     return (
       isApiSuccess(response.statusCode) &&
       response.data &&
@@ -353,7 +260,7 @@ export class ProductWebServiceApi extends BaseApiService {
     );
   }
 
-  static isValidProductList(response: ProductWebFindResponse): boolean {
+  isValidProductList(response: ProductWebFindResponse): boolean {
     return (
       isApiSuccess(response.statusCode) &&
       response.data &&
@@ -361,7 +268,7 @@ export class ProductWebServiceApi extends BaseApiService {
     );
   }
 
-  static isValidProductSections(response: ProductWebSectionsResponse): boolean {
+  isValidProductSections(response: ProductWebSectionsResponse): boolean {
     return (
       isApiSuccess(response.statusCode) &&
       response.data &&
@@ -369,3 +276,8 @@ export class ProductWebServiceApi extends BaseApiService {
     );
   }
 }
+
+/**
+ * Instância única do serviço de produto web
+ */
+export const productServiceApi = new ProductWebServiceApi();
