@@ -1,6 +1,11 @@
 import "server-only";
 
-import type { AxiosError, AxiosInstance, AxiosResponse } from "axios";
+import type {
+  AxiosError,
+  AxiosInstance,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 import axios from "axios";
 import { envs } from "@/core/config";
 import {
@@ -9,6 +14,10 @@ import {
   EXTERNAL_API_BASE_URL,
   RETRY_CONFIG,
 } from "@/core/constants/api-constants";
+
+type AxiosConfigWithRetry = InternalAxiosRequestConfig & {
+  _retryCount?: number;
+};
 
 /**
  * Cliente Axios configurado para uso no servidor (Server Components e API Routes)
@@ -69,14 +78,16 @@ class ServerAxiosClient {
           data: error.response?.data,
         });
 
-        const currentRetryCount = (error.config as any)?._retryCount || 0;
+        const currentRetryCount =
+          (error.config as AxiosConfigWithRetry)?._retryCount || 0;
         const shouldRetry =
           error.config &&
           currentRetryCount < RETRY_CONFIG.MAX_RETRIES &&
           this.shouldRetryRequest(error);
 
         if (shouldRetry && error.config) {
-          (error.config as any)._retryCount = currentRetryCount + 1;
+          (error.config as AxiosConfigWithRetry)._retryCount =
+            currentRetryCount + 1;
           const delay = RETRY_CONFIG.RETRY_DELAY * 2 ** currentRetryCount;
 
           console.warn(

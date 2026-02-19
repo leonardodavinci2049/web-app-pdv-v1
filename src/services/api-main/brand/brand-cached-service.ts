@@ -13,12 +13,6 @@ import {
 
 const logger = createLogger("brand-cached-service");
 
-export interface MutationResult {
-  success: boolean;
-  data?: number;
-  error?: string;
-}
-
 export async function getBrands(
   params: {
     brandId?: number;
@@ -72,84 +66,5 @@ export async function getBrandById(id: number): Promise<UIBrand | undefined> {
   } catch (error) {
     logger.error(`Erro ao buscar marca por ID ${id}:`, error);
     return undefined;
-  }
-}
-
-export async function createBrand(params: {
-  brand: string;
-  slug: string;
-}): Promise<MutationResult> {
-  try {
-    const response = await brandServiceApi.createBrand({
-      pe_brand: params.brand,
-      pe_slug: params.slug,
-    });
-
-    const result = brandServiceApi.extractStoredProcedureResult(response);
-    if (result && result.sp_return_id > 0) {
-      return { success: true, data: result.sp_return_id };
-    }
-
-    return {
-      success: false,
-      error: result?.sp_message || "Erro desconhecido ao criar marca",
-    };
-  } catch (error) {
-    logger.error("Erro ao criar marca:", error);
-    return { success: false, error: "Erro ao criar marca" };
-  }
-}
-
-export async function updateBrand(params: {
-  brandId: number;
-  brand?: string;
-  slug?: string;
-  imagePath?: string;
-  notes?: string;
-  inactive?: number;
-}): Promise<MutationResult> {
-  try {
-    const response = await brandServiceApi.updateBrand({
-      pe_brand_id: params.brandId,
-      pe_brand: params.brand,
-      pe_slug: params.slug,
-      pe_image_path: params.imagePath,
-      pe_notes: params.notes,
-      pe_inactive: params.inactive,
-    });
-
-    const result = brandServiceApi.extractStoredProcedureResult(response);
-    if (result && result.sp_return_id > 0) {
-      return { success: true, data: result.sp_return_id };
-    }
-
-    return {
-      success: false,
-      error: result?.sp_message || "Erro desconhecido ao atualizar marca",
-    };
-  } catch (error) {
-    logger.error("Erro ao atualizar marca:", error);
-    return { success: false, error: "Erro ao atualizar marca" };
-  }
-}
-
-export async function deleteBrand(id: number): Promise<MutationResult> {
-  try {
-    const response = await brandServiceApi.deleteBrand({
-      pe_brand_id: id,
-    });
-
-    const result = brandServiceApi.extractStoredProcedureResult(response);
-    if (result && result.sp_return_id > 0) {
-      return { success: true, data: result.sp_return_id };
-    }
-
-    return {
-      success: false,
-      error: result?.sp_message || "Erro desconhecido ao excluir marca",
-    };
-  } catch (error) {
-    logger.error("Erro ao excluir marca:", error);
-    return { success: false, error: "Erro ao excluir marca" };
   }
 }
