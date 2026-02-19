@@ -33,8 +33,8 @@ export class CategoryServiceApi extends BaseApiService {
       pe_system_client_id: envs.SYSTEM_CLIENT_ID,
       pe_store_id: envs.STORE_ID,
       pe_organization_id: envs.ORGANIZATION_ID,
-      pe_member_id: envs.MEMBER_ID,
       pe_user_id: envs.USER_ID,
+      pe_member_role: envs.MEMBER_ROLE,
       pe_person_id: envs.PERSON_ID,
       ...additionalData,
     };

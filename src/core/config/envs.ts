@@ -33,7 +33,7 @@ const envsSchema = z.object({
     .transform((val) => parseInt(val, 10))
     .pipe(z.number().positive("STORE_ID must be a positive number")),
   ORGANIZATION_ID: z.string().min(1, "ORGANIZATION_ID is required"),
-  MEMBER_ID: z.string().min(1, "MEMBER_ID is required"),
+  MEMBER_ROLE: z.string().min(1, "MEMBER_ROLE is required"),
   USER_ID: z.string().min(1, "USER_ID is required"),
   PERSON_ID: z
     .string()
@@ -132,7 +132,7 @@ if (typeof window === "undefined") {
     SYSTEM_CLIENT_ID: 0,
     STORE_ID: 0,
     ORGANIZATION_ID: "",
-    MEMBER_ID: "",
+    MEMBER_ROLE: "",
     USER_ID: "",
     PERSON_ID: 0,
     // Estas variáveis públicas PODEM ser acessadas no cliente
@@ -174,7 +174,7 @@ export const envs = {
   SYSTEM_CLIENT_ID: envVars.SYSTEM_CLIENT_ID,
   STORE_ID: envVars.STORE_ID,
   ORGANIZATION_ID: envVars.ORGANIZATION_ID,
-  MEMBER_ID: envVars.MEMBER_ID,
+  MEMBER_ROLE: envVars.MEMBER_ROLE,
   USER_ID: envVars.USER_ID,
   PERSON_ID: envVars.PERSON_ID,
   TYPE_BUSINESS: envVars.TYPE_BUSINESS,

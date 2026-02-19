@@ -11,8 +11,8 @@ interface CategoryBaseRequest {
   pe_system_client_id?: number;
   pe_store_id?: number;
   pe_organization_id?: string;
-  pe_member_id?: string;
   pe_user_id?: string;
+  pe_member_role?: string;
   pe_person_id?: number;
 }
 
