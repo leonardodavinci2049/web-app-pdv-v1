@@ -10,7 +10,7 @@ import { z } from "zod";
 export const ProductWebFindByIdSchema = z.object({
   pe_type_business: z.number().int().positive(),
   pe_id_produto: z.number().int().positive(),
-  pe_slug_produto: z.string().max(300).min(1),
+  pe_slug_produto: z.string().max(300),
 });
 
 /**
