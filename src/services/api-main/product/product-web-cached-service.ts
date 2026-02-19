@@ -3,16 +3,12 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { createLogger } from "@/core/logger";
 import { CACHE_TAGS } from "@/lib/cache-config";
-import { CategoryServiceApi } from "@/services/api-main/category/category-service-api";
-import { ProductWebServiceApi } from "@/services/api-main/product/product-service-api";
+
+import { productServiceApi } from "@/services/api-main/product/product-service-api";
 import {
-  type CategoryLookupResult,
-  findCategoryBySlug,
-  transformCategoryMenu,
   transformProductDetail,
   transformProductList,
   transformRelatedProducts,
-  type UICategory,
   type UIProduct,
 } from "./transformers/transformers";
 
@@ -24,7 +20,7 @@ const logger = createLogger("ProductWebCachedService");
 
 /**
  * Fetch all products with cache
- * Uses ProductWebServiceApi.findProducts
+ * Uses productServiceApi.findProducts
  */
 export async function getProducts(
   params: {
@@ -39,11 +35,11 @@ export async function getProducts(
   } = {},
 ): Promise<UIProduct[]> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("minutes");
   cacheTag(CACHE_TAGS.products);
 
   try {
-    const response = await ProductWebServiceApi.findProducts({
+    const response = await productServiceApi.findProducts({
       pe_id_taxonomy: params.taxonomyId ?? 0,
       pe_id_marca: params.brandId ?? 0,
       pe_qt_registros: params.limit ?? 100,
@@ -54,7 +50,7 @@ export async function getProducts(
       pe_flag_estoque: params.stockOnly ? 1 : 0,
     });
 
-    const products = ProductWebServiceApi.extractProductList(response);
+    const products = productServiceApi.extractProductList(response);
     return transformProductList(products);
   } catch (error) {
     // Warn instead of error - this may happen during build when API is unavailable
@@ -69,7 +65,7 @@ export async function getProducts(
 
 /**
  * Fetch a product by ID with cache
- * Uses ProductWebServiceApi.findProductById
+ * Uses productServiceApi.findProductById
  */
 export async function getProductById(
   id: string,
@@ -79,12 +75,12 @@ export async function getProductById(
   cacheTag(CACHE_TAGS.product(id), CACHE_TAGS.products);
 
   try {
-    const response = await ProductWebServiceApi.findProductById({
+    const response = await productServiceApi.findProductById({
       pe_id_produto: Number.parseInt(id, 10),
       pe_slug_produto: "",
     });
 
-    const product = ProductWebServiceApi.extractProduct(response);
+    const product = productServiceApi.extractProduct(response);
     if (!product) {
       return undefined;
     }
@@ -118,12 +114,12 @@ export async function getProductBySlug(
       return undefined;
     }
 
-    const response = await ProductWebServiceApi.findProductById({
+    const response = await productServiceApi.findProductById({
       pe_id_produto: Number.parseInt(id, 10),
       pe_slug_produto: fullSlug,
     });
 
-    const product = ProductWebServiceApi.extractProduct(response);
+    const product = productServiceApi.extractProduct(response);
     if (!product) {
       return undefined;
     }
@@ -165,18 +161,18 @@ export async function getProductWithRelated(
       return undefined;
     }
 
-    const response = await ProductWebServiceApi.findProductById({
+    const response = await productServiceApi.findProductById({
       pe_id_produto: Number.parseInt(id, 10),
       pe_slug_produto: fullSlug,
     });
 
-    const product = ProductWebServiceApi.extractProduct(response);
+    const product = productServiceApi.extractProduct(response);
     if (!product) {
       return undefined;
     }
 
     // Extract related products from data[2] of the API response
-    const relatedRaw = ProductWebServiceApi.extractRelatedProducts(response);
+    const relatedRaw = productServiceApi.extractRelatedProducts(response);
 
     // Transform and filter out current product from related products
     const relatedProducts = transformRelatedProducts(relatedRaw).filter(
@@ -215,12 +211,12 @@ export async function getRelatedProducts(
       return [];
     }
 
-    const response = await ProductWebServiceApi.findProducts({
+    const response = await productServiceApi.findProducts({
       pe_id_taxonomy: parsedTaxonomyId,
       pe_qt_registros: 10,
     });
 
-    const products = ProductWebServiceApi.extractProductList(response);
+    const products = productServiceApi.extractProductList(response);
     // Filter out the current product
     return transformProductList(products).filter((p) => p.id !== productId);
   } catch (error) {
@@ -252,12 +248,12 @@ export async function getProductsByCategory(
       return [];
     }
 
-    const response = await ProductWebServiceApi.findProducts({
+    const response = await productServiceApi.findProducts({
       pe_id_taxonomy: taxonomyId,
       pe_qt_registros: 30,
     });
 
-    const products = ProductWebServiceApi.extractProductList(response);
+    const products = productServiceApi.extractProductList(response);
     return transformProductList(products);
   } catch (error) {
     logger.error(`Failed to fetch products by category:`, error);
@@ -277,11 +273,11 @@ export async function getProductsBySlug(
   sortOrd = 1,
 ): Promise<UIProduct[]> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("minutes");
   cacheTag(CACHE_TAGS.products, CACHE_TAGS.category(slugTaxonomy));
 
   try {
-    const response = await ProductWebServiceApi.findProducts({
+    const response = await productServiceApi.findProducts({
       pe_slug_taxonomy: slugTaxonomy,
       pe_qt_registros: limit,
       pe_pagina_id: page,
@@ -289,7 +285,7 @@ export async function getProductsBySlug(
       pe_ordem_id: sortOrd,
     });
 
-    const products = ProductWebServiceApi.extractProductList(response);
+    const products = productServiceApi.extractProductList(response);
     return transformProductList(products);
   } catch (error) {
     logger.error(`Failed to fetch products by slug:`, error);
@@ -313,7 +309,7 @@ export async function getProductsByTaxonomy(
   stockOnly?: boolean,
 ): Promise<UIProduct[]> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("minutes");
   cacheTag(CACHE_TAGS.products, CACHE_TAGS.category(slugOrId));
 
   const stockFlag = stockOnly ? 1 : 0;
@@ -321,7 +317,7 @@ export async function getProductsByTaxonomy(
   try {
     // Fazer UMA ÚNICA chamada à API enviando tanto ID quanto slug
     // A API decide qual usar baseado nos parâmetros fornecidos
-    const response = await ProductWebServiceApi.findProducts({
+    const response = await productServiceApi.findProducts({
       pe_id_taxonomy: taxonomyId && taxonomyId > 0 ? taxonomyId : 0,
       pe_slug_taxonomy: slugOrId,
       pe_qt_registros: limit,
@@ -331,7 +327,7 @@ export async function getProductsByTaxonomy(
       pe_flag_estoque: stockFlag,
     });
 
-    const products = ProductWebServiceApi.extractProductList(response);
+    const products = productServiceApi.extractProductList(response);
 
     // Se não encontrou produtos, retornar array vazio
     if (products.length === 0) {
@@ -345,65 +341,5 @@ export async function getProductsByTaxonomy(
   } catch (error) {
     logger.error(`Failed to fetch products by taxonomy:`, error);
     return [];
-  }
-}
-
-// ============================================================================
-// Category Functions
-// ============================================================================
-
-// pe_id_tipo: 1 = menu hierárquico completo (conforme teste Postman)
-// pe_parent_id: 0 = buscar a partir da raiz
-const CATEGORY_MENU_TYPE_ID = 1;
-const CATEGORY_PARENT_ID = 0;
-
-/**
- * Fetch all categories (menu) with cache
- * Uses CategoryServiceApi.findMenu
- */
-export async function getCategories(): Promise<UICategory[]> {
-  "use cache";
-  cacheLife({ stale: 15 * 60, revalidate: 30 * 60 });
-  cacheTag(CACHE_TAGS.categories, CACHE_TAGS.navigation);
-
-  try {
-    const response = await CategoryServiceApi.findMenu({
-      pe_id_tipo: CATEGORY_MENU_TYPE_ID,
-      pe_parent_id: CATEGORY_PARENT_ID,
-    });
-
-    const menu = CategoryServiceApi.extractCategories(response);
-
-    if (menu.length === 0) {
-      logger.warn("No categories found in menu response");
-    }
-
-    const transformed = transformCategoryMenu(menu);
-
-    return transformed;
-  } catch (error) {
-    logger.error("Failed to fetch categories:", error);
-    return [];
-  }
-}
-
-/**
- * Fetch category by slug with cache
- * Searches the hierarchical menu structure for matching slug
- */
-export async function getCategoryBySlug(
-  categorySlug: string,
-  subcategorySlug?: string,
-): Promise<CategoryLookupResult | null> {
-  "use cache";
-  cacheLife("hours");
-  cacheTag(CACHE_TAGS.categories);
-
-  try {
-    const categories = await getCategories();
-    return findCategoryBySlug(categories, categorySlug, subcategorySlug);
-  } catch (error) {
-    logger.error(`Failed to fetch category by slug:`, error);
-    return null;
   }
 }
