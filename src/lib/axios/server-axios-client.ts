@@ -1,5 +1,5 @@
 import "server-only";
-import "@/lib/axios/axios-types.d.ts";
+
 import type { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import axios from "axios";
 import { envs } from "@/core/config";
@@ -9,9 +9,18 @@ import {
   EXTERNAL_API_BASE_URL,
   RETRY_CONFIG,
 } from "@/core/constants/api-constants";
-import { createLogger } from "@/core/logger";
 
-const logger = createLogger("ServerAxiosClient");
+/**
+ * Extensão do tipo InternalAxiosRequestConfig para incluir metadata
+ */
+declare module "axios" {
+  export interface InternalAxiosRequestConfig {
+    metadata?: {
+      startTime: number;
+      retryCount?: number;
+    };
+  }
+}
 
 /**
  * Cliente Axios configurado para uso no servidor (Server Components e API Routes)
@@ -20,7 +29,6 @@ const logger = createLogger("ServerAxiosClient");
 class ServerAxiosClient {
   private baseURL: string;
   private apiKey: string;
-  private instance: AxiosInstance;
 
   constructor() {
     this.baseURL = EXTERNAL_API_BASE_URL;
@@ -28,11 +36,15 @@ class ServerAxiosClient {
 
     // Only warn in server environment, not during client bundle
     if (!this.apiKey && typeof window === "undefined") {
-      logger.warn("API_KEY não configurada no servidor");
+      console.warn("⚠️  Atenção: API_KEY não configurada no servidor");
     }
+  }
 
-    // Inicializa a instância única
-    this.instance = axios.create({
+  /**
+   * Cria uma instância axios com configuração da API_KEY
+   */
+  private createInstance(): AxiosInstance {
+    const instance = axios.create({
       baseURL: this.baseURL,
       timeout: API_TIMEOUTS.SERVER_DEFAULT,
       headers: {
@@ -43,7 +55,8 @@ class ServerAxiosClient {
       },
     });
 
-    this.setupInterceptors(this.instance);
+    this.setupInterceptors(instance);
+    return instance;
   }
 
   /**
@@ -67,7 +80,10 @@ class ServerAxiosClient {
         return config;
       },
       (error) => {
-        logger.error("Erro na requisição do servidor", error);
+        console.error(
+          `[${new Date().toISOString()}] [Server Request Error]`,
+          error,
+        );
         return Promise.reject(error);
       },
     );
@@ -84,7 +100,7 @@ class ServerAxiosClient {
           : null;
 
         // Log estruturado de erros do servidor
-        logger.error("Erro na API do servidor", {
+        console.error(`[${new Date().toISOString()}] [Server API Error]`, {
           status: error.response?.status,
           message: error.message,
           url: error.config?.url,
@@ -112,8 +128,8 @@ class ServerAxiosClient {
           // Calcular delay exponencial: 1s, 2s, 4s, etc.
           const delay = RETRY_CONFIG.RETRY_DELAY * 2 ** retryCount;
 
-          logger.warn(
-            `Retry ${retryCount + 1}/${RETRY_CONFIG.MAX_RETRIES} em ${delay}ms para ${error.config.url}`,
+          console.warn(
+            `[${new Date().toISOString()}] 🔄 Retry ${retryCount + 1}/${RETRY_CONFIG.MAX_RETRIES} em ${delay}ms para ${error.config.url}`,
           );
 
           // Aguardar antes de fazer retry
@@ -135,7 +151,8 @@ class ServerAxiosClient {
     url: string,
     config?: Record<string, unknown>,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.get<T>(url, config);
+    const instance = this.createInstance();
+    return instance.get<T>(url, config);
   }
 
   public post<T = unknown>(
@@ -143,7 +160,8 @@ class ServerAxiosClient {
     data?: unknown,
     config?: Record<string, unknown>,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.post<T>(url, data, config);
+    const instance = this.createInstance();
+    return instance.post<T>(url, data, config);
   }
 
   public put<T = unknown>(
@@ -151,7 +169,8 @@ class ServerAxiosClient {
     data?: unknown,
     config?: Record<string, unknown>,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.put<T>(url, data, config);
+    const instance = this.createInstance();
+    return instance.put<T>(url, data, config);
   }
 
   public patch<T = unknown>(
@@ -159,19 +178,25 @@ class ServerAxiosClient {
     data?: unknown,
     config?: Record<string, unknown>,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.patch<T>(url, data, config);
+    const instance = this.createInstance();
+    return instance.patch<T>(url, data, config);
   }
 
   public delete<T = unknown>(
     url: string,
     config?: Record<string, unknown>,
   ): Promise<AxiosResponse<T>> {
-    return this.instance.delete<T>(url, config);
+    const instance = this.createInstance();
+    return instance.delete<T>(url, config);
   }
 
   /**
    * Métodos utilitários
    */
+  public getApiKey(): string {
+    return this.apiKey;
+  }
+
   public isApiKeyConfigured(): boolean {
     return Boolean(this.apiKey && this.apiKey.length > 0);
   }

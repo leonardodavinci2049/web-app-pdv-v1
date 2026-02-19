@@ -1,94 +1,8 @@
-import "server-only";
+// Tipos para o serviço de marcas (Brand)
 
-interface BrandBaseRequest {
-  pe_app_id?: number;
-  pe_system_client_id?: number;
-  pe_store_id?: number;
-  pe_organization_id?: string;
-  pe_user_id?: string;
-  pe_member_role?: string;
-  pe_person_id?: number;
-}
-
-interface BrandBaseResponse {
-  statusCode: number;
-  message: string;
-  recordId: number;
-  quantity: number;
-  errorId: number;
-  info1?: string;
-}
-
-export interface BrandFindAllRequest extends BrandBaseRequest {
-  pe_brand_id?: number;
-  pe_brand?: string;
-  pe_limit?: number;
-}
-
-export interface BrandListItem {
-  ID_MARCA: number;
-  MARCA: string;
-}
-
-export interface BrandFindByIdRequest extends BrandBaseRequest {
-  pe_brand_id: number;
-}
-
-export interface BrandDetail {
-  ID_MARCA: number;
-  UUID: string | null;
-  ID_SYSTEM_CLIENTE: number;
-  NOME: string;
-  MARCA: string | null;
-  INATIVO: number;
-  DT_UPDATE: string | null;
-  DATADOCADASTRO: string;
-}
-
-export interface BrandCreateRequest extends BrandBaseRequest {
-  pe_brand: string;
-  pe_slug: string;
-}
-
-export interface BrandUpdateRequest extends BrandBaseRequest {
-  pe_brand_id: number;
-  pe_brand?: string;
-  pe_slug?: string;
-  pe_image_path?: string;
-  pe_notes?: string;
-  pe_inactive?: number;
-}
-
-export interface BrandDeleteRequest extends BrandBaseRequest {
-  pe_brand_id: number;
-}
-
-export interface StoredProcedureResponse {
-  sp_return_id: number;
-  sp_message: string;
-  sp_error_id: number;
-}
-
-export interface BrandFindAllResponse extends BrandBaseResponse {
-  data: Record<string, BrandListItem[]>;
-}
-
-export interface BrandFindByIdResponse extends BrandBaseResponse {
-  data: Record<string, BrandDetail[]>;
-}
-
-export interface BrandCreateResponse extends BrandBaseResponse {
-  data: [StoredProcedureResponse[]];
-}
-
-export interface BrandUpdateResponse extends BrandBaseResponse {
-  data: [StoredProcedureResponse[]];
-}
-
-export interface BrandDeleteResponse extends BrandBaseResponse {
-  data: [StoredProcedureResponse[]];
-}
-
+/**
+ * Custom error class for brand-related errors
+ */
 export class BrandError extends Error {
   constructor(
     message: string,
@@ -101,6 +15,9 @@ export class BrandError extends Error {
   }
 }
 
+/**
+ * Error thrown when brand is not found
+ */
 export class BrandNotFoundError extends BrandError {
   constructor(params?: Record<string, unknown>) {
     const message = params
@@ -112,6 +29,9 @@ export class BrandNotFoundError extends BrandError {
   }
 }
 
+/**
+ * Error thrown when brand validation fails
+ */
 export class BrandValidationError extends BrandError {
   constructor(
     message: string,
@@ -121,4 +41,74 @@ export class BrandValidationError extends BrandError {
     this.name = "BrandValidationError";
     Object.setPrototypeOf(this, BrandValidationError.prototype);
   }
+}
+
+/**
+ * Base request interface with common parameters
+ */
+interface BaseBrandRequest {
+  pe_app_id: number;
+  pe_system_client_id: number;
+  pe_store_id: number;
+  pe_organization_id?: string;
+  pe_member_id?: string;
+  pe_user_id?: string;
+  pe_person_id?: number;
+}
+
+/**
+ * Requisição para listar marcas
+ */
+export interface FindBrandRequest extends BaseBrandRequest {
+  pe_id_marca?: number;
+  pe_marca?: string;
+  pe_limit?: number;
+}
+
+/**
+ * Estrutura de dados da marca
+ */
+export interface BrandData {
+  ID_MARCA: number;
+  MARCA: string | null;
+}
+
+/**
+ * Estrutura de resposta da stored procedure
+ */
+export interface StoredProcedureResponse {
+  sp_return_id: number;
+  sp_message: string;
+  sp_error_id: number;
+}
+
+/**
+ * Estrutura de metadados MySQL
+ */
+export interface MySQLMetadata {
+  fieldCount: number;
+  affectedRows: number;
+  insertId: number;
+  info: string;
+  serverStatus: number;
+  warningStatus: number;
+  changedRows: number;
+}
+
+/**
+ * Base response interface
+ */
+interface BaseBrandResponse {
+  statusCode: number;
+  message: string;
+  recordId: number;
+  quantity: number;
+  info1: string;
+}
+
+/**
+ * Resposta da listagem de marcas
+ */
+export interface FindBrandResponse extends BaseBrandResponse {
+  data: [BrandData[], [StoredProcedureResponse], MySQLMetadata];
 }

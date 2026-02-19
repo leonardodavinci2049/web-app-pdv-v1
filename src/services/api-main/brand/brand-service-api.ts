@@ -1,4 +1,6 @@
-import "server-only";
+/**
+ * Serviço de marcas para interagir com a API
+ */
 
 import { envs } from "@/core/config";
 import {
@@ -11,213 +13,201 @@ import { createLogger } from "@/core/logger";
 import { BaseApiService } from "@/lib/axios/base-api-service";
 
 import type {
-  BrandCreateRequest,
-  BrandCreateResponse,
-  BrandDeleteRequest,
-  BrandDeleteResponse,
-  BrandDetail,
-  BrandFindAllRequest,
-  BrandFindAllResponse,
-  BrandFindByIdRequest,
-  BrandFindByIdResponse,
-  BrandListItem,
-  BrandUpdateRequest,
-  BrandUpdateResponse,
+  BrandData,
+  FindBrandRequest,
+  FindBrandResponse,
   StoredProcedureResponse,
 } from "./types/brand-types";
-import { BrandError, BrandNotFoundError } from "./types/brand-types";
-import {
-  BrandCreateSchema,
-  BrandDeleteSchema,
-  BrandFindAllSchema,
-  BrandFindByIdSchema,
-  BrandUpdateSchema,
-} from "./validation/brand-schemas";
 
-const logger = createLogger("BrandServiceApi");
+import { FindBrandSchema } from "./validation/brand-schemas";
 
+// Logger instance
+const logger = createLogger("BrandService");
+
+/**
+ * Serviço para operações relacionadas a marcas
+ */
 export class BrandServiceApi extends BaseApiService {
-  private buildBasePayload(
+  /**
+   * Build base payload with environment variables
+   */
+  private static buildBasePayload(
     additionalData: Record<string, unknown> = {},
   ): Record<string, unknown> {
     return {
       pe_app_id: envs.APP_ID,
       pe_system_client_id: envs.SYSTEM_CLIENT_ID,
       pe_store_id: envs.STORE_ID,
+      pe_organization_id: '1',
+      pe_member_id: '1',
+      pe_user_id: '1',
+      pe_person_id: 1,
       ...additionalData,
     };
   }
 
-  async findAllBrands(
-    params: Partial<BrandFindAllRequest> = {},
-  ): Promise<BrandFindAllResponse> {
+  /**
+   * Endpoint - Listar Marcas v2
+   * @param params - Parâmetros de busca e filtros
+   * @returns Promise com lista de marcas
+   */
+  static async findBrands(
+    params: Partial<FindBrandRequest> = {},
+  ): Promise<FindBrandResponse> {
     try {
-      const validatedParams = BrandFindAllSchema.partial().parse(params);
-      const requestBody = this.buildBasePayload({
-        pe_brand_id: validatedParams.pe_brand_id ?? 0,
-        pe_brand: validatedParams.pe_brand ?? "",
-        pe_limit: validatedParams.pe_limit ?? 100,
-      });
+      const validatedParams = BrandServiceApi.validateSearchParams(params);
+      const requestBody = BrandServiceApi.buildSearchPayload(validatedParams);
 
-      const response = await this.post<BrandFindAllResponse>(
-        BRAND_ENDPOINTS.FIND_ALL,
-        requestBody,
-      );
+      const response = await BrandServiceApi.executeBrandSearch(requestBody);
 
-      return this.normalizeEmptyBrandFindAllResponse(response);
+      return BrandServiceApi.handleSearchResponse(response);
     } catch (error) {
-      logger.error("Erro ao buscar todas as marcas", error);
+      logger.error("Erro no serviço de marcas (busca)", error);
       throw error;
     }
   }
 
-  async findBrandById(
-    params: BrandFindByIdRequest,
-  ): Promise<BrandFindByIdResponse> {
+  /**
+   * Valida parâmetros de busca
+   * @private
+   */
+  private static validateSearchParams(
+    params: Partial<FindBrandRequest>,
+  ): Partial<FindBrandRequest> {
     try {
-      const validatedParams = BrandFindByIdSchema.parse(params);
-      const requestBody = this.buildBasePayload(validatedParams);
-
-      const response = await this.post<BrandFindByIdResponse>(
-        BRAND_ENDPOINTS.FIND_BY_ID,
-        requestBody,
-      );
-
-      if (response.statusCode === API_STATUS_CODES.NOT_FOUND) {
-        throw new BrandNotFoundError(validatedParams);
-      }
-
-      if (isApiError(response.statusCode)) {
-        throw new BrandError(
-          response.message || "Erro ao buscar marca por ID",
-          "BRAND_FIND_BY_ID_ERROR",
-          response.statusCode,
-        );
-      }
-
-      return response;
+      return FindBrandSchema.partial().parse(params);
     } catch (error) {
-      logger.error("Erro ao buscar marca por ID", error);
+      logger.error("Erro na validação de parâmetros de busca", error);
       throw error;
     }
   }
 
-  async createBrand(params: BrandCreateRequest): Promise<BrandCreateResponse> {
-    try {
-      const validatedParams = BrandCreateSchema.parse(params);
-      const requestBody = this.buildBasePayload(validatedParams);
+  /**
+   * Constrói payload de busca com valores padrão
+   * @private
+   */
+  private static buildSearchPayload(
+    params: Partial<FindBrandRequest>,
+  ): Record<string, unknown> {
+    const payload = BrandServiceApi.buildBasePayload({
+      pe_id_marca: 0, // Valor padrão - sem filtro específico
+      pe_marca: "", // Valor padrão - sem filtro por nome
+      pe_limit: 100, // Valor padrão - 100 registros
+      ...params,
+    });
 
-      const response = await this.post<BrandCreateResponse>(
-        BRAND_ENDPOINTS.CREATE,
-        requestBody,
-      );
-
-      this.checkStoredProcedureError(response);
-      return response;
-    } catch (error) {
-      logger.error("Erro ao criar marca", error);
-      throw error;
-    }
+    return payload;
   }
 
-  async updateBrand(params: BrandUpdateRequest): Promise<BrandUpdateResponse> {
-    try {
-      const validatedParams = BrandUpdateSchema.parse(params);
-      const requestBody = this.buildBasePayload(validatedParams);
-
-      const response = await this.post<BrandUpdateResponse>(
-        BRAND_ENDPOINTS.UPDATE,
-        requestBody,
-      );
-
-      this.checkStoredProcedureError(response);
-      return response;
-    } catch (error) {
-      logger.error("Erro ao atualizar marca", error);
-      throw error;
-    }
+  /**
+   * Executa busca de marcas na API
+   * @private
+   */
+  private static async executeBrandSearch(
+    requestBody: Record<string, unknown>,
+  ): Promise<FindBrandResponse> {
+    const instance = new BrandServiceApi();
+    return await instance.post<FindBrandResponse>(
+      BRAND_ENDPOINTS.FIND_ALL,
+      requestBody,
+    );
   }
 
-  async deleteBrand(params: BrandDeleteRequest): Promise<BrandDeleteResponse> {
-    try {
-      const validatedParams = BrandDeleteSchema.parse(params);
-      const requestBody = this.buildBasePayload(validatedParams);
-
-      const response = await this.post<BrandDeleteResponse>(
-        BRAND_ENDPOINTS.DELETE,
-        requestBody,
-      );
-
-      this.checkStoredProcedureError(response);
-      return response;
-    } catch (error) {
-      logger.error("Erro ao excluir marca", error);
-      throw error;
-    }
-  }
-
-  private checkStoredProcedureError(
-    response: BrandCreateResponse | BrandUpdateResponse | BrandDeleteResponse,
-  ): void {
-    const spResponse = response.data?.[0]?.[0] as StoredProcedureResponse;
-    if (spResponse && spResponse.sp_error_id !== 0) {
-      throw new BrandError(
-        spResponse.sp_message || "Erro na operação de marca",
-        "BRAND_OPERATION_ERROR",
-        spResponse.sp_error_id,
-      );
-    }
-  }
-
-  private normalizeEmptyBrandFindAllResponse(
-    response: BrandFindAllResponse,
-  ): BrandFindAllResponse {
+  /**
+   * Trata resposta da busca de marcas
+   * @private
+   */
+  private static handleSearchResponse(
+    data: FindBrandResponse,
+  ): FindBrandResponse {
+    // Verifica se é código de resultado vazio ou não encontrado
     if (
-      response.statusCode === API_STATUS_CODES.NOT_FOUND ||
-      response.statusCode === API_STATUS_CODES.EMPTY_RESULT
+      data.statusCode === API_STATUS_CODES.EMPTY_RESULT ||
+      data.statusCode === API_STATUS_CODES.NOT_FOUND ||
+      data.statusCode === API_STATUS_CODES.UNPROCESSABLE
     ) {
       return {
-        ...response,
+        ...data,
         statusCode: API_STATUS_CODES.SUCCESS,
         quantity: 0,
-        data: {
-          "Brand find All": [],
-        },
+        data: [
+          [],
+          [
+            {
+              sp_return_id: 0,
+              sp_message: "Nenhuma marca encontrada",
+              sp_error_id: 0,
+            },
+          ],
+          {
+            fieldCount: 0,
+            affectedRows: 0,
+            insertId: 0,
+            info: "",
+            serverStatus: 0,
+            warningStatus: 0,
+            changedRows: 0,
+          },
+        ],
       };
     }
-    return response;
+
+    // Verifica se a busca foi bem-sucedida usando função utilitária
+    if (isApiError(data.statusCode)) {
+      throw new Error(data.message || "Erro ao buscar marcas");
+    }
+
+    return data;
   }
 
-  extractBrands(response: BrandFindAllResponse): BrandListItem[] {
-    return response.data?.["Brand find All"] ?? [];
+  // ========================================
+  // UTILITY METHODS
+  // ========================================
+
+  /**
+   * Extrai lista de marcas da resposta da API
+   * @param response - Resposta da API
+   * @returns Lista de marcas ou array vazio
+   */
+  static extractBrandList(response: FindBrandResponse): BrandData[] {
+    return response.data?.[0] ?? [];
   }
 
-  extractBrandById(response: BrandFindByIdResponse): BrandDetail | null {
-    return response.data?.["Brand find All"]?.[0] ?? null;
-  }
-
-  extractStoredProcedureResult(
-    response: BrandCreateResponse | BrandUpdateResponse | BrandDeleteResponse,
+  /**
+   * Extrai resposta da stored procedure
+   * @param response - Resposta da API com stored procedure
+   * @returns Resposta da stored procedure ou null
+   */
+  static extractStoredProcedureResponse(
+    response: FindBrandResponse,
   ): StoredProcedureResponse | null {
-    return (response.data?.[0]?.[0] as StoredProcedureResponse) ?? null;
+    return response.data?.[1]?.[0] ?? null;
   }
 
-  isValidBrandList(response: BrandFindAllResponse): boolean {
+  // ========================================
+  // VALIDATION METHODS
+  // ========================================
+
+  /**
+   * Valida se a resposta de busca de marcas é válida
+   * @param response - Resposta da API
+   * @returns true se válida, false caso contrário
+   */
+  static isValidBrandResponse(response: FindBrandResponse): boolean {
     return (
       isApiSuccess(response.statusCode) &&
       response.data &&
-      Array.isArray(response.data["Brand find All"])
+      Array.isArray(response.data[0])
     );
   }
 
-  isValidBrandDetail(response: BrandFindByIdResponse): boolean {
-    return (
-      isApiSuccess(response.statusCode) &&
-      response.data &&
-      Array.isArray(response.data["Brand find All"]) &&
-      response.data["Brand find All"].length > 0
-    );
+  /**
+   * Verifica se a operação foi bem-sucedida baseado na stored procedure
+   * @param response - Resposta da API
+   * @returns true se bem-sucedida, false caso contrário
+   */
+  static isOperationSuccessful(response: FindBrandResponse): boolean {
+    const spResponse = BrandServiceApi.extractStoredProcedureResponse(response);
+    return spResponse ? spResponse.sp_error_id === 0 : false;
   }
 }
-
-export const brandServiceApi = new BrandServiceApi();

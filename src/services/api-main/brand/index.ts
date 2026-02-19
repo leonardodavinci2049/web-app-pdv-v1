@@ -1,23 +1,14 @@
+// Export brand service and types
+
 export { BrandServiceApi } from "./brand-service-api";
 
 export type {
-  BrandCreateRequest,
-  BrandCreateResponse,
-  BrandDeleteRequest,
-  BrandDeleteResponse,
-  BrandDetail,
-  BrandFindAllRequest,
-  BrandFindAllResponse,
-  BrandFindByIdRequest,
-  BrandFindByIdResponse,
-  BrandListItem,
-  BrandUpdateRequest,
-  BrandUpdateResponse,
+  BrandData,
+  // Request types
+  FindBrandRequest,
+  // Response types
+  FindBrandResponse,
+  MySQLMetadata,
+  // Data types
   StoredProcedureResponse,
-} from "./types/brand-types";
-
-export {
-  BrandError,
-  BrandNotFoundError,
-  BrandValidationError,
 } from "./types/brand-types";
