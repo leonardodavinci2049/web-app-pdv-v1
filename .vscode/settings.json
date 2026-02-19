@@ -1,0 +1,9 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["biome.json"],
+      "url": "https://biomejs.dev/schemas/2.4.2/schema.json"
+    }
+  ],
+  "http.systemCertificates": true
+}
