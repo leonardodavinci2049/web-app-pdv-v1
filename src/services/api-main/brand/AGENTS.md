@@ -58,6 +58,16 @@ brand/
 
 ### Nomes de Parâmetros API
 Prefixo `pe_` (parameter):
+
+**Parâmetros de Contexto (opcionais):**
+```typescript
+pe_organization_id: string  // ID da organização (Max 200 chars) - depende do usuário logado
+pe_user_id: string          // ID do usuário (Max 200 chars) - depende do usuário logado
+pe_member_role: string      // Papel do membro (Max 200 chars) - depende do usuário logado
+pe_person_id: number        // ID da pessoa associada - depende do usuário logado
+```
+
+**Parâmetros Específicos de Marca:**
 ```typescript
 pe_brand_id: number        // ID da marca
 pe_brand: string           // Nome da marca
@@ -71,13 +81,17 @@ pe_inactive: number        // 0 = ativo, 1 = inativo
 Todos os requests incluem contexto por padrão:
 ```typescript
 {
+  // Parâmetros fixos (carregados das variáveis de ambiente)
   pe_app_id: envs.APP_ID,
   pe_system_client_id: envs.SYSTEM_CLIENT_ID,
   pe_store_id: envs.STORE_ID,
-  pe_organization_id: envs.ORGANIZATION_ID,
-  pe_user_id: envs.USER_ID,
-  pe_member_role: envs.MEMBER_ROLE,
-  pe_person_id: envs.PERSON_ID,
+
+  // Parâmetros dinâmicos (dependem do usuário logado)
+  // pe_organization_id: string  // Max 200 chars
+  // pe_user_id: string          // Max 200 chars
+  // pe_member_role: string      // Max 200 chars
+  // pe_person_id: number
+
   // ... parâmetros específicos da operação
 }
 ```
@@ -195,15 +209,23 @@ async function BrandList() {
 ```typescript
 import { createBrand, updateBrand, deleteBrand } from "@/services/api-main/brand";
 import { revalidateTag } from "next/cache";
+import { auth } from "@/lib/auth/auth";
 
 export async function createBrandAction(data: { brand: string, slug: string }) {
-  const result = await createBrand(data);
-  
+  const session = await auth.api.getSession({ headers: await headers() });
+  const result = await createBrand({
+    pe_organization_id: session?.user?.organizationId,
+    pe_user_id: session?.user?.id,
+    pe_member_role: session?.user?.role,
+    pe_person_id: session?.user?.personId,
+    ...data
+  });
+
   if (result.success) {
     revalidateTag("brands"); // Invalida cache
     return { success: true };
   }
-  
+
   return { success: false, error: result.error };
 }
 ```
@@ -220,3 +242,5 @@ export async function createBrandAction(data: { brand: string, slug: string }) {
 8. **Usar logger** para erros com contexto descritivo
 9. **Usar cache tags** hierárquicas (`brands` + `brand:id`)
 10. **Normalizar respostas vazias** (NOT_FOUND → SUCCESS + [])
+11. **Parâmetros de contexto fixos**: pe_app_id, pe_system_client_id, pe_store_id (carregados de env)
+12. **Parâmetros de contexto dinâmicos**: pe_organization_id, pe_user_id, pe_member_role, pe_person_id (obrigatórios na API, mas opcionais nos schemas - devem ser passados pelo usuário logado)

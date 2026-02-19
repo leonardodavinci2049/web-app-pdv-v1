@@ -1,21 +1,37 @@
 import { z } from "zod";
 
 export const BrandCreateSchema = z.object({
+  pe_organization_id: z.string().max(200).optional(),
+  pe_user_id: z.string().max(200).optional(),
+  pe_member_role: z.string().max(200).optional(),
+  pe_person_id: z.number().optional(),
   pe_brand: z.string().max(100).min(1),
   pe_slug: z.string().max(300).min(1),
 });
 
 export const BrandFindAllSchema = z.object({
+  pe_organization_id: z.string().max(200).optional(),
+  pe_user_id: z.string().max(200).optional(),
+  pe_member_role: z.string().max(200).optional(),
+  pe_person_id: z.number().optional(),
   pe_brand_id: z.number().int().min(0).optional(),
   pe_brand: z.string().max(200).optional(),
   pe_limit: z.number().int().positive().optional(),
 });
 
 export const BrandFindByIdSchema = z.object({
+  pe_organization_id: z.string().max(200).optional(),
+  pe_user_id: z.string().max(200).optional(),
+  pe_member_role: z.string().max(200).optional(),
+  pe_person_id: z.number().optional(),
   pe_brand_id: z.number().int().positive(),
 });
 
 export const BrandUpdateSchema = z.object({
+  pe_organization_id: z.string().max(200).optional(),
+  pe_user_id: z.string().max(200).optional(),
+  pe_member_role: z.string().max(200).optional(),
+  pe_person_id: z.number().optional(),
   pe_brand_id: z.number().int().positive(),
   pe_brand: z.string().max(100).optional(),
   pe_slug: z.string().max(100).optional(),
@@ -25,6 +41,10 @@ export const BrandUpdateSchema = z.object({
 });
 
 export const BrandDeleteSchema = z.object({
+  pe_organization_id: z.string().max(200).optional(),
+  pe_user_id: z.string().max(200).optional(),
+  pe_member_role: z.string().max(200).optional(),
+  pe_person_id: z.number().optional(),
   pe_brand_id: z.number().int().positive(),
 });
 
