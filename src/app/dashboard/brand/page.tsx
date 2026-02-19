@@ -1,13 +1,16 @@
-import { BrandServiceApi } from "@/services/api-main/brand/brand-service-api";
+import { getBrands } from "@/services/api-main/brand/brand-cached-service";
 
 const BrandPage = async () => {
-  const response = await BrandServiceApi.findAllBrands({
+  // Dados de sessão fictícios (ajuste conforme necessário)
+  const brands = await getBrands({
+    brandId: 0,
+    brand: "",
+    limit: 10,
     pe_organization_id: "1",
     pe_user_id: "1",
     pe_member_role: "admin",
     pe_person_id: 1,
   });
-  const brands = BrandServiceApi.extractBrandList(response);
 
   return (
     <div className="p-6">
@@ -17,12 +20,9 @@ const BrandPage = async () => {
           <p className="text-gray-500">Nenhuma marca encontrada</p>
         ) : (
           brands.map((brand) => (
-            <div
-              key={brand.ID_MARCA}
-              className="p-4 border rounded-lg bg-white"
-            >
-              <div className="font-medium">ID: {brand.ID_MARCA}</div>
-              <div className="text-gray-700">{brand.MARCA ?? "Sem nome"}</div>
+            <div key={brand.id} className="p-4 border rounded-lg bg-white">
+              <div className="font-medium">ID: {brand.id}</div>
+              <div className="text-gray-700">{brand.name ?? "Sem nome"}</div>
             </div>
           ))
         )}
