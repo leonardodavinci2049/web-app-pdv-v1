@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createLogger } from "@/core/logger";
 import { auth } from "@/lib/auth/auth";
+import { CACHE_TAGS } from "@/lib/cache-config";
 import { brandServiceApi } from "@/services/api-main/brand";
 
 const logger = createLogger("createBrandAction");
@@ -25,9 +26,21 @@ export async function createBrandAction(
       redirect("/sign-in");
     }
 
+    const brandName = (formData.get("brand") as string) || "";
+    const slugInput = (formData.get("slug") as string) || "";
+    // Gera slug automaticamente a partir do nome da marca se não fornecido
+    const generatedSlug = brandName
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .trim();
+
     const rawData = {
-      pe_brand: (formData.get("brand") as string) || "",
-      pe_slug: (formData.get("slug") as string) || "",
+      pe_brand: brandName,
+      pe_slug: slugInput || generatedSlug,
       pe_image_path: (formData.get("image_path") as string) || undefined,
       pe_notes: (formData.get("notes") as string) || undefined,
       pe_system_client_id: session.session?.systemId ?? 0,
@@ -47,7 +60,7 @@ export async function createBrandAction(
       };
     }
 
-    revalidateTag("brands", "");
+    revalidateTag(CACHE_TAGS.brands, "seconds");
 
     return {
       success: true,

@@ -1,10 +1,11 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Calendar, Hash, Tags } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import type { BrandDetail as IBrandDetail } from "@/services/api-main/brand";
 import { BrandDeleteDialog } from "../../_components/brand-delete-dialog";
 import { BrandUpdateDialog } from "../../_components/brand-update-dialog";
@@ -16,89 +17,165 @@ interface BrandDetailProps {
 export function BrandDetail({ brand }: BrandDetailProps) {
   const brandName = brand.MARCA ?? brand.NOME ?? "Sem Nome";
   const isActive = brand.INATIVO === 0;
+  const initial = brandName.charAt(0).toUpperCase();
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" asChild>
-            <Link href="/brand">
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
-          <h2 className="text-2xl font-bold tracking-tight">{brandName}</h2>
-          <Badge variant={isActive ? "default" : "secondary"}>
-            {isActive ? "Ativo" : "Inativo"}
-          </Badge>
-        </div>
-        <div className="flex items-center gap-2">
-          <BrandUpdateDialog brandId={brand.ID_MARCA} brandName={brandName} />
-          <BrandDeleteDialog
-            brandId={brand.ID_MARCA}
-            brandName={brandName}
-            redirectTo="/brand"
-          />
-        </div>
-      </div>
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="space-y-6">
+          {/* Botão voltar */}
+          <div>
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="-ml-2 gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <Link href="/brand">
+                <ArrowLeft className="h-4 w-4" />
+                Voltar para Marcas
+              </Link>
+            </Button>
+          </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Informações Básicas</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <span className="text-sm font-medium text-muted-foreground">
-                  ID da Marca
-                </span>
-                <p>{brand.ID_MARCA}</p>
+          {/* Hero section */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-2xl font-bold text-primary">
+                {initial}
               </div>
-              <div>
-                <span className="text-sm font-medium text-muted-foreground">
-                  UUID
-                </span>
-                <p className="truncate" title={brand.UUID ?? ""}>
-                  {brand.UUID ?? "-"}
-                </p>
+              <div className="space-y-1">
+                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  {brandName}
+                </h1>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-mono text-xs text-muted-foreground">
+                    ID #{brand.ID_MARCA}
+                  </span>
+                  <Badge
+                    variant={isActive ? "default" : "secondary"}
+                    className={
+                      isActive
+                        ? "bg-emerald-100 text-xs text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:hover:bg-emerald-900/30"
+                        : "text-xs"
+                    }
+                  >
+                    {isActive ? "Ativa" : "Inativa"}
+                  </Badge>
+                </div>
               </div>
             </div>
-            <div>
-              <span className="text-sm font-medium text-muted-foreground">
-                Nome
-              </span>
-              <p>{brandName}</p>
-            </div>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Metadados</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <span className="text-sm font-medium text-muted-foreground">
-                Data de Cadastro
-              </span>
-              <p>
-                {brand.DATADOCADASTRO
-                  ? new Date(brand.DATADOCADASTRO).toLocaleString("pt-BR")
-                  : "-"}
-              </p>
+            <div className="flex shrink-0 items-center gap-2">
+              <BrandUpdateDialog
+                brandId={brand.ID_MARCA}
+                brandName={brandName}
+              />
+              <BrandDeleteDialog
+                brandId={brand.ID_MARCA}
+                brandName={brandName}
+                redirectTo="/brand"
+              />
             </div>
-            <div>
-              <span className="text-sm font-medium text-muted-foreground">
-                Última Atualização
-              </span>
-              <p>
-                {brand.DT_UPDATE
-                  ? new Date(brand.DT_UPDATE).toLocaleString("pt-BR")
-                  : "-"}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          {/* Cards de informação */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card className="border shadow-none">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                  <Hash className="h-4 w-4" />
+                  Identificação
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      ID
+                    </p>
+                    <p className="mt-0.5 font-mono font-semibold">
+                      {brand.ID_MARCA}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Status
+                    </p>
+                    <p className="mt-0.5 font-medium">
+                      {isActive ? "Ativa" : "Inativa"}
+                    </p>
+                  </div>
+                </div>
+
+                {brand.UUID && (
+                  <>
+                    <Separator />
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">
+                        UUID
+                      </p>
+                      <p className="mt-0.5 break-all font-mono text-xs text-muted-foreground">
+                        {brand.UUID}
+                      </p>
+                    </div>
+                  </>
+                )}
+
+                <Separator />
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Nome
+                  </p>
+                  <p className="mt-0.5 font-medium">{brandName}</p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                    <Tags className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    Marca registrada no sistema
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border shadow-none">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  Histórico
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Cadastrado em
+                  </p>
+                  <p className="mt-0.5 font-medium">
+                    {brand.DATADOCADASTRO
+                      ? new Date(brand.DATADOCADASTRO).toLocaleString("pt-BR")
+                      : "—"}
+                  </p>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Última atualização
+                  </p>
+                  <p className="mt-0.5 font-medium">
+                    {brand.DT_UPDATE
+                      ? new Date(brand.DT_UPDATE).toLocaleString("pt-BR")
+                      : "—"}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

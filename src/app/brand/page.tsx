@@ -37,16 +37,10 @@ export default async function BrandPage() {
   });
 
   return (
-    <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
-      <div className="flex items-center justify-between space-y-2">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Marcas</h2>
-          <p className="text-muted-foreground">
-            Gerencie as marcas de produtos do sistema.
-          </p>
-        </div>
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <BrandList brands={brands} />
       </div>
-      <BrandList brands={brands} />
     </div>
   );
 }
