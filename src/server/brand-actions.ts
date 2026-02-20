@@ -30,6 +30,7 @@ export async function createBrand(params: {
     const response = await brandServiceApi.createBrand({
       pe_brand: params.brand,
       pe_slug: params.slug,
+      pe_system_client_id: session.session?.systemId ?? 0,
     });
 
     const result = brandServiceApi.extractStoredProcedureResult(response);
@@ -70,6 +71,7 @@ export async function updateBrand(params: {
       pe_image_path: params.imagePath,
       pe_notes: params.notes,
       pe_inactive: params.inactive,
+      pe_system_client_id: session.session?.systemId ?? 0,
     });
 
     const result = brandServiceApi.extractStoredProcedureResult(response);
@@ -100,6 +102,7 @@ export async function deleteBrand(id: number): Promise<MutationResult> {
   try {
     const response = await brandServiceApi.deleteBrand({
       pe_brand_id: id,
+      pe_system_client_id: session.session?.systemId ?? 0,
     });
 
     const result = brandServiceApi.extractStoredProcedureResult(response);

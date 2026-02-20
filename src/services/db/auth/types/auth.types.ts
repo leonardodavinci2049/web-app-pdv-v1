@@ -124,6 +124,7 @@ export interface OrganizationEntity extends RowDataPacket {
   logo: string | null;
   createdAt: Date | null;
   metadata: string | null;
+  system_id: number | null;
 }
 
 /**
@@ -517,6 +518,7 @@ export function mapOrganizationEntityToDto(
     logo: entity.logo,
     createdAt: entity.createdAt ? new Date(entity.createdAt) : null,
     metadata: entity.metadata,
+    systemId: entity.system_id ?? null,
   };
 }
 

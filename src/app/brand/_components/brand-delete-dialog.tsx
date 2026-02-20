@@ -40,7 +40,7 @@ export function BrandDeleteDialog({
 
     try {
       const result = await deleteBrandAction(null, formData);
-     
+
       if (result?.success) {
         toast.success(result.message);
         setOpen(false);

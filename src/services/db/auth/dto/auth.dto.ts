@@ -45,6 +45,7 @@ export interface Organization {
   logo: string | null;
   createdAt: Date | null;
   metadata: string | null;
+  systemId: number | null;
 }
 
 /**

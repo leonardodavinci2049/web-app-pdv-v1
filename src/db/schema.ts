@@ -7,6 +7,7 @@ export type Organization = {
   logo?: string | null;
   createdAt?: Date | null;
   metadata?: string | null;
+  systemId?: number | null;
   member?: Member[];
 };
 

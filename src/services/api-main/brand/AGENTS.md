@@ -109,8 +109,10 @@ Todos os requests incluem contexto por padrão:
 {
   // Parâmetros fixos (carregados das variáveis de ambiente)
   pe_app_id: envs.APP_ID,
-  pe_system_client_id: envs.SYSTEM_CLIENT_ID,
   pe_store_id: envs.STORE_ID,
+
+  // Parâmetro carregado da sessão do usuário (organização ativa)
+  // pe_system_client_id: session.session.systemId
 
   // Parâmetros dinâmicos (dependem do usuário logado)
   // pe_organization_id: string  // Max 200 chars
@@ -341,7 +343,8 @@ isValidBrandDetail(response: BrandFindByIdResponse): boolean
 8. **Usar logger** para erros com contexto descritivo (`createLogger("context")`)
 9. **Usar cache tags** hierárquicas (`brands` + `brand:id`)
 10. **Normalizar respostas vazias** (NOT_FOUND/EMPTY_RESULT → SUCCESS + `[]`)
-11. **Parâmetros de contexto fixos**: `pe_app_id`, `pe_system_client_id`, `pe_store_id` (carregados de env via `buildBasePayload`)
+11. **Parâmetros de contexto fixos**: `pe_app_id`, `pe_store_id` (carregados de env via `buildBasePayload`)
+12. **Parâmetro de contexto da sessão**: `pe_system_client_id` (carregado de `session.session.systemId` - campo `system_id` da organização ativa)
 12. **Parâmetros de contexto dinâmicos**: `pe_organization_id`, `pe_user_id`, `pe_member_role`, `pe_person_id` (obrigatórios na API, mas `.optional()` nos schemas - devem ser passados pelo usuário logado)
 13. **Imports de constantes**: `API_STATUS_CODES`, `BRAND_ENDPOINTS`, `isApiError`, `isApiSuccess` vêm de `@/core/constants/api-constants`
 14. **Imports de cache**: `CACHE_TAGS` vem de `@/lib/cache-config`
