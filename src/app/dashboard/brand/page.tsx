@@ -1,14 +1,23 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { connection } from "next/server";
+import { auth } from "@/lib/auth/auth";
 import { getBrands } from "@/services/api-main/brand/brand-cached-service";
 
 const BrandPage = async () => {
-  // Dados de sessão fictícios (ajuste conforme necessário)
+  await connection();
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  if (!session) {
+    redirect("/sign-in");
+  }
+
   const brands = await getBrands({
-    brandId: 0,
-    brand: "",
     limit: 10,
-    pe_organization_id: "1",
-    pe_user_id: "1",
-    pe_member_role: "admin",
+    pe_system_client_id: session.session?.systemId ?? 0,
+    pe_organization_id: session.session?.activeOrganizationId ?? "0",
+    pe_user_id: session.user.id ?? "0",
+    pe_member_role: session.user.role ?? "admin",
     pe_person_id: 1,
   });
 
