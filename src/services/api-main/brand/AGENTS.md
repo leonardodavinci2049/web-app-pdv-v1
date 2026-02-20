@@ -18,8 +18,11 @@ brand/
 └── transformers/
     └── transformers.ts        # Entity → DTO (API response → UI models)
 
-src/server/
-└── brand-actions.ts           # Server Actions para mutations (create, update, delete)
+src/app/brand/_actions/
+├── create-brand.ts            # Server Action para criar marca
+├── update-brand.ts            # Server Action para atualizar marca
+├── delete-brand.ts            # Server Action para excluir marca
+└── get-brand.ts               # Server Action para buscar marca
 ```
 
 ## Responsabilidades
@@ -43,7 +46,7 @@ src/server/
 - **Retorna** estruturas simplificadas (`UIBrand[]`, `UIBrand | undefined`)
 - **Trata erros** silenciosamente (return `[]` ou `undefined`)
 - **Usa** tags de cache para invalidação: `CACHE_TAGS.brands`, `CACHE_TAGS.brand(id)`
-- **Nota**: Operações de escrita (mutations) estão em `src/server/brand-actions.ts`
+- **Nota**: Operações de escrita (mutations) estão em `src/app/brand/_actions/`
 
 ### 3. `types/brand-types.ts`
 - Define interfaces base (`BrandBaseRequest`, `BrandBaseResponse`)
@@ -70,13 +73,12 @@ src/server/
 - Exporta todos os tipos de `brand-types.ts` (requests, responses, entities, errors)
 - **Nota**: Funções do `brand-cached-service.ts` devem ser importadas diretamente do arquivo
 
-### 7. `src/server/brand-actions.ts` (Server Actions para Mutations)
-- **Fornece** Server Actions para operações de escrita (`createBrand`, `updateBrand`, `deleteBrand`)
+### 7. `src/app/brand/_actions/` (Server Actions para Mutations)
+- **Fornece** Server Actions co-locadas para operações de escrita (`createBrand`, `updateBrand`, `deleteBrand`)
 - **Usa** `"use server"` directive
 - **Verifica** autenticação via `auth.api.getSession()` com redirect para `/sign-in` se não autenticado
 - **Chama** `brandServiceApi` diretamente (sem cache) para operações de escrita
 - **Invalida** cache após mutations com `revalidateTag`
-- **Exporta** tipo `MutationResult` para respostas de operações
 - **Trata erros** com try-catch e retorna estruturas padronizadas
 
 ## Padrões de Código
@@ -276,7 +278,9 @@ async function BrandList() {
 ## Uso em Server Actions
 
 ```typescript
-import { createBrand, updateBrand, deleteBrand, type MutationResult } from "@/server/brand-actions";
+import { createBrand } from "@/app/brand/_actions/create-brand";
+import { updateBrand } from "@/app/brand/_actions/update-brand";
+import { deleteBrand } from "@/app/brand/_actions/delete-brand";
 
 // createBrand - Server Action já faz auth e invalida cache
 export async function myCreateBrandAction(data: { brand: string, slug: string }): Promise<MutationResult> {
