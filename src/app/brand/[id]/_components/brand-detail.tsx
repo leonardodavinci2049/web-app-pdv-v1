@@ -1,22 +1,20 @@
-"use client";
-
 import { ArrowLeft, Calendar, Hash, Tags } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import type { BrandDetail as IBrandDetail } from "@/services/api-main/brand";
+import type { UIBrand } from "@/services/api-main/brand/transformers/transformers";
 import { BrandDeleteDialog } from "../../_components/brand-delete-dialog";
 import { BrandUpdateDialog } from "../../_components/brand-update-dialog";
 
 interface BrandDetailProps {
-  brand: IBrandDetail;
+  brand: UIBrand;
 }
 
 export function BrandDetail({ brand }: BrandDetailProps) {
-  const brandName = brand.MARCA ?? brand.NOME ?? "Sem Nome";
-  const isActive = brand.INATIVO === 0;
+  const brandName = brand.name || "Sem Nome";
+  const isActive = !brand.inactive;
   const initial = brandName.charAt(0).toUpperCase();
 
   return (
@@ -50,7 +48,7 @@ export function BrandDetail({ brand }: BrandDetailProps) {
                 </h1>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-mono text-xs text-muted-foreground">
-                    ID #{brand.ID_MARCA}
+                    ID #{brand.id}
                   </span>
                   <Badge
                     variant={isActive ? "default" : "secondary"}
@@ -67,12 +65,9 @@ export function BrandDetail({ brand }: BrandDetailProps) {
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
-              <BrandUpdateDialog
-                brandId={brand.ID_MARCA}
-                brandName={brandName}
-              />
+              <BrandUpdateDialog brandId={brand.id} brandName={brandName} />
               <BrandDeleteDialog
-                brandId={brand.ID_MARCA}
+                brandId={brand.id}
                 brandName={brandName}
                 redirectTo="/brand"
               />
@@ -94,9 +89,7 @@ export function BrandDetail({ brand }: BrandDetailProps) {
                     <p className="text-xs font-medium text-muted-foreground">
                       ID
                     </p>
-                    <p className="mt-0.5 font-mono font-semibold">
-                      {brand.ID_MARCA}
-                    </p>
+                    <p className="mt-0.5 font-mono font-semibold">{brand.id}</p>
                   </div>
                   <div>
                     <p className="text-xs font-medium text-muted-foreground">
@@ -107,20 +100,6 @@ export function BrandDetail({ brand }: BrandDetailProps) {
                     </p>
                   </div>
                 </div>
-
-                {brand.UUID && (
-                  <>
-                    <Separator />
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        UUID
-                      </p>
-                      <p className="mt-0.5 break-all font-mono text-xs text-muted-foreground">
-                        {brand.UUID}
-                      </p>
-                    </div>
-                  </>
-                )}
 
                 <Separator />
                 <div>
@@ -154,8 +133,8 @@ export function BrandDetail({ brand }: BrandDetailProps) {
                     Cadastrado em
                   </p>
                   <p className="mt-0.5 font-medium">
-                    {brand.DATADOCADASTRO
-                      ? new Date(brand.DATADOCADASTRO).toLocaleString("pt-BR")
+                    {brand.createdAt
+                      ? new Date(brand.createdAt).toLocaleString("pt-BR")
                       : "—"}
                   </p>
                 </div>
@@ -167,8 +146,8 @@ export function BrandDetail({ brand }: BrandDetailProps) {
                     Última atualização
                   </p>
                   <p className="mt-0.5 font-medium">
-                    {brand.DT_UPDATE
-                      ? new Date(brand.DT_UPDATE).toLocaleString("pt-BR")
+                    {brand.updatedAt
+                      ? new Date(brand.updatedAt).toLocaleString("pt-BR")
                       : "—"}
                   </p>
                 </div>

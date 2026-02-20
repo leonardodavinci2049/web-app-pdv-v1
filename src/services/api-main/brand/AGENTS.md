@@ -48,7 +48,7 @@ src/app/brand/_actions/
 - **Usa** tags de cache para invalidação: `CACHE_TAGS.brands`, `CACHE_TAGS.brand(id)`
 - **Guard check**: retorna `[]` imediatamente se `pe_system_client_id` não for fornecido em `getBrands`
 - **Guard check**: retorna `undefined` imediatamente se `systemClientId` não for fornecido em `getBrandById`
-- `getBrandById` recebe `systemClientId` como **segundo parâmetro posicional**, não dentro do objeto de params
+- `getBrandById` recebe `id` como 1º parâmetro e um objeto `params` com os campos de contexto da API (`pe_system_client_id`, `pe_organization_id`, `pe_user_id`, `pe_member_role`, `pe_person_id`) como 2º parâmetro
 - **Nota**: Operações de escrita (mutations) estão em `src/app/brand/_actions/`
 
 ### 3. `types/brand-types.ts`
@@ -275,8 +275,14 @@ async function BrandList() {
   const brands = await getBrands({ pe_system_client_id: systemClientId, limit: 50 });
   // brands: UIBrand[]
 
-  // getBrandById: id como 1º param, systemClientId como 2º param separado
-  const brand = await getBrandById(1, systemClientId);
+  // getBrandById: id como 1º param, objeto de contexto como 2º param
+  const brand = await getBrandById(1, {
+    pe_system_client_id: systemClientId,
+    pe_organization_id: organizationId,
+    pe_user_id: userId,
+    pe_member_role: memberRole,
+    pe_person_id: personId,
+  });
   // brand: UIBrand | undefined
 
   return <ul>{brands.map(b => <li key={b.id}>{b.name}</li>)}</ul>;

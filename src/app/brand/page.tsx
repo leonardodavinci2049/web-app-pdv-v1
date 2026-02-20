@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { auth } from "@/lib/auth/auth";
+import { getAuthContext } from "@/server/auth-context";
 import { getBrands } from "@/services/api-main/brand/brand-cached-service";
 import { BrandList } from "./_components/brand-list";
 
@@ -13,27 +11,11 @@ export const metadata: Metadata = {
 
 export default async function BrandPage() {
   await connection();
-  const session = await auth.api.getSession({ headers: await headers() });
+  const { apiContext } = await getAuthContext();
 
-  if (!session) {
-    redirect("/sign-in");
-  }
-
-  // Debug: Log session data to understand what's being passed
-  /*   console.log("BrandPage Session Data:", {
-    organizationId: session.session?.activeOrganizationId,
-    userId: session.user.id,
-    role: session.user.role,
-  }); */
-
-  // Buscar marcas usando o serviço com cache (consistente com dashboard)
   const brands = await getBrands({
     limit: 100,
-    pe_system_client_id: session.session?.systemId ?? 0,
-    pe_organization_id: session.session?.activeOrganizationId ?? "0",
-    pe_user_id: session.user.id ?? "0",
-    pe_member_role: session.user.role ?? "admin",
-    pe_person_id: 1,
+    ...apiContext,
   });
 
   return (

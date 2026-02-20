@@ -1,5 +1,3 @@
-"use client";
-
 import { Package, PackageCheck, PackageX, Tags } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
