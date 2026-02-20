@@ -2,11 +2,7 @@ import "server-only";
 
 import type { AxiosResponse } from "axios";
 import { AxiosError } from "axios";
-import {
-  API_STATUS_CODES,
-  isApiError,
-  isApiSuccess,
-} from "@/core/constants/api-constants";
+import { isApiSuccess } from "@/core/constants/api-constants";
 import serverAxiosClient from "./server-axios-client";
 
 /**
@@ -172,52 +168,15 @@ export abstract class BaseApiService {
   }
 
   /**
-   * Verifica se a resposta tem a estrutura esperada da API
-   */
-  private isApiResponse<T>(data: unknown): data is ApiResponse<T> {
-    return (
-      data !== null &&
-      typeof data === "object" &&
-      "statusCode" in data &&
-      "message" in data &&
-      typeof (data as Record<string, unknown>).statusCode === "number" &&
-      typeof (data as Record<string, unknown>).message === "string"
-    );
-  }
-
-  /**
-   * Trata resposta da API
+   * Trata resposta da API.
+   *
+   * RESPONSABILIDADE: Retornar os dados da resposta HTTP.
+   * Erros HTTP (4xx/5xx) são capturados pelo interceptor do Axios
+   * e tratados em handleError. Status codes customizados da API
+   * (100xxx) devem ser tratados pelo serviço específico
+   * (BrandServiceApi, etc.).
    */
   private handleResponse<T>(response: AxiosResponse<T>): T {
-    // Verifica se a resposta tem a estrutura esperada da API
-    if (this.isApiResponse<T>(response.data)) {
-      const apiResponse = response.data;
-
-      // Para casos especiais como "not found" mas com dados válidos
-      if (
-        apiResponse.message &&
-        (apiResponse.message.includes("not found") ||
-          apiResponse.message.includes("não encontrado")) &&
-        apiResponse.data &&
-        Array.isArray(apiResponse.data) &&
-        apiResponse.data.length > 0
-      ) {
-        // Retorna a resposta mesmo com mensagem "not found" se há dados
-        return response.data;
-      }
-
-      // Para código 100422 (Product not found), permite que o serviço específico trate
-      if (apiResponse.statusCode === API_STATUS_CODES.NOT_FOUND) {
-        // Retorna a resposta para que o serviço específico possa tratar
-        return response.data;
-      }
-
-      // Verifica se o statusCode indica sucesso usando função utilitária
-      if (isApiError(apiResponse.statusCode)) {
-        throw new Error(apiResponse.message || "Erro na resposta da API");
-      }
-    }
-
     return response.data;
   }
 

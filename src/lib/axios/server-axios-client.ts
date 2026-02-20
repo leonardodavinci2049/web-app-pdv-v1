@@ -14,6 +14,9 @@ import {
   EXTERNAL_API_BASE_URL,
   RETRY_CONFIG,
 } from "@/core/constants/api-constants";
+import { createLogger } from "@/core/logger";
+
+const logger = createLogger("ServerAxiosClient");
 
 type AxiosConfigWithRetry = InternalAxiosRequestConfig & {
   _retryCount?: number;
@@ -32,7 +35,7 @@ class ServerAxiosClient {
     this.apiKey = envs.API_KEY || "";
 
     if (!this.apiKey && typeof window === "undefined") {
-      console.warn("⚠️  Atenção: API_KEY não configurada no servidor");
+      logger.warn("API_KEY não configurada no servidor");
     }
   }
 
@@ -70,7 +73,7 @@ class ServerAxiosClient {
         return response;
       },
       async (error: AxiosError) => {
-        console.error("[Server API Error]", {
+        logger.error("Erro na requisição da API", {
           status: error.response?.status,
           message: error.message,
           url: error.config?.url,
@@ -90,8 +93,8 @@ class ServerAxiosClient {
             currentRetryCount + 1;
           const delay = RETRY_CONFIG.RETRY_DELAY * 2 ** currentRetryCount;
 
-          console.warn(
-            `🔄 Retry ${currentRetryCount + 1}/${RETRY_CONFIG.MAX_RETRIES} em ${delay}ms para ${error.config.url}`,
+          logger.warn(
+            `Retry ${currentRetryCount + 1}/${RETRY_CONFIG.MAX_RETRIES} em ${delay}ms para ${error.config.url}`,
           );
 
           await new Promise((resolve) => setTimeout(resolve, delay));
@@ -144,10 +147,6 @@ class ServerAxiosClient {
   ): Promise<AxiosResponse<T>> {
     const instance = this.createInstance();
     return instance.delete<T>(url, config);
-  }
-
-  public getApiKey(): string {
-    return this.apiKey;
   }
 
   public isApiKeyConfigured(): boolean {
