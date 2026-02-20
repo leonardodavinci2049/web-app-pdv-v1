@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createLogger } from "@/core/logger";
 import { auth } from "@/lib/auth/auth";
+import { CACHE_TAGS } from "@/lib/cache-config";
 import { brandServiceApi } from "@/services/api-main/brand";
 
 const logger = createLogger("updateBrandAction");
@@ -59,8 +60,8 @@ export async function updateBrandAction(
       };
     }
 
-    revalidateTag("brands", "");
-    revalidateTag(`brand:${brandId}`, "");
+    revalidateTag(CACHE_TAGS.brands, "seconds");
+    revalidateTag(CACHE_TAGS.brand(String(brandId)), "hours");
 
     return {
       success: true,

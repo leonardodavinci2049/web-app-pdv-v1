@@ -29,8 +29,9 @@ export async function getBrands(
   cacheLife("seconds");
   cacheTag(CACHE_TAGS.brands);
 
-  console.log("pe_system_client_id in getBrands:", params.pe_system_client_id);
-  console.log("pe_organization_id in getBrands:", params.pe_organization_id);
+  if (!params.pe_system_client_id) {
+    return [];
+  }
 
   try {
     const response = await brandServiceApi.findAllBrands({
@@ -59,6 +60,10 @@ export async function getBrandById(
   "use cache";
   cacheLife("hours");
   cacheTag(CACHE_TAGS.brand(String(id)), CACHE_TAGS.brands);
+
+  if (!systemClientId) {
+    return undefined;
+  }
 
   try {
     const response = await brandServiceApi.findBrandById({

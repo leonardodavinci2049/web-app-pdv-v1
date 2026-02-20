@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createLogger } from "@/core/logger";
 import { auth } from "@/lib/auth/auth";
+import { CACHE_TAGS } from "@/lib/cache-config";
 import { brandServiceApi } from "@/services/api-main/brand";
 
 const logger = createLogger("deleteBrandAction");
@@ -51,8 +52,8 @@ export async function deleteBrandAction(
       };
     }
 
-    revalidateTag("brands", "max");
-    revalidateTag(`brand:${brandId}`, "max");
+    revalidateTag(CACHE_TAGS.brands, "seconds");
+    revalidateTag(CACHE_TAGS.brand(String(brandId)), "hours");
 
     return {
       success: true,
