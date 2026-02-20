@@ -78,15 +78,15 @@ export interface BrandFindByIdResponse extends BrandBaseResponse {
 }
 
 export interface BrandCreateResponse extends BrandBaseResponse {
-  data: [StoredProcedureResponse[]];
+  data: StoredProcedureResponse[];
 }
 
 export interface BrandUpdateResponse extends BrandBaseResponse {
-  data: [StoredProcedureResponse[]];
+  data: StoredProcedureResponse[];
 }
 
 export interface BrandDeleteResponse extends BrandBaseResponse {
-  data: [StoredProcedureResponse[]];
+  data: StoredProcedureResponse[];
 }
 
 export class BrandError extends Error {

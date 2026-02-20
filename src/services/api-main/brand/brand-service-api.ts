@@ -163,7 +163,7 @@ export class BrandServiceApi extends BaseApiService {
   private checkStoredProcedureError(
     response: BrandCreateResponse | BrandUpdateResponse | BrandDeleteResponse,
   ): void {
-    const spResponse = response.data?.[0]?.[0] as StoredProcedureResponse;
+    const spResponse = response.data?.[0] as StoredProcedureResponse;
     if (spResponse && spResponse.sp_error_id !== 0) {
       throw new BrandError(
         spResponse.sp_message || "Erro na operação de marca",
@@ -203,7 +203,7 @@ export class BrandServiceApi extends BaseApiService {
   extractStoredProcedureResult(
     response: BrandCreateResponse | BrandUpdateResponse | BrandDeleteResponse,
   ): StoredProcedureResponse | null {
-    return (response.data?.[0]?.[0] as StoredProcedureResponse) ?? null;
+    return (response.data?.[0] as StoredProcedureResponse) ?? null;
   }
 
   isValidBrandList(response: BrandFindAllResponse): boolean {

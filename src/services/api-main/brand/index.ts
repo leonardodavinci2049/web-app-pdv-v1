@@ -1,4 +1,4 @@
-export { BrandServiceApi } from "./brand-service-api";
+export { BrandServiceApi, brandServiceApi } from "./brand-service-api";
 
 export type {
   BrandCreateRequest,
