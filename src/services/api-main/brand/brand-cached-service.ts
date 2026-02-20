@@ -32,7 +32,6 @@ export async function getBrands(
   console.log("pe_system_client_id in getBrands:", params.pe_system_client_id);
   console.log("pe_organization_id in getBrands:", params.pe_organization_id);
 
-
   try {
     const response = await brandServiceApi.findAllBrands({
       pe_brand_id: params.brandId,

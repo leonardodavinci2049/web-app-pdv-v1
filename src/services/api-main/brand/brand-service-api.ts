@@ -63,8 +63,6 @@ export class BrandServiceApi extends BaseApiService {
         pe_limit: validatedParams.pe_limit ?? 100,
       });
 
-
-      
       const response = await this.post<BrandFindAllResponse>(
         BRAND_ENDPOINTS.FIND_ALL,
         requestBody,
