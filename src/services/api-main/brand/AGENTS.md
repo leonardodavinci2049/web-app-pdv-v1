@@ -9,7 +9,7 @@ O módulo segue um padrão de **camadas** para integração com API externa:
 ```
 brand/
 ├── brand-service-api.ts       # Classe principal - integração direta com API
-├── brand-cached-service.ts    # Funções com cache para Server Components
+├── brand-cached-service.ts    # Funções com cache para Server Components (apenas leitura)
 ├── index.ts                   # Exportações públicas
 ├── types/
 │   └── brand-types.ts         # Interfaces TypeScript (API response, errors)
@@ -17,6 +17,9 @@ brand/
 │   └── brand-schemas.ts       # Schemas Zod (validação de request/response)
 └── transformers/
     └── transformers.ts        # Entity → DTO (API response → UI models)
+
+src/server/
+└── brand-actions.ts           # Server Actions para mutations (create, update, delete)
 ```
 
 ## Responsabilidades
@@ -25,34 +28,56 @@ brand/
 - **Extende** `BaseApiService` para comunicação HTTP
 - **Valida** todos os parâmetros de entrada com Zod
 - **Constrói** payload base com context IDs (app, store, organization, user)
-- **Normaliza** respostas de API (NOT_FOUND → SUCCESS com array vazio)
-- **Extrai** dados da estrutura de resposta da API
+- **Normaliza** respostas de API (NOT_FOUND/EMPTY_RESULT → SUCCESS com array vazio)
+- **Extrai** dados da estrutura de resposta da API (`extractBrands`, `extractBrandById`, `extractStoredProcedureResult`)
+- **Valida** respostas da API (`isValidBrandList`, `isValidBrandDetail`)
 - **Lança** erros específicos (`BrandError`, `BrandNotFoundError`)
+- **Verifica** erros de stored procedures (`checkStoredProcedureError`)
 - **Não usa cache** - apenas comunicação direta
+- **Exporta** instância singleton `brandServiceApi`
 
-### 2. `brand-cached-service.ts` (Camada de Cache)
-- **Fornece** funções para Server Components
+### 2. `brand-cached-service.ts` (Camada de Cache - Apenas Leitura)
+- **Fornece** funções de leitura para Server Components (`getBrands`, `getBrandById`)
 - **Usa** Next.js Cache com `cacheLife` e `cacheTag`
-- **Transforma** entidades API → DTOs UI
-- **Retorna** estruturas simplificadas (`UIBrand[]`, `MutationResult`)
+- **Transforma** entidades API → DTOs UI via `transformers`
+- **Retorna** estruturas simplificadas (`UIBrand[]`, `UIBrand | undefined`)
 - **Trata erros** silenciosamente (return `[]` ou `undefined`)
 - **Usa** tags de cache para invalidação: `CACHE_TAGS.brands`, `CACHE_TAGS.brand(id)`
+- **Nota**: Operações de escrita (mutations) estão em `src/server/brand-actions.ts`
 
 ### 3. `types/brand-types.ts`
-- Define interfaces para **requests** (`*Request`)
-- Define interfaces para **responses** (`*Response`)
-- Define tipos para **entidades** (`BrandListItem`, `BrandDetail`)
-- Define classes de erro customizadas
+- Define interfaces base (`BrandBaseRequest`, `BrandBaseResponse`)
+- Define interfaces para **requests** (`BrandFindAllRequest`, `BrandFindByIdRequest`, `BrandCreateRequest`, `BrandUpdateRequest`, `BrandDeleteRequest`)
+- Define interfaces para **responses** (`BrandFindAllResponse`, `BrandFindByIdResponse`, `BrandCreateResponse`, `BrandUpdateResponse`, `BrandDeleteResponse`)
+- Define tipos para **entidades** API (`BrandListItem`, `BrandDetail`, `StoredProcedureResponse`)
+- Define classes de erro customizadas (`BrandError`, `BrandNotFoundError`, `BrandValidationError`)
 
 ### 4. `validation/brand-schemas.ts`
 - **Valida** entrada de dados com Zod
-- Exporta tipos inferidos (`*Input`)
-- Define constraints específicas da API (max length, min values)
+- Exporta tipos inferidos (`BrandCreateInput`, `BrandFindAllInput`, `BrandFindByIdInput`, `BrandUpdateInput`, `BrandDeleteInput`)
+- Define constraints específicas da API (max length, min values, int, positive)
+- Parâmetros de contexto são `.optional()` nos schemas
 
 ### 5. `transformers/transformers.ts`
+- Define interface `UIBrand` para uso no front-end
 - **Converte** entidades da API (`BrandListItem`, `BrandDetail`) → DTOs UI (`UIBrand`)
-- **Normaliza** tipos (ex: `INATIVO: number` → `inactive: boolean`)
+- **Normaliza** tipos (ex: `INATIVO: number` → `inactive: boolean`, `ID_MARCA` → `id`, `MARCA` → `name`)
 - **Handle** campos opcionais/null
+- Funções: `transformBrandListItem`, `transformBrandDetail`, `transformBrandList`, `transformBrandDetailList`, `transformBrand`
+
+### 6. `index.ts` (Exportações Públicas)
+- Exporta `BrandServiceApi` classe
+- Exporta todos os tipos de `brand-types.ts` (requests, responses, entities, errors)
+- **Nota**: Funções do `brand-cached-service.ts` devem ser importadas diretamente do arquivo
+
+### 7. `src/server/brand-actions.ts` (Server Actions para Mutations)
+- **Fornece** Server Actions para operações de escrita (`createBrand`, `updateBrand`, `deleteBrand`)
+- **Usa** `"use server"` directive
+- **Verifica** autenticação via `auth.api.getSession()` com redirect para `/sign-in` se não autenticado
+- **Chama** `brandServiceApi` diretamente (sem cache) para operações de escrita
+- **Invalida** cache após mutations com `revalidateTag`
+- **Exporta** tipo `MutationResult` para respostas de operações
+- **Trata erros** com try-catch e retorna estruturas padronizadas
 
 ## Padrões de Código
 
@@ -72,6 +97,7 @@ pe_person_id: number        // ID da pessoa associada - depende do usuário loga
 pe_brand_id: number        // ID da marca
 pe_brand: string           // Nome da marca
 pe_slug: string            // Slug da marca
+pe_limit: number           // Limite de resultados (default 100)
 pe_image_path: string      // Caminho da imagem
 pe_notes: string           // Observações
 pe_inactive: number        // 0 = ativo, 1 = inativo
@@ -98,6 +124,7 @@ Todos os requests incluem contexto por padrão:
 
 ### Estrutura de Resposta da API
 ```typescript
+// Base Response
 {
   statusCode: number,      // 200, 404, 500, etc.
   message: string,         // Mensagem da API
@@ -105,10 +132,35 @@ Todos os requests incluem contexto por padrão:
   quantity: number,        // Quantidade de itens
   errorId: number,         // ID do erro (se houver)
   info1?: string,          // Info adicional
+}
+
+// FindAll/FindById Response
+{
+  ...BaseResponse,
   data: {
-    "Brand find All": [...],  // Chave específica da API
-    "StoredProcedure": [[...]] // Para operações de mutação
+    "Brand find All": [...],  // Array de BrandListItem ou BrandDetail
   }
+}
+
+// Create/Update/Delete Response (StoredProcedure)
+{
+  ...BaseResponse,
+  data: [
+    [
+      {
+        sp_return_id: number,  // ID retornado pela SP
+        sp_message: string,     // Mensagem da SP
+        sp_error_id: number     // ID do erro (0 = sucesso)
+      }
+    ]
+  ]
+}
+
+// StoredProcedureResponse Type
+interface StoredProcedureResponse {
+  sp_return_id: number;
+  sp_message: string;
+  sp_error_id: number;
 }
 ```
 
@@ -155,19 +207,31 @@ try {
 // API Entity → UI DTO
 export function transformBrand(entity: BrandListItem | BrandDetail): UIBrand | null {
   if (!entity) return null;
-  
+
   if ("UUID" in entity) {
     return transformBrandDetail(entity); // Detalhe completo
   }
-  
+
   return transformBrandListItem(entity); // Lista simples
+}
+
+// Interface UIBrand (DTO para UI)
+export interface UIBrand {
+  id: number;              // Mapped from ID_MARCA
+  name: string;            // Mapped from MARCA or NOME
+  slug?: string;           // Slug (quando disponível)
+  imagePath?: string;      // Caminho da imagem
+  notes?: string;          // Observações
+  inactive: boolean;       // Mapped from INATIVO (number)
+  createdAt?: string;      // Mapped from DATADOCADASTRO
+  updatedAt?: string;      // Mapped from DT_UPDATE
 }
 ```
 
 ## Constantes Utilizadas
 
 ```typescript
-// Endpoints da API
+// Endpoints da API (importado de @/core/constants/api-constants)
 BRAND_ENDPOINTS = {
   FIND_ALL: "/brand/find-all",
   FIND_BY_ID: "/brand/find-by-id",
@@ -176,7 +240,7 @@ BRAND_ENDPOINTS = {
   DELETE: "/brand/delete"
 }
 
-// Status codes
+// Status codes (importado de @/core/constants/api-constants)
 API_STATUS_CODES = {
   SUCCESS: 200,
   NOT_FOUND: 404,
@@ -184,11 +248,14 @@ API_STATUS_CODES = {
   // ...
 }
 
-// Cache tags
+// Cache tags (importado de @/lib/cache-config)
 CACHE_TAGS = {
   brands: "brands",
   brand: (id: string) => `brand:${id}`
 }
+
+// Instância singleton
+brandServiceApi = new BrandServiceApi()
 ```
 
 ## Uso em Server Components
@@ -207,40 +274,75 @@ async function BrandList() {
 ## Uso em Server Actions
 
 ```typescript
-import { createBrand, updateBrand, deleteBrand } from "@/services/api-main/brand";
-import { revalidateTag } from "next/cache";
-import { auth } from "@/lib/auth/auth";
+import { createBrand, updateBrand, deleteBrand, type MutationResult } from "@/server/brand-actions";
 
-export async function createBrandAction(data: { brand: string, slug: string }) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  const result = await createBrand({
-    pe_organization_id: session?.user?.organizationId,
-    pe_user_id: session?.user?.id,
-    pe_member_role: session?.user?.role,
-    pe_person_id: session?.user?.personId,
-    ...data
-  });
-
-  if (result.success) {
-    revalidateTag("brands"); // Invalida cache
-    return { success: true };
-  }
-
-  return { success: false, error: result.error };
+// createBrand - Server Action já faz auth e invalida cache
+export async function myCreateBrandAction(data: { brand: string, slug: string }): Promise<MutationResult> {
+  const result = await createBrand(data);
+  return result;
 }
+
+// updateBrand - Server Action já faz auth e invalida cache
+export async function myUpdateBrandAction(
+  brandId: number,
+  data: { brand?: string; slug?: string; imagePath?: string; notes?: string; inactive?: number }
+): Promise<MutationResult> {
+  const result = await updateBrand({
+    brandId,
+    ...data,
+  });
+  return result;
+}
+
+// deleteBrand - Server Action já faz auth e invalida cache
+export async function myDeleteBrandAction(brandId: number): Promise<MutationResult> {
+  const result = await deleteBrand(brandId);
+  return result;
+}
+```
+
+**Tipo MutationResult:**
+```typescript
+interface MutationResult {
+  success: boolean;
+  data?: number;   // ID retornado pela stored procedure
+  error?: string;
+}
+```
+
+## Métodos de Extração (BrandServiceApi)
+
+```typescript
+// Extrai lista de marcas da resposta do findAll
+extractBrands(response: BrandFindAllResponse): BrandListItem[]
+
+// Extrai marca única da resposta do findById
+extractBrandById(response: BrandFindByIdResponse): BrandDetail | null
+
+// Extrai resultado da stored procedure (create/update/delete)
+extractStoredProcedureResult(response: BrandCreateResponse | BrandUpdateResponse | BrandDeleteResponse): StoredProcedureResponse | null
+
+// Valida se a resposta é válida para lista
+isValidBrandList(response: BrandFindAllResponse): boolean
+
+// Valida se a resposta é válida para detalhe
+isValidBrandDetail(response: BrandFindByIdResponse): boolean
 ```
 
 ## Regras Específicas
 
 1. **Sempre usar `"server-only"`** no topo dos arquivos
-2. **Validar com Zod** antes de enviar para API
-3. **Usar cache apenas em `brand-cached-service.ts`**
-4. **Lançar erros específicos** em `brand-service-api.ts`
-5. **Transformar entidades** para UI DTOs antes de retornar
-6. **Invalidar cache** após operações de mutação
+2. **Validar com Zod** antes de enviar para API (`.parse()` para obrigatório, `.partial().parse()` para opcional)
+3. **Usar cache apenas em `brand-cached-service.ts`** com `"use cache"` directive
+4. **Lançar erros específicos** em `brand-service-api.ts` (`BrandError`, `BrandNotFoundError`, `BrandValidationError`)
+5. **Transformar entidades** para UI DTOs antes de retornar em `brand-cached-service.ts`
+6. **Invalidar cache** após operações de mutação (`revalidateTag`)
 7. **Prefixar parâmetros API** com `pe_`
-8. **Usar logger** para erros com contexto descritivo
+8. **Usar logger** para erros com contexto descritivo (`createLogger("context")`)
 9. **Usar cache tags** hierárquicas (`brands` + `brand:id`)
-10. **Normalizar respostas vazias** (NOT_FOUND → SUCCESS + [])
-11. **Parâmetros de contexto fixos**: pe_app_id, pe_system_client_id, pe_store_id (carregados de env)
-12. **Parâmetros de contexto dinâmicos**: pe_organization_id, pe_user_id, pe_member_role, pe_person_id (obrigatórios na API, mas opcionais nos schemas - devem ser passados pelo usuário logado)
+10. **Normalizar respostas vazias** (NOT_FOUND/EMPTY_RESULT → SUCCESS + `[]`)
+11. **Parâmetros de contexto fixos**: `pe_app_id`, `pe_system_client_id`, `pe_store_id` (carregados de env via `buildBasePayload`)
+12. **Parâmetros de contexto dinâmicos**: `pe_organization_id`, `pe_user_id`, `pe_member_role`, `pe_person_id` (obrigatórios na API, mas `.optional()` nos schemas - devem ser passados pelo usuário logado)
+13. **Imports de constantes**: `API_STATUS_CODES`, `BRAND_ENDPOINTS`, `isApiError`, `isApiSuccess` vêm de `@/core/constants/api-constants`
+14. **Imports de cache**: `CACHE_TAGS` vem de `@/lib/cache-config`
+15. **Usar instância singleton** `brandServiceApi` em vez de criar novas instâncias

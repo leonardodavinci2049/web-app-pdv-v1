@@ -54,6 +54,10 @@ export class BrandServiceApi extends BaseApiService {
     try {
       const validatedParams = BrandFindAllSchema.partial().parse(params);
       const requestBody = this.buildBasePayload({
+        pe_organization_id: validatedParams.pe_organization_id,
+        pe_user_id: validatedParams.pe_user_id,
+        pe_member_role: validatedParams.pe_member_role,
+        pe_person_id: validatedParams.pe_person_id,
         pe_brand_id: validatedParams.pe_brand_id ?? 0,
         pe_brand: validatedParams.pe_brand ?? "",
         pe_limit: validatedParams.pe_limit ?? 100,
@@ -159,7 +163,7 @@ export class BrandServiceApi extends BaseApiService {
   private checkStoredProcedureError(
     response: BrandCreateResponse | BrandUpdateResponse | BrandDeleteResponse,
   ): void {
-    const spResponse = response.data?.[0]?.[0] as StoredProcedureResponse;
+    const spResponse = response.data?.[0] as StoredProcedureResponse;
     if (spResponse && spResponse.sp_error_id !== 0) {
       throw new BrandError(
         spResponse.sp_message || "Erro na operação de marca",
@@ -199,7 +203,7 @@ export class BrandServiceApi extends BaseApiService {
   extractStoredProcedureResult(
     response: BrandCreateResponse | BrandUpdateResponse | BrandDeleteResponse,
   ): StoredProcedureResponse | null {
-    return (response.data?.[0]?.[0] as StoredProcedureResponse) ?? null;
+    return (response.data?.[0] as StoredProcedureResponse) ?? null;
   }
 
   isValidBrandList(response: BrandFindAllResponse): boolean {

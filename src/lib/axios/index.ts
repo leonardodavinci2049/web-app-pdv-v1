@@ -3,6 +3,8 @@
  * Centraliza todas as configurações e exporta os clientes apropriados
  */
 
+// Clientes Axios
+export { default as axiosClient } from "./axios-client";
 // Classes de erro personalizadas
 export {
   ApiAuthenticationError,
@@ -14,6 +16,48 @@ export {
 } from "./base-api-service";
 
 export { default as serverAxiosClient } from "./server-axios-client";
+
+/**
+ * Configurações globais do Axios para o projeto
+ */
+export const AXIOS_CONFIG = {
+  // Timeouts
+  CLIENT_TIMEOUT: 15000,
+  SERVER_TIMEOUT: 30000,
+  UPLOAD_TIMEOUT: 60000,
+
+  // Retry
+  MAX_RETRIES: 3,
+  RETRY_DELAY: 1000,
+
+  // Headers padrão
+  DEFAULT_HEADERS: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+  },
+
+  // Status codes para retry automático
+  RETRY_STATUS_CODES: [408, 429, 500, 502, 503, 504],
+} as const;
+
+/**
+ * Tipos para responses da API
+ */
+export interface StandardApiResponse<T = unknown> {
+  statusCode: number;
+  message: string;
+  data?: T;
+  recordId?: number;
+  quantity?: number;
+  info1?: string;
+}
+
+export interface ApiError {
+  statusCode: number;
+  message: string;
+  details?: unknown;
+}
 
 /**
  * Guia de uso rápido:
