@@ -42,6 +42,7 @@ export async function updateBrandAction(
       pe_inactive: formData.get("inactive")
         ? Number(formData.get("inactive"))
         : 0,
+      pe_system_client_id: session.session?.systemId ?? 0,
       pe_organization_id: session.session?.activeOrganizationId ?? "1",
       pe_user_id: session.user.id ?? "1",
       pe_member_role: session.user.role ?? "admin",

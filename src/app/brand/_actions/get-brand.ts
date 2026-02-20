@@ -16,8 +16,9 @@ export async function getBrandAction(brandId: number) {
 
     const response = await brandServiceApi.findBrandById({
       pe_brand_id: brandId,
-      pe_organization_id: session.session?.activeOrganizationId ?? "1",
-      pe_user_id: session.user.id ?? "1",
+      pe_system_client_id: session.session?.systemId ?? 0,
+      pe_organization_id: session.session?.activeOrganizationId ?? "0",
+      pe_user_id: session.user.id ?? "0",
       pe_member_role: session.user.role ?? "admin",
       pe_person_id: 1,
     });

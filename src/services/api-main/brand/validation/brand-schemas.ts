@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const BrandCreateSchema = z.object({
+  pe_system_client_id: z.number().int().min(0).optional(),
   pe_organization_id: z.string().max(200).optional(),
   pe_user_id: z.string().max(200).optional(),
   pe_member_role: z.string().max(200).optional(),
@@ -10,6 +11,7 @@ export const BrandCreateSchema = z.object({
 });
 
 export const BrandFindAllSchema = z.object({
+  pe_system_client_id: z.number().int().min(0).optional(),
   pe_organization_id: z.string().max(200).optional(),
   pe_user_id: z.string().max(200).optional(),
   pe_member_role: z.string().max(200).optional(),
@@ -20,6 +22,7 @@ export const BrandFindAllSchema = z.object({
 });
 
 export const BrandFindByIdSchema = z.object({
+  pe_system_client_id: z.number().int().min(0).optional(),
   pe_organization_id: z.string().max(200).optional(),
   pe_user_id: z.string().max(200).optional(),
   pe_member_role: z.string().max(200).optional(),
@@ -28,6 +31,7 @@ export const BrandFindByIdSchema = z.object({
 });
 
 export const BrandUpdateSchema = z.object({
+  pe_system_client_id: z.number().int().min(0).optional(),
   pe_organization_id: z.string().max(200).optional(),
   pe_user_id: z.string().max(200).optional(),
   pe_member_role: z.string().max(200).optional(),
@@ -41,6 +45,7 @@ export const BrandUpdateSchema = z.object({
 });
 
 export const BrandDeleteSchema = z.object({
+  pe_system_client_id: z.number().int().min(0).optional(),
   pe_organization_id: z.string().max(200).optional(),
   pe_user_id: z.string().max(200).optional(),
   pe_member_role: z.string().max(200).optional(),

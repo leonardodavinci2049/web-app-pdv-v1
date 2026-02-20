@@ -32,7 +32,7 @@ import {
 import { ac } from "./permissions/statements";
 
 export const auth = betterAuth({
-  appName: "AI Sales Agent",
+  appName: "PDV WinERP",
   secret: envs.BETTER_AUTH_SECRET,
   database: createPool({
     host: envs.DATABASE_HOST,
@@ -56,6 +56,7 @@ export const auth = betterAuth({
             data: {
               ...session,
               activeOrganizationId: activeOrganization?.id,
+              systemId: activeOrganization?.systemId ?? 0,
             },
           };
         },
@@ -130,6 +131,12 @@ export const auth = betterAuth({
       enabled: true,
       maxAge: 60, // 1 minute
     },
+    additionalFields: {
+      systemId: {
+        type: "number",
+        required: false,
+      },
+    },
   },
   rateLimit: {
     enabled: true,
@@ -175,6 +182,17 @@ export const auth = betterAuth({
         finance,
         shipping,
         customer,
+      },
+      schema: {
+        organization: {
+          additionalFields: {
+            system_id: {
+              type: "number",
+              input: true,
+              required: true,
+            },
+          },
+        },
       },
     }),
 

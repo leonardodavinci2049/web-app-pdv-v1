@@ -458,7 +458,7 @@ async function findOrganizationById(params: {
 
     const query = `
       SELECT 
-        id, name, slug, logo, createdAt, metadata
+        id, name, slug, logo, createdAt, metadata, system_id
       FROM ${AUTH_TABLES.ORGANIZATION}
       WHERE id = ?
       LIMIT 1
@@ -516,7 +516,7 @@ async function findOrganizationsByIds(params: {
 
     const query = `
       SELECT 
-        id, name, slug, logo, createdAt, metadata
+        id, name, slug, logo, createdAt, metadata, system_id
       FROM ${AUTH_TABLES.ORGANIZATION}
       WHERE id IN (${placeholders})
       ORDER BY name ASC
@@ -557,7 +557,7 @@ async function findOrganizationBySlug(params: {
 
     const query = `
       SELECT 
-        id, name, slug, logo, createdAt, metadata
+        id, name, slug, logo, createdAt, metadata, system_id
       FROM ${AUTH_TABLES.ORGANIZATION}
       WHERE slug = ?
       LIMIT 1
@@ -612,7 +612,7 @@ async function findOrganizationBySlugWithMembers(params: {
     // First find the organization
     const orgQuery = `
       SELECT 
-        id, name, slug, logo, createdAt, metadata
+        id, name, slug, logo, createdAt, metadata, system_id
       FROM ${AUTH_TABLES.ORGANIZATION}
       WHERE slug = ?
       LIMIT 1
@@ -985,7 +985,7 @@ async function findUserOrganizations(params: {
     // Optimized query with JOIN
     const query = `
       SELECT DISTINCT
-        o.id, o.name, o.slug, o.logo, o.createdAt, o.metadata
+        o.id, o.name, o.slug, o.logo, o.createdAt, o.metadata, o.system_id
       FROM ${AUTH_TABLES.ORGANIZATION} o
       INNER JOIN ${AUTH_TABLES.MEMBER} m ON o.id = m.organizationId
       WHERE m.userId = ?
@@ -1029,7 +1029,7 @@ async function findActiveOrganization(params: {
     // Optimized query with JOIN
     const query = `
       SELECT 
-        o.id, o.name, o.slug, o.logo, o.createdAt, o.metadata
+        o.id, o.name, o.slug, o.logo, o.createdAt, o.metadata, o.system_id
       FROM ${AUTH_TABLES.ORGANIZATION} o
       INNER JOIN ${AUTH_TABLES.MEMBER} m ON o.id = m.organizationId
       WHERE m.userId = ?

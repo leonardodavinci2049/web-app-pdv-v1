@@ -42,7 +42,6 @@ export class BrandServiceApi extends BaseApiService {
   ): Record<string, unknown> {
     return {
       pe_app_id: envs.APP_ID,
-      pe_system_client_id: envs.SYSTEM_CLIENT_ID,
       pe_store_id: envs.STORE_ID,
       ...additionalData,
     };
@@ -54,6 +53,7 @@ export class BrandServiceApi extends BaseApiService {
     try {
       const validatedParams = BrandFindAllSchema.partial().parse(params);
       const requestBody = this.buildBasePayload({
+        pe_system_client_id: validatedParams.pe_system_client_id,
         pe_organization_id: validatedParams.pe_organization_id,
         pe_user_id: validatedParams.pe_user_id,
         pe_member_role: validatedParams.pe_member_role,
@@ -63,6 +63,8 @@ export class BrandServiceApi extends BaseApiService {
         pe_limit: validatedParams.pe_limit ?? 100,
       });
 
+
+      
       const response = await this.post<BrandFindAllResponse>(
         BRAND_ENDPOINTS.FIND_ALL,
         requestBody,
