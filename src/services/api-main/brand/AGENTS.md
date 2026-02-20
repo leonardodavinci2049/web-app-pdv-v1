@@ -46,6 +46,9 @@ src/app/brand/_actions/
 - **Retorna** estruturas simplificadas (`UIBrand[]`, `UIBrand | undefined`)
 - **Trata erros** silenciosamente (return `[]` ou `undefined`)
 - **Usa** tags de cache para invalidação: `CACHE_TAGS.brands`, `CACHE_TAGS.brand(id)`
+- **Guard check**: retorna `[]` imediatamente se `pe_system_client_id` não for fornecido em `getBrands`
+- **Guard check**: retorna `undefined` imediatamente se `systemClientId` não for fornecido em `getBrandById`
+- `getBrandById` recebe `id` como 1º parâmetro e um objeto `params` com os campos de contexto da API (`pe_system_client_id`, `pe_organization_id`, `pe_user_id`, `pe_member_role`, `pe_person_id`) como 2º parâmetro
 - **Nota**: Operações de escrita (mutations) estão em `src/app/brand/_actions/`
 
 ### 3. `types/brand-types.ts`
@@ -67,6 +70,8 @@ src/app/brand/_actions/
 - **Normaliza** tipos (ex: `INATIVO: number` → `inactive: boolean`, `ID_MARCA` → `id`, `MARCA` → `name`)
 - **Handle** campos opcionais/null
 - Funções: `transformBrandListItem`, `transformBrandDetail`, `transformBrandList`, `transformBrandDetailList`, `transformBrand`
+- **`transformBrandListItem`**: mapeia apenas `id` (← `ID_MARCA`) e `name` (← `MARCA`); `slug`, `imagePath`, `notes` são sempre `undefined` pois a API de lista não retorna esses campos
+- **`transformBrandDetail`**: mapeia `name` como `MARCA ?? NOME ?? ""`, `inactive` como `INATIVO === 1`, `createdAt` e `updatedAt`; `slug`, `imagePath`, `notes` são sempre `undefined` pois a API de detalhe não retorna esses campos
 
 ### 6. `index.ts` (Exportações Públicas)
 - Exporta `BrandServiceApi` classe
@@ -150,13 +155,11 @@ Todos os requests incluem contexto por padrão:
 {
   ...BaseResponse,
   data: [
-    [
-      {
-        sp_return_id: number,  // ID retornado pela SP
-        sp_message: string,     // Mensagem da SP
-        sp_error_id: number     // ID do erro (0 = sucesso)
-      }
-    ]
+    {
+      sp_return_id: number,  // ID retornado pela SP
+      sp_message: string,    // Mensagem da SP
+      sp_error_id: number    // ID do erro (0 = sucesso)
+    }
   ]
 }
 
@@ -170,9 +173,9 @@ interface StoredProcedureResponse {
 
 ### Cache Configuration
 ```typescript
-// Leitura de lista - cache frequente
+// Leitura de lista - cache de segundos
 "use cache";
-cacheLife("frequent");
+cacheLife("seconds");
 cacheTag(CACHE_TAGS.brands);
 
 // Leitura por ID - cache de horas
@@ -265,11 +268,22 @@ brandServiceApi = new BrandServiceApi()
 ## Uso em Server Components
 
 ```typescript
-import { getBrands, getBrandById } from "@/services/api-main/brand";
+import { getBrands, getBrandById } from "@/services/api-main/brand/brand-cached-service";
 
 async function BrandList() {
-  const brands = await getBrands({ limit: 50 });
+  // pe_system_client_id é obrigatório na prática - sem ele retorna []
+  const brands = await getBrands({ pe_system_client_id: systemClientId, limit: 50 });
   // brands: UIBrand[]
+
+  // getBrandById: id como 1º param, objeto de contexto como 2º param
+  const brand = await getBrandById(1, {
+    pe_system_client_id: systemClientId,
+    pe_organization_id: organizationId,
+    pe_user_id: userId,
+    pe_member_role: memberRole,
+    pe_person_id: personId,
+  });
+  // brand: UIBrand | undefined
 
   return <ul>{brands.map(b => <li key={b.id}>{b.name}</li>)}</ul>;
 }
@@ -348,8 +362,8 @@ isValidBrandDetail(response: BrandFindByIdResponse): boolean
 9. **Usar cache tags** hierárquicas (`brands` + `brand:id`)
 10. **Normalizar respostas vazias** (NOT_FOUND/EMPTY_RESULT → SUCCESS + `[]`)
 11. **Parâmetros de contexto fixos**: `pe_app_id`, `pe_store_id` (carregados de env via `buildBasePayload`)
-12. **Parâmetro de contexto da sessão**: `pe_system_client_id` (carregado de `session.session.systemId` - campo `system_id` da organização ativa)
-12. **Parâmetros de contexto dinâmicos**: `pe_organization_id`, `pe_user_id`, `pe_member_role`, `pe_person_id` (obrigatórios na API, mas `.optional()` nos schemas - devem ser passados pelo usuário logado)
+12. **Parâmetro de contexto da sessão**: `pe_system_client_id` (tipo `number`, carregado de `session.session.systemId` - campo `system_id` da organização ativa)
+13. **Parâmetros de contexto dinâmicos**: `pe_organization_id`, `pe_user_id`, `pe_member_role`, `pe_person_id` (obrigatórios na API, mas `.optional()` nos schemas - devem ser passados pelo usuário logado)
 13. **Imports de constantes**: `API_STATUS_CODES`, `BRAND_ENDPOINTS`, `isApiError`, `isApiSuccess` vêm de `@/core/constants/api-constants`
 14. **Imports de cache**: `CACHE_TAGS` vem de `@/lib/cache-config`
 15. **Usar instância singleton** `brandServiceApi` em vez de criar novas instâncias
