@@ -46,8 +46,6 @@ export function BrandDeleteDialog({
         setOpen(false);
         if (redirectTo) {
           router.push(redirectTo);
-        } else {
-          router.refresh();
         }
       } else {
         toast.error(result?.message || "Erro ao deletar marca.");

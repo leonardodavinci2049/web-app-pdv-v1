@@ -64,7 +64,7 @@ export function BrandRow({ brand }: BrandRowProps) {
               <SquareArrowOutUpRight className="h-3.5 w-3.5" />
             </Link>
           </Button>
-          <BrandUpdateDialog brandId={brand.id} brandName={brand.name} />
+          <BrandUpdateDialog brand={brand} />
           <BrandDeleteDialog brandId={brand.id} brandName={brand.name} />
         </div>
       </TableCell>
