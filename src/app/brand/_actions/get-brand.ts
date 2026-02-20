@@ -1,26 +1,18 @@
 "use server";
 
-import { headers } from "next/headers";
 import { createLogger } from "@/core/logger";
-import { auth } from "@/lib/auth/auth";
+import { getAuthContext } from "@/server/auth-context";
 import { brandServiceApi } from "@/services/api-main/brand";
 
 const logger = createLogger("getBrandAction");
 
 export async function getBrandAction(brandId: number) {
   try {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-      throw new Error("Não autorizado");
-    }
+    const { apiContext } = await getAuthContext();
 
     const response = await brandServiceApi.findBrandById({
       pe_brand_id: brandId,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_member_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
     const brand = brandServiceApi.extractBrandById(response);
 
