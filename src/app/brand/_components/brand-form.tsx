@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import Form from "next/form";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,6 @@ interface BrandFormProps {
   initialData?: {
     brand_id?: number;
     brand?: string;
-    slug?: string;
     image_path?: string;
     notes?: string;
     inactive?: number;
@@ -50,17 +49,20 @@ export function BrandForm({
 }: BrandFormProps) {
   const [state, formAction] = useActionState(action, null);
   const [inactive, setInactive] = useState(initialData?.inactive === 1);
+  const onSuccessRef = useRef(onSuccess);
+
+  useEffect(() => {
+    onSuccessRef.current = onSuccess;
+  });
 
   useEffect(() => {
     if (state?.success) {
       toast.success(state.message);
-      if (onSuccess) {
-        onSuccess();
-      }
+      onSuccessRef.current?.();
     } else if (state?.success === false) {
       toast.error(state.message);
     }
-  }, [state, onSuccess]);
+  }, [state]);
 
   return (
     <Form action={formAction} className="space-y-4">
@@ -77,19 +79,6 @@ export function BrandForm({
           defaultValue={initialData?.brand}
           required
         />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="slug">Slug</Label>
-        <Input
-          id="slug"
-          name="slug"
-          placeholder="Ex: nike, samsung"
-          defaultValue={initialData?.slug}
-        />
-        <p className="text-xs text-muted-foreground">
-          Deixe em branco para gerar automaticamente.
-        </p>
       </div>
 
       <div className="space-y-2">

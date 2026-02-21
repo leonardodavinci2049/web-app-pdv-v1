@@ -6,7 +6,8 @@ interface BrandBaseRequest {
   pe_store_id?: number;
   pe_organization_id?: string;
   pe_user_id?: string;
-  pe_member_role?: string;
+  pe_user_name?: string;
+  pe_user_role?: string;
   pe_person_id?: number;
 }
 
@@ -22,12 +23,17 @@ interface BrandBaseResponse {
 export interface BrandFindAllRequest extends BrandBaseRequest {
   pe_brand_id?: number;
   pe_brand?: string;
+  pe_inactive?: number;
   pe_limit?: number;
 }
 
 export interface BrandListItem {
   ID_MARCA: number;
   MARCA: string;
+  SLUG: string;
+  PATH_IMAGEM: string;
+  INATIVO: number;
+  DATADOCADASTRO: string;
 }
 
 export interface BrandFindByIdRequest extends BrandBaseRequest {
@@ -36,10 +42,10 @@ export interface BrandFindByIdRequest extends BrandBaseRequest {
 
 export interface BrandDetail {
   ID_MARCA: number;
-  UUID: string | null;
-  ID_SYSTEM_CLIENTE: number;
-  NOME: string;
-  MARCA: string | null;
+  MARCA: string;
+  SLUG: string;
+  PATH_IMAGEM: string;
+  ANOTACOES: string | null;
   INATIVO: number;
   DT_UPDATE: string | null;
   DATADOCADASTRO: string;
@@ -47,13 +53,13 @@ export interface BrandDetail {
 
 export interface BrandCreateRequest extends BrandBaseRequest {
   pe_brand: string;
-  pe_slug: string;
+  pe_image_path?: string;
+  pe_notes?: string;
 }
 
 export interface BrandUpdateRequest extends BrandBaseRequest {
   pe_brand_id: number;
   pe_brand?: string;
-  pe_slug?: string;
   pe_image_path?: string;
   pe_notes?: string;
   pe_inactive?: number;

@@ -48,7 +48,7 @@ src/app/brand/_actions/
 - **Usa** tags de cache para invalidação: `CACHE_TAGS.brands`, `CACHE_TAGS.brand(id)`
 - **Guard check**: retorna `[]` imediatamente se `pe_system_client_id` não for fornecido em `getBrands`
 - **Guard check**: retorna `undefined` imediatamente se `systemClientId` não for fornecido em `getBrandById`
-- `getBrandById` recebe `id` como 1º parâmetro e um objeto `params` com os campos de contexto da API (`pe_system_client_id`, `pe_organization_id`, `pe_user_id`, `pe_member_role`, `pe_person_id`) como 2º parâmetro
+- `getBrandById` recebe `id` como 1º parâmetro e um objeto `params` com os campos de contexto da API (`pe_system_client_id`, `pe_organization_id`, `pe_user_id`, `pe_user_name`, `pe_user_role`, `pe_person_id`) como 2º parâmetro
 - **Nota**: Operações de escrita (mutations) estão em `src/app/brand/_actions/`
 
 ### 3. `types/brand-types.ts`
@@ -70,8 +70,8 @@ src/app/brand/_actions/
 - **Normaliza** tipos (ex: `INATIVO: number` → `inactive: boolean`, `ID_MARCA` → `id`, `MARCA` → `name`)
 - **Handle** campos opcionais/null
 - Funções: `transformBrandListItem`, `transformBrandDetail`, `transformBrandList`, `transformBrandDetailList`, `transformBrand`
-- **`transformBrandListItem`**: mapeia apenas `id` (← `ID_MARCA`) e `name` (← `MARCA`); `slug`, `imagePath`, `notes` são sempre `undefined` pois a API de lista não retorna esses campos
-- **`transformBrandDetail`**: mapeia `name` como `MARCA ?? NOME ?? ""`, `inactive` como `INATIVO === 1`, `createdAt` e `updatedAt`; `slug`, `imagePath`, `notes` são sempre `undefined` pois a API de detalhe não retorna esses campos
+- **`transformBrandListItem`**: mapeia `id` (← `ID_MARCA`), `name` (← `MARCA`), `slug` (← `SLUG`), `imagePath` (← `PATH_IMAGEM`), `inactive` (← `INATIVO`), `createdAt` (← `DATADOCADASTRO`); `notes` e `updatedAt` são sempre `undefined` pois a API de lista não retorna esses campos
+- **`transformBrandDetail`**: mapeia `name` como `MARCA ?? ""`, `slug` (← `SLUG`), `imagePath` (← `PATH_IMAGEM`), `notes` (← `ANOTACOES`), `inactive` como `INATIVO === 1`, `createdAt` e `updatedAt`
 
 ### 6. `index.ts` (Exportações Públicas)
 - Exporta `BrandServiceApi` classe
@@ -95,7 +95,8 @@ Prefixo `pe_` (parameter):
 ```typescript
 pe_organization_id: string  // ID da organização (Max 200 chars) - depende do usuário logado
 pe_user_id: string          // ID do usuário (Max 200 chars) - depende do usuário logado
-pe_member_role: string      // Papel do membro (Max 200 chars) - depende do usuário logado
+pe_user_name: string        // Nome do usuário (Max 200 chars) - depende do usuário logado
+pe_user_role: string        // Papel do usuário (Max 200 chars) - depende do usuário logado
 pe_person_id: number        // ID da pessoa associada - depende do usuário logado
 ```
 
@@ -103,7 +104,6 @@ pe_person_id: number        // ID da pessoa associada - depende do usuário loga
 ```typescript
 pe_brand_id: number        // ID da marca
 pe_brand: string           // Nome da marca
-pe_slug: string            // Slug da marca
 pe_limit: number           // Limite de resultados (default 100)
 pe_image_path: string      // Caminho da imagem
 pe_notes: string           // Observações
@@ -124,7 +124,8 @@ Todos os requests incluem contexto por padrão:
   // Parâmetros dinâmicos (dependem do usuário logado)
   // pe_organization_id: string  // Max 200 chars
   // pe_user_id: string          // Max 200 chars
-  // pe_member_role: string      // Max 200 chars
+  // pe_user_name: string        // Max 200 chars
+  // pe_user_role: string         // Max 200 chars
   // pe_person_id: number
 
   // ... parâmetros específicos da operação
@@ -280,7 +281,8 @@ async function BrandList() {
     pe_system_client_id: systemClientId,
     pe_organization_id: organizationId,
     pe_user_id: userId,
-    pe_member_role: memberRole,
+    pe_user_name: memberName,
+    pe_user_role: memberRole,
     pe_person_id: personId,
   });
   // brand: UIBrand | undefined
@@ -363,7 +365,7 @@ isValidBrandDetail(response: BrandFindByIdResponse): boolean
 10. **Normalizar respostas vazias** (NOT_FOUND/EMPTY_RESULT → SUCCESS + `[]`)
 11. **Parâmetros de contexto fixos**: `pe_app_id`, `pe_store_id` (carregados de env via `buildBasePayload`)
 12. **Parâmetro de contexto da sessão**: `pe_system_client_id` (tipo `number`, carregado de `session.session.systemId` - campo `system_id` da organização ativa)
-13. **Parâmetros de contexto dinâmicos**: `pe_organization_id`, `pe_user_id`, `pe_member_role`, `pe_person_id` (obrigatórios na API, mas `.optional()` nos schemas - devem ser passados pelo usuário logado)
+13. **Parâmetros de contexto dinâmicos**: `pe_organization_id`, `pe_user_id`, `pe_user_name`, `pe_user_role`, `pe_person_id` (obrigatórios na API, mas `.optional()` nos schemas - devem ser passados pelo usuário logado)
 13. **Imports de constantes**: `API_STATUS_CODES`, `BRAND_ENDPOINTS`, `isApiError`, `isApiSuccess` vêm de `@/core/constants/api-constants`
 14. **Imports de cache**: `CACHE_TAGS` vem de `@/lib/cache-config`
 15. **Usar instância singleton** `brandServiceApi` em vez de criar novas instâncias
