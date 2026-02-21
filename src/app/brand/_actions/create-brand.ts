@@ -17,22 +17,13 @@ export async function createBrandAction(
     const { apiContext } = await getAuthContext();
 
     const brandName = (formData.get("brand") as string) || "";
-    const slugInput = (formData.get("slug") as string) || "";
-    // Gera slug automaticamente a partir do nome da marca se não fornecido
-    const generatedSlug = brandName
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .trim();
+    const imagePath = formData.get("image_path") as string;
+    const notes = formData.get("notes") as string;
 
     const rawData = {
       pe_brand: brandName,
-      pe_slug: slugInput || generatedSlug,
-      pe_image_path: (formData.get("image_path") as string) || undefined,
-      pe_notes: (formData.get("notes") as string) || undefined,
+      pe_image_path: imagePath || "",
+      pe_notes: notes || "",
       ...apiContext,
     };
 

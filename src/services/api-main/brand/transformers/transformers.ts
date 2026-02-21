@@ -1,5 +1,3 @@
-import "server-only";
-
 import type { BrandDetail, BrandListItem } from "../types/brand-types";
 
 export interface UIBrand {
@@ -17,11 +15,11 @@ export function transformBrandListItem(entity: BrandListItem): UIBrand {
   return {
     id: entity.ID_MARCA,
     name: entity.MARCA,
-    slug: undefined,
-    imagePath: undefined,
+    slug: entity.SLUG || undefined,
+    imagePath: entity.PATH_IMAGEM || undefined,
     notes: undefined,
-    inactive: false,
-    createdAt: undefined,
+    inactive: entity.INATIVO === 1,
+    createdAt: entity.DATADOCADASTRO,
     updatedAt: undefined,
   };
 }
@@ -33,10 +31,10 @@ export function transformBrandList(items: BrandListItem[]): UIBrand[] {
 export function transformBrandDetail(entity: BrandDetail): UIBrand {
   return {
     id: entity.ID_MARCA,
-    name: entity.MARCA ?? entity.NOME ?? "",
-    slug: undefined,
-    imagePath: undefined,
-    notes: undefined,
+    name: entity.MARCA ?? "",
+    slug: entity.SLUG || undefined,
+    imagePath: entity.PATH_IMAGEM || undefined,
+    notes: entity.ANOTACOES ?? undefined,
     inactive: entity.INATIVO === 1,
     createdAt: entity.DATADOCADASTRO,
     updatedAt: entity.DT_UPDATE ?? undefined,
@@ -52,7 +50,7 @@ export function transformBrand(
 ): UIBrand | null {
   if (!entity) return null;
 
-  if ("UUID" in entity) {
+  if ("ANOTACOES" in entity) {
     return transformBrandDetail(entity as BrandDetail);
   }
 
