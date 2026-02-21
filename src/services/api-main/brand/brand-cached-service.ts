@@ -15,8 +15,7 @@ const logger = createLogger("brand-cached-service");
 
 export async function getBrands(
   params: {
-    brandId?: number;
-    brand?: string;
+    search?: string;
     inactive?: number;
     limit?: number;
     pe_system_client_id?: number;
@@ -37,8 +36,7 @@ export async function getBrands(
 
   try {
     const response = await brandServiceApi.findAllBrands({
-      pe_brand_id: params.brandId,
-      pe_brand: params.brand,
+      pe_search: params.search,
       pe_inactive: params.inactive,
       pe_limit: params.limit,
       pe_system_client_id: params.pe_system_client_id,

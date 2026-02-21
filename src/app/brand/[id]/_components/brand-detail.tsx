@@ -1,4 +1,11 @@
-import { ArrowLeft, Calendar, Hash, Tags } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  FileText,
+  Hash,
+  ImageIcon,
+  Tags,
+} from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -114,36 +121,72 @@ export function BrandDetail({ brand }: BrandDetailProps) {
           </CardContent>
         </Card>
 
-        <Card className="border shadow-none">
+        {brand.imagePath && (
+          <Card className="border shadow-none">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                <ImageIcon className="h-4 w-4" />
+                Imagem da Marca
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted">
+                {/* biome-ignore lint/performance/noImgElement: External image source unknown */}
+                <img
+                  src={brand.imagePath}
+                  alt={`Imagem de ${brandName}`}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {brand.notes && (
+          <Card className="border shadow-none sm:col-span-2">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                <FileText className="h-4 w-4" />
+                Anotações
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="whitespace-pre-wrap text-sm text-foreground">
+                {brand.notes}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card className="border shadow-none sm:col-span-2">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
               <Calendar className="h-4 w-4" />
               Histórico
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground">
-                Cadastrado em
-              </p>
-              <p className="mt-0.5 font-medium">
-                {brand.createdAt
-                  ? new Date(brand.createdAt).toLocaleString("pt-BR")
-                  : "—"}
-              </p>
-            </div>
-
-            <Separator />
-
-            <div>
-              <p className="text-xs font-medium text-muted-foreground">
-                Última atualização
-              </p>
-              <p className="mt-0.5 font-medium">
-                {brand.updatedAt
-                  ? new Date(brand.updatedAt).toLocaleString("pt-BR")
-                  : "—"}
-              </p>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Cadastrado em
+                </p>
+                <p className="mt-0.5 font-medium">
+                  {brand.createdAt
+                    ? new Date(brand.createdAt).toLocaleString("pt-BR")
+                    : "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Última atualização
+                </p>
+                <p className="mt-0.5 font-medium">
+                  {brand.updatedAt
+                    ? new Date(brand.updatedAt).toLocaleString("pt-BR")
+                    : "—"}
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
