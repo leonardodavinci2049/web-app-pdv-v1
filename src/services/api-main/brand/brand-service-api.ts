@@ -59,8 +59,7 @@ export class BrandServiceApi extends BaseApiService {
         pe_user_name: validatedParams.pe_user_name,
         pe_user_role: validatedParams.pe_user_role,
         pe_person_id: validatedParams.pe_person_id,
-        pe_brand_id: validatedParams.pe_brand_id ?? 0,
-        pe_brand: validatedParams.pe_brand ?? "",
+        pe_search: validatedParams.pe_search ?? "",
         pe_inactive: validatedParams.pe_inactive ?? 0,
         pe_limit: validatedParams.pe_limit ?? 100,
       });

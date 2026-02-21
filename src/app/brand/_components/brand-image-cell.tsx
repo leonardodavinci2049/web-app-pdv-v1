@@ -5,13 +5,25 @@ import { useState } from "react";
 
 const FALLBACK_IMAGE = "/images/brand/no-image.png";
 
+function resolveImageSrc(imagePath?: string): string {
+  if (!imagePath) return FALLBACK_IMAGE;
+  if (
+    imagePath.startsWith("/") ||
+    imagePath.startsWith("http://") ||
+    imagePath.startsWith("https://")
+  ) {
+    return imagePath;
+  }
+  return FALLBACK_IMAGE;
+}
+
 interface BrandImageCellProps {
   imagePath?: string;
   brandName: string;
 }
 
 export function BrandImageCell({ imagePath, brandName }: BrandImageCellProps) {
-  const [src, setSrc] = useState(imagePath || FALLBACK_IMAGE);
+  const [src, setSrc] = useState(() => resolveImageSrc(imagePath));
 
   return (
     <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-md border bg-muted/30">

@@ -21,8 +21,7 @@ interface BrandBaseResponse {
 }
 
 export interface BrandFindAllRequest extends BrandBaseRequest {
-  pe_brand_id?: number;
-  pe_brand?: string;
+  pe_search?: string;
   pe_inactive?: number;
   pe_limit?: number;
 }
