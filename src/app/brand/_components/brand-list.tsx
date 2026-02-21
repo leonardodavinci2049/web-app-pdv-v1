@@ -108,11 +108,11 @@ export function BrandList({ brands }: BrandListProps) {
                 <TableHead className="w-[72px] font-semibold text-foreground/70">
                   ID
                 </TableHead>
+                <TableHead className="w-[72px] font-semibold text-foreground/70">
+                  Imagem
+                </TableHead>
                 <TableHead className="font-semibold text-foreground/70">
                   Nome
-                </TableHead>
-                <TableHead className="hidden font-semibold text-foreground/70 sm:table-cell">
-                  Slug
                 </TableHead>
                 <TableHead className="font-semibold text-foreground/70">
                   Status

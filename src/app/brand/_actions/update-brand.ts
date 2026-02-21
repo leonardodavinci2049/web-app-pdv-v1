@@ -24,15 +24,18 @@ export async function updateBrandAction(
       };
     }
 
+    const brand = formData.get("brand") as string;
+    const imagePath = formData.get("image_path") as string;
+    const notes = formData.get("notes") as string;
+
     const rawData = {
       pe_brand_id: Number(brandId),
-      pe_brand: (formData.get("brand") as string) || undefined,
-      pe_slug: (formData.get("slug") as string) || undefined,
-      pe_image_path: (formData.get("image_path") as string) || undefined,
-      pe_notes: (formData.get("notes") as string) || undefined,
+      pe_brand: brand || "",
       pe_inactive: formData.get("inactive")
         ? Number(formData.get("inactive"))
         : 0,
+      pe_image_path: imagePath || "",
+      pe_notes: notes || "",
       ...apiContext,
     };
 

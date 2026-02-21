@@ -17,11 +17,13 @@ export async function getBrands(
   params: {
     brandId?: number;
     brand?: string;
+    inactive?: number;
     limit?: number;
     pe_system_client_id?: number;
     pe_organization_id?: string;
     pe_user_id?: string;
-    pe_member_role?: string;
+    pe_user_name?: string;
+    pe_user_role?: string;
     pe_person_id?: number;
   } = {},
 ): Promise<UIBrand[]> {
@@ -37,11 +39,13 @@ export async function getBrands(
     const response = await brandServiceApi.findAllBrands({
       pe_brand_id: params.brandId,
       pe_brand: params.brand,
+      pe_inactive: params.inactive,
       pe_limit: params.limit,
       pe_system_client_id: params.pe_system_client_id,
       pe_organization_id: params.pe_organization_id,
       pe_user_id: params.pe_user_id,
-      pe_member_role: params.pe_member_role,
+      pe_user_name: params.pe_user_name,
+      pe_user_role: params.pe_user_role,
       pe_person_id: params.pe_person_id,
     });
 
@@ -59,7 +63,8 @@ export async function getBrandById(
     pe_system_client_id?: number;
     pe_organization_id?: string;
     pe_user_id?: string;
-    pe_member_role?: string;
+    pe_user_name?: string;
+    pe_user_role?: string;
     pe_person_id?: number;
   } = {},
 ): Promise<UIBrand | undefined> {
@@ -77,7 +82,8 @@ export async function getBrandById(
       pe_system_client_id: params.pe_system_client_id,
       pe_organization_id: params.pe_organization_id,
       pe_user_id: params.pe_user_id,
-      pe_member_role: params.pe_member_role,
+      pe_user_name: params.pe_user_name,
+      pe_user_role: params.pe_user_role,
       pe_person_id: params.pe_person_id,
     });
 

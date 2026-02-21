@@ -3,7 +3,6 @@
 import { Loader2, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,59 +12,53 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { getBrandAction } from "../_actions/get-brand";
+import type { UIBrand } from "@/services/api-main/brand/transformers/transformers";
+import { getBrandByIdAction } from "../_actions/get-brand";
 import { updateBrandAction } from "../_actions/update-brand";
 import { BrandForm } from "./brand-form";
 
-type InitialData = {
-  brand_id?: number;
-  brand?: string;
-  slug?: string;
-  image_path?: string;
-  notes?: string;
-  inactive?: number;
-};
-
 interface BrandUpdateDialogProps {
-  brandId: number;
-  brandName: string;
+  brand: UIBrand;
 }
 
-export function BrandUpdateDialog({
-  brandId,
-  brandName,
-}: BrandUpdateDialogProps) {
+export function BrandUpdateDialog({ brand }: BrandUpdateDialogProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [initialData, setInitialData] = useState<InitialData | null>(null);
-  const router = useRouter();
+  const [brandDetails, setBrandDetails] = useState<UIBrand | null>(null);
 
-  const handleOpenChange = async (isOpen: boolean) => {
-    setOpen(isOpen);
-    if (isOpen) {
-      setLoading(true);
-      try {
-        const data = await getBrandAction(brandId);
-        if (data) {
-          setInitialData(data);
-        } else {
-          toast.error("Não foi possível carregar os dados da marca.");
-          setOpen(false);
-        }
-      } catch (_error) {
-        toast.error("Erro ao carregar dados.");
-        setOpen(false);
-      } finally {
-        setLoading(false);
+  const loadBrandDetails = async () => {
+    setLoading(true);
+    try {
+      const details = await getBrandByIdAction(brand.id);
+      if (details) {
+        setBrandDetails(details);
       }
-    } else {
-      setInitialData(null); // Reset on close
+    } catch (error) {
+      console.error("Erro ao carregar detalhes da marca:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (newOpen) {
+      loadBrandDetails();
     }
   };
 
   const handleSuccess = () => {
     setOpen(false);
     router.refresh();
+  };
+
+  const initialData = {
+    brand_id: brandDetails?.id || brand.id,
+    brand: brandDetails?.name || brand.name,
+    image_path: brandDetails?.imagePath ?? "",
+    notes: brandDetails?.notes ?? "",
+    inactive: brandDetails?.inactive ? 1 : 0,
   };
 
   return (
@@ -79,22 +72,20 @@ export function BrandUpdateDialog({
         <DialogHeader>
           <DialogTitle>Editar Marca</DialogTitle>
           <DialogDescription>
-            Altere os dados da marca {brandName}.
+            Altere os dados da marca {brand.name} (ID: {brand.id}).
           </DialogDescription>
         </DialogHeader>
         {loading ? (
-          <div className="flex h-40 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          initialData && (
-            <BrandForm
-              mode="update"
-              initialData={initialData}
-              action={updateBrandAction}
-              onSuccess={handleSuccess}
-            />
-          )
+          <BrandForm
+            mode="update"
+            initialData={initialData}
+            action={updateBrandAction}
+            onSuccess={handleSuccess}
+          />
         )}
       </DialogContent>
     </Dialog>
