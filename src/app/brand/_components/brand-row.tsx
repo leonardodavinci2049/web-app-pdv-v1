@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import type { UIBrand } from "@/services/api-main/brand/transformers/transformers";
 import { BrandDeleteDialog } from "./brand-delete-dialog";
+import { BrandImageCell } from "./brand-image-cell";
 import { BrandUpdateDialog } from "./brand-update-dialog";
 
 interface BrandRowProps {
@@ -12,8 +13,6 @@ interface BrandRowProps {
 }
 
 export function BrandRow({ brand }: BrandRowProps) {
-  const initial = brand.name ? brand.name.charAt(0).toUpperCase() : "?";
-
   return (
     <TableRow className="group transition-colors hover:bg-muted/40">
       <TableCell className="font-mono text-xs text-muted-foreground">
@@ -21,22 +20,11 @@ export function BrandRow({ brand }: BrandRowProps) {
       </TableCell>
 
       <TableCell>
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
-            {initial}
-          </div>
-          <span className="font-medium">{brand.name}</span>
-        </div>
+        <BrandImageCell imagePath={brand.imagePath} brandName={brand.name} />
       </TableCell>
 
-      <TableCell className="hidden sm:table-cell">
-        {brand.slug ? (
-          <code className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
-            {brand.slug}
-          </code>
-        ) : (
-          <span className="text-xs text-muted-foreground/40">—</span>
-        )}
+      <TableCell>
+        <span className="font-medium">{brand.name}</span>
       </TableCell>
 
       <TableCell>
