@@ -3,12 +3,20 @@ import { getAuthContext } from "@/server/auth-context";
 import { getBrands } from "@/services/api-main/brand/brand-cached-service";
 import { BrandList } from "./_components/brand-list";
 
-export default async function BrandPage() {
+interface BrandPageProps {
+  searchParams: Promise<{
+    search?: string;
+  }>;
+}
+
+export default async function BrandPage(props: BrandPageProps) {
   await connection();
+  const searchParams = await props.searchParams;
   const { apiContext } = await getAuthContext();
 
   const brands = await getBrands({
     limit: 100,
+    search: searchParams.search,
     ...apiContext,
   });
 

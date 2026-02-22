@@ -11,6 +11,7 @@ import {
 import type { UIBrand } from "@/services/api-main/brand/transformers/transformers";
 import { BrandCreateDialog } from "./brand-create-dialog";
 import { BrandRow } from "./brand-row";
+import { BrandSearchInput } from "./brand-search-input";
 
 interface BrandListProps {
   brands: UIBrand[];
@@ -87,6 +88,13 @@ export function BrandList({ brands }: BrandListProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Card de Pesquisa */}
+      <Card className="border bg-card shadow-none">
+        <CardContent className="flex items-center justify-center p-6">
+          <BrandSearchInput />
+        </CardContent>
+      </Card>
 
       {/* Tabela de marcas */}
       <Card className="overflow-hidden border shadow-none">
