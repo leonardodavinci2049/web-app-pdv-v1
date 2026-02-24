@@ -62,9 +62,39 @@ export const CART_ENDPOINTS = {
   CLEAR_ALL: "/cart/v1/cart-clear-all",
 } as const;
 
-// Endpoints de Cliente
+// Endpoints de Cliente (Legacy - Cart)
 export const CUSTOMER_ENDPOINTS = {
   CHECK_CUSTOMER: "/cart/v1/cart-check-customer",
+} as const;
+
+// Endpoints de Cliente (General)
+export const CUSTOMER_GENERAL_ENDPOINTS = {
+  FIND_ALL: "/customer/v2/customer-find-all",
+  FIND_BY_ID: "/customer/v2/customer-find-by-id",
+  CREATE: "/customer/v2/customer-create",
+  FIND_LATEST_PRODUCTS: "/customer/v2/customer-find-latest-products",
+} as const;
+
+// Endpoints de Cliente (Update - seções do cadastro)
+export const CUSTOMER_UPD_ENDPOINTS = {
+  UPD_GENERAL: "/customer-upd/v2/customer-upd-general",
+  UPD_PERSONAL: "/customer-upd/v2/customer-upd-personal",
+  UPD_BUSINESS: "/customer-upd/v2/customer-upd-business",
+  UPD_ADDRESS: "/customer-upd/v2/customer-upd-address",
+  UPD_INTERNET: "/customer-upd/v2/customer-upd-internet",
+  UPD_FLAG: "/customer-upd/v2/customer-upd-flag",
+} as const;
+
+// Endpoints de Cliente (Inline Update - campo individual)
+export const CUSTOMER_INLINE_ENDPOINTS = {
+  UPD_EMAIL: "/customer-inline/v2/customer-upd-inline-email",
+  UPD_NAME: "/customer-inline/v2/customer-upd-inline-name",
+  UPD_NOTES: "/customer-inline/v2/customer-upd-inline-notes",
+  UPD_PHONE: "/customer-inline/v2/customer-upd-inline-phone",
+  UPD_SELLER_ID: "/customer-inline/v2/customer-upd-inline-seller-id",
+  UPD_TYPE_CUSTOMER: "/customer-inline/v2/customer-upd-inline-type-customer",
+  UPD_TYPE_PERSON: "/customer-inline/v2/customer-upd-inline-type-person",
+  UPD_WHATSAPP: "/customer-inline/v2/customer-upd-inline-whatsapp",
 } as const;
 
 // Endpoints de Category (Legacy)

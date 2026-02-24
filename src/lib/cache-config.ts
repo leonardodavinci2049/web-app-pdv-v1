@@ -19,6 +19,8 @@ export const CACHE_TAGS = {
   carrier: (id: string) => `carrier-${id}`,
   supplier: (id: string) => `supplier-${id}`,
   supplierRelProd: (id: string) => `supplier-rel-prod-${id}`,
+  customer: (id: string) => `customer-${id}`,
+  customerLatestProducts: (id: string) => `customer-latest-products-${id}`,
 
   // Static tags
   products: "products",
@@ -28,6 +30,7 @@ export const CACHE_TAGS = {
   carriers: "carriers",
   suppliers: "suppliers",
   suppliersRelProd: "suppliers-rel-prod",
+  customers: "customers",
   navigation: "navigation",
   banners: "banners",
   footer: "footer",
