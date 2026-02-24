@@ -16,12 +16,18 @@ export const CACHE_TAGS = {
   category: (id: string) => `category-${id}`,
   brand: (id: string) => `brand-${id}`,
   ptype: (id: string) => `ptype-${id}`,
+  carrier: (id: string) => `carrier-${id}`,
+  supplier: (id: string) => `supplier-${id}`,
+  supplierRelProd: (id: string) => `supplier-rel-prod-${id}`,
 
   // Static tags
   products: "products",
   categories: "categories",
   brands: "brands",
   ptypes: "ptypes",
+  carriers: "carriers",
+  suppliers: "suppliers",
+  suppliersRelProd: "suppliers-rel-prod",
   navigation: "navigation",
   banners: "banners",
   footer: "footer",

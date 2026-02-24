@@ -116,9 +116,25 @@ export const BRAND_ENDPOINTS = {
   DELETE: "/brand/v2/brand-delete",
 } as const;
 
+// Endpoints de Carrier
+export const CARRIER_ENDPOINTS = {
+  FIND_ALL: "/carrier/v2/carrier-find-all",
+  FIND_BY_ID: "/carrier/v2/carrier-find-id",
+  CREATE: "/carrier/v2/carrier-create",
+  UPDATE: "/carrier/v2/carrier-update",
+  DELETE: "/carrier/v2/carrier-delete",
+} as const;
+
 // Endpoints de Supplier
 export const SUPPLIER_ENDPOINTS = {
   FIND_ALL: "/supplier/v2/supplier-find-all",
+  FIND_BY_ID: "/supplier/v2/supplier-find-id",
+  CREATE: "/supplier/v2/supplier-create",
+  UPDATE: "/supplier/v2/supplier-update",
+  DELETE: "/supplier/v2/supplier-delete",
+  REL_CREATE: "/supplier/v2/supplier-rel-create",
+  REL_DELETE: "/supplier/v2/supplier-rel-delete",
+  REL_FIND_PROD_ALL: "/supplier/v2/supplier-rel-find-prod-all",
 } as const;
 
 // Endpoints de Account (Dashboard da Conta)
@@ -150,12 +166,13 @@ export const ACCOUNT_ENDPOINTS = {
 // Endpoints de Validação (Check if Exists)
 export const CHECK_ENDPOINTS = {
   STATUS: "/check", // Health check endpoint (GET)
-  EMAIL: "/check/v2/check-if-email-exists",
-  CPF: "/check/v2/check-if-cpf-exists",
-  CNPJ: "/check/v2/check-if-cnpj-exists",
-  TAXONOMY_SLUG: "/check/v2/check-if-taxonomy-slug-exists",
-  PRODUCT_NAME: "/check/v2/check-if-product-name-exists",
-  PRODUCT_SLUG: "/check/v2/check-if-product-slug-exists",
+  EMAIL: "/check/v3/check-if-email-exists",
+  CPF: "/check/v3/check-if-cpf-exists",
+  CNPJ: "/check/v3/check-if-cnpj-exists",
+  TAXONOMY_NAME: "/check/v3/check-if-taxonomy-name-exists",
+  TAXONOMY_SLUG: "/check/v3/check-if-taxonomy-slug-exists",
+  PRODUCT_NAME: "/check/v3/check-if-product-name-exists",
+  PRODUCT_SLUG: "/check/v3/check-if-product-slug-exists",
 } as const;
 
 // Configurações padrão do sistema
