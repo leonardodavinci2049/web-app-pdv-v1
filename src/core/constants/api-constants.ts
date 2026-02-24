@@ -101,6 +101,10 @@ export const TAXONOMY_ENDPOINTS = {
 // Endpoints de Product Type
 export const PTYPE_ENDPOINTS = {
   FIND_ALL: "/ptype/v2/ptype-find-all",
+  FIND_BY_ID: "/ptype/v2/ptype-find-id",
+  CREATE: "/ptype/v2/ptype-create",
+  UPDATE: "/ptype/v2/ptype-update",
+  DELETE: "/ptype/v2/ptype-delete",
 } as const;
 
 // Endpoints de Brand
