@@ -21,6 +21,9 @@ export const CACHE_TAGS = {
   supplierRelProd: (id: string) => `supplier-rel-prod-${id}`,
   customer: (id: string) => `customer-${id}`,
   customerLatestProducts: (id: string) => `customer-latest-products-${id}`,
+  orderItem: (id: string) => `order-item-${id}`,
+  orderReport: (id: string) => `order-report-${id}`,
+  orderSale: (id: string) => `order-sale-${id}`,
 
   // Static tags
   products: "products",
@@ -31,6 +34,9 @@ export const CACHE_TAGS = {
   suppliers: "suppliers",
   suppliersRelProd: "suppliers-rel-prod",
   customers: "customers",
+  orderItems: "order-items",
+  orderReports: "order-reports",
+  orderSales: "order-sales",
   navigation: "navigation",
   banners: "banners",
   footer: "footer",

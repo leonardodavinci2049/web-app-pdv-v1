@@ -193,6 +193,66 @@ export const ACCOUNT_ENDPOINTS = {
   UPDATE_PASSWORD: "/account/v1/upd-account-password",
 } as const;
 
+// Endpoints de Order Items
+export const ORDER_ITEMS_ENDPOINTS = {
+  FIND_ALL: "/order-items/v2/order-items-find-all",
+  FIND_BY_ID: "/order-items/v2/order-items-find-id",
+  DELETE: "/order-items/v2/order-items-delete",
+  DISCOUNT: "/order-items/v2/order-items-discount",
+  DISCOUNT_ADM: "/order-items/v2/order-items-discount-adm",
+  FRETE_VL: "/order-items/v2/order-items-frete-vl",
+  INSURANCE_VL: "/order-items/v2/order-items-insurance-vl",
+  NOTES: "/order-items/v2/order-items-notes",
+  QT: "/order-items/v2/order-items-qt",
+  VALUE: "/order-items/v2/order-items-value",
+} as const;
+
+// Endpoints de Order Operations
+export const ORDER_OPERATIONS_ENDPOINTS = {
+  CREATE: "/order-operation/v2/order-oper-create",
+  ADD_ITEM: "/order-operation/v2/order-oper-add-item",
+  CLOSE: "/order-operation/v2/order-oper-close-id",
+  REVERSE: "/order-operation/v2/order-oper-reverse-id",
+  SENDING_BY_EMAIL: "/order-operation/v2/order-oper-sending-by-email",
+} as const;
+
+// Endpoints de Order Reports
+export const ORDER_REPORTS_ENDPOINTS = {
+  FIND_CUSTOMER_ALL: "/order-reports/v2/order-find-customer-all",
+  FIND_CUSTOMER_ID: "/order-reports/v2/order-find-customer-id",
+  FIND_LATEST_ALL: "/order-reports/v2/order-find-latest-all",
+  FIND_LATEST_ID: "/order-reports/v2/order-find-latest-id",
+  FIND_SALE_ALL: "/order-reports/v2/order-find-sale-all",
+  FIND_SALE_ID: "/order-reports/v2/order-find-sale-id",
+  FIND_SELLER_ALL: "/order-reports/v2/order-find-seller-all",
+} as const;
+
+// Endpoints de Order Sales
+export const ORDER_SALES_ENDPOINTS = {
+  FIND_CO_CARRIER_ID: "/order-sales/v2/order-find-co-carrier-id",
+  FIND_CO_CUSTOMER_ID: "/order-sales/v2/order-find-co-customer-id",
+  FIND_CO_DELIVERY_ID: "/order-sales/v2/order-find-co-delivery-id",
+  FIND_CO_HISTORY_ID: "/order-sales/v2/order-find-co-history-id",
+  FIND_CO_NF_ID: "/order-sales/v2/order-find-co-nf-id",
+  FIND_CO_PG_FORMA_ID: "/order-sales/v2/order-find-co-pg-forma-id",
+  FIND_CO_PROTOCOL_ID: "/order-sales/v2/order-find-co-protocol-id",
+  FIND_CO_SELLER_ID: "/order-sales/v2/order-find-co-seller-id",
+  FIND_CO_SUMMARY_ID: "/order-sales/v2/order-find-co-summary-id",
+  FIND_DASHBOARD_ID: "/order-sales/v2/order-find-dashboard-id",
+  FIND_EQUIPMENT_ID: "/order-sales/v2/order-find-equipment-id",
+} as const;
+
+// Endpoints de Order Update
+export const ORDER_UPD_ENDPOINTS = {
+  UPD_CUSTOMER_ID: "/order-upd/v2/order-upd-customer-id",
+  UPD_DISCOUNT_ID: "/order-upd/v2/order-upd-discount-id",
+  UPD_FRETE_ID: "/order-upd/v2/order-upd-frete-id",
+  UPD_NOTES_ID: "/order-upd/v2/order-upd-notes-id",
+  UPD_PG_METHOD_ID: "/order-upd/v2/order-upd-pg-method-id",
+  UPD_SELLER_ID: "/order-upd/v2/order-upd-seller-id",
+  UPD_STATUS_ID: "/order-upd/v2/order-upd-status-id",
+} as const;
+
 // Endpoints de Validação (Check if Exists)
 export const CHECK_ENDPOINTS = {
   STATUS: "/check", // Health check endpoint (GET)
