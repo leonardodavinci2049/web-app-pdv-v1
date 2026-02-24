@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { updateProductStock } from "@/app/actions/action-product-updates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useTranslation } from "@/hooks/use-translation";
 
 interface InlineStockEditorProps {
   productId: number;
@@ -23,7 +22,6 @@ export function InlineStockEditor({
   onStockUpdated,
   className = "",
 }: InlineStockEditorProps) {
-  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [tempStock, setTempStock] = useState(currentStock.toString());
@@ -130,7 +128,7 @@ export function InlineStockEditor({
       <div className={`space-y-3 ${className}`}>
         {/* Input Section */}
         <div className="flex items-center gap-2">
-          <Package className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+          <Package className="h-4 w-4 shrink-0 text-muted-foreground" />
           <div className="flex items-center gap-2">
             <Input
               type="number"
@@ -153,7 +151,7 @@ export function InlineStockEditor({
 
         {/* Hint Message */}
         <p className="text-xs text-muted-foreground">
-          ℹ️ Pressione{" "}
+          Pressione{" "}
           <kbd className="px-1 py-0.5 rounded bg-muted text-xs">Enter</kbd> para
           salvar ou{" "}
           <kbd className="px-1 py-0.5 rounded bg-muted text-xs">Esc</kbd> para
@@ -199,7 +197,7 @@ export function InlineStockEditor({
       }}
       title="Clique para editar o estoque"
     >
-      <Package className="h-4 w-4 flex-shrink-0" />
+      <Package className="h-4 w-4 shrink-0" />
       <span
         className={`font-medium ${
           currentStock === 0
@@ -207,7 +205,7 @@ export function InlineStockEditor({
             : "text-muted-foreground"
         }`}
       >
-        {t("dashboard.products.productStock")}: {currentStock}
+        Estoque: {currentStock}
       </span>
       <Edit2 className="h-3 w-3 opacity-0 group-hover/stock-editor:opacity-100 transition-opacity text-muted-foreground" />
     </button>

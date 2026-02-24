@@ -1,11 +1,12 @@
 import { Suspense } from "react";
 import { fetchProducts } from "@/app/actions/action-products";
 import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
-import { ProductCatalogContent } from "@/components/dashboard/product/catalog/ProductCatalogContent";
+
 
 import { createLogger } from "@/lib/logger";
 import type { Product } from "@/types/types";
 import { ProductGridSkeleton } from "./components/ProductSkeleton";
+import { ProductCatalogContent } from "./components/ProductCatalogContent";
 
 const logger = createLogger("CatalogPage");
 

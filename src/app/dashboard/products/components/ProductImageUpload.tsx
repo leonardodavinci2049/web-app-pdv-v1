@@ -4,7 +4,7 @@ import { Loader2, Package, Upload } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { uploadProductImageAction } from "@/app/actions/action-product-images";
-import { useTranslation } from "@/hooks/use-translation";
+
 
 interface ProductImageUploadProps {
   productId: string;
@@ -19,7 +19,6 @@ export function ProductImageUpload({
   viewMode,
   onUploadSuccess,
 }: ProductImageUploadProps) {
-  const { t } = useTranslation();
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -33,13 +32,13 @@ export function ProductImageUpload({
 
       // Validate file type
       if (!file.type.startsWith("image/")) {
-        toast.error(t("dashboard.products.catalog.upload.invalidFileType"));
+        toast.error("Por favor, selecione apenas arquivos de imagem");
         return;
       }
 
       // Validate file size (10MB limit)
       if (file.size > 10 * 1024 * 1024) {
-        toast.error(t("dashboard.products.catalog.upload.fileTooLarge"));
+        toast.error("Arquivo muito grande. Limite: 10MB");
         return;
       }
 
@@ -57,7 +56,7 @@ export function ProductImageUpload({
         const result = await uploadProductImageAction(formData);
 
         if (result.success) {
-          toast.success(t("dashboard.products.catalog.upload.success"));
+          toast.success("Imagem enviada com sucesso!");
 
           // Trigger refresh callback
           if (onUploadSuccess) {
@@ -65,17 +64,17 @@ export function ProductImageUpload({
           }
         } else {
           toast.error(
-            result.error || t("dashboard.products.catalog.upload.error"),
+            result.error || "Erro ao enviar imagem",
           );
         }
       } catch (error) {
         console.error("Error uploading image:", error);
-        toast.error(t("dashboard.products.catalog.upload.error"));
+        toast.error("Erro ao enviar imagem");
       } finally {
         setIsUploading(false);
       }
     },
-    [productId, productName, onUploadSuccess, t],
+    [productId, productName, onUploadSuccess],
   );
 
   // Handle drag events
@@ -142,7 +141,7 @@ export function ProductImageUpload({
           onChange={handleFileInputChange}
           className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
           disabled={isUploading}
-          aria-label={t("dashboard.products.catalog.upload.ariaLabel")}
+          aria-label="Enviar imagem do produto"
         />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
@@ -150,24 +149,24 @@ export function ProductImageUpload({
             <>
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <span className="text-xs font-medium text-muted-foreground">
-                {t("dashboard.product.gallery.uploading")}
+                Enviando...
               </span>
             </>
           ) : isDragOver ? (
             <>
               <Package className="h-8 w-8 text-primary" />
               <span className="text-xs font-medium text-primary">
-                {t("dashboard.product.gallery.dropHere")}
+                Soltar aqui
               </span>
             </>
           ) : (
             <>
               <Upload className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
               <span className="text-xs font-medium text-muted-foreground">
-                {t("dashboard.products.catalog.upload.addImage")}
+                Adicionar Imagem
               </span>
               <span className="text-xs text-muted-foreground/70">
-                {t("dashboard.products.catalog.upload.clickOrDrag")}
+                Clique ou arraste
               </span>
             </>
           )}
@@ -202,7 +201,7 @@ export function ProductImageUpload({
         onChange={handleFileInputChange}
         className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
         disabled={isUploading}
-        aria-label={t("dashboard.products.catalog.upload.ariaLabel")}
+        aria-label="Enviar imagem do produto"
       />
 
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
@@ -210,21 +209,21 @@ export function ProductImageUpload({
           <>
             <Loader2 className="h-5 w-5 animate-spin text-primary" />
             <span className="text-xs font-medium text-muted-foreground">
-              {t("dashboard.product.gallery.uploading")}
+              Enviando...
             </span>
           </>
         ) : isDragOver ? (
           <>
             <Package className="h-5 w-5 text-primary" />
             <span className="text-xs font-medium text-primary">
-              {t("dashboard.product.gallery.dropHere")}
+              Soltar aqui
             </span>
           </>
         ) : (
           <>
             <Upload className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
             <span className="text-xs font-medium text-muted-foreground text-center leading-tight">
-              {t("dashboard.products.catalog.upload.addImage")}
+              Adicionar Imagem
             </span>
           </>
         )}

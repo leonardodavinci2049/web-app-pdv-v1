@@ -83,10 +83,10 @@ export class TaxonomyServiceApi extends BaseApiService {
       pe_app_id: envs.APP_ID,
       pe_system_client_id: 1,
       pe_store_id: 1,
-      pe_organization_id: 'xxx',
-      pe_member_id: 'xxx',
-      pe_user_id: '',
-      pe_person_id: '1937', // Valor dinâmico das variáveis de ambiente
+      pe_organization_id: "xxx",
+      pe_member_id: "xxx",
+      pe_user_id: "",
+      pe_person_id: "1937", // Valor dinâmico das variáveis de ambiente
       ...additionalData,
     };
   }

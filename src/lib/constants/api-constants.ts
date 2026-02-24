@@ -2,48 +2,15 @@
  * Constantes da API para endpoints e configurações
  */
 
-/**
- * Get External API Base URL (Server-side only)
- * This function should only be called on the server side
- * Warnings will only be shown in server runtime, not during module import
- */
-function getExternalApiBaseUrl(): string {
-  const url = process.env.EXTERNAL_API_BASE_URL;
-
-  if (!url) {
-    throw new Error(
-      "❌ EXTERNAL_API_BASE_URL must be defined in environment variables (.env file)",
-    );
-  }
-
-  return url;
-}
-
-/**
- * Get Next App Base URL (Server-side only)
- * This function should only be called on the server side
- * Warnings will only be shown in server runtime, not during module import
- */
-function getNextAppBaseUrl(): string {
-  const url = process.env.NEXT_APP_BASE_URL;
-
-  if (!url) {
-    throw new Error(
-      "❌ NEXT_APP_BASE_URL must be defined in environment variables (.env file)",
-    );
-  }
-
-  return url;
-}
+import { envs } from "@/core/config";
 
 // URL base da API Externa (Servidor NestJS) - apenas server-side
 // Esta é a URL do backend que fornece os dados via REST API
-// Valida rigorosamente em produção para evitar fallback silencioso
-export const EXTERNAL_API_BASE_URL = getExternalApiBaseUrl();
+export const EXTERNAL_API_BASE_URL = envs.EXTERNAL_API_MAIN_URL;
 
 // URL base da Aplicação Next.js (Frontend + API Route Handlers)
 // Esta é a URL da nossa aplicação Next.js onde ficam os Route Handlers (/api/*)
-export const NEXT_APP_BASE_URL = getNextAppBaseUrl();
+export const NEXT_APP_BASE_URL = envs.NEXT_PUBLIC_APP_URL;
 
 // Configurações de timeout (em milissegundos)
 export const API_TIMEOUTS = {

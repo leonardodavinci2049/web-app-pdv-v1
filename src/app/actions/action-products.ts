@@ -1,6 +1,5 @@
 "use server";
 
-import { envs } from "@/core/config";
 import { createLogger } from "@/lib/logger";
 import { ProductServiceApi } from "@/services/api/product/product-service-api";
 import type {
@@ -418,8 +417,7 @@ export async function createProductFromForm(formData: FormData): Promise<{
     const brandId = parseInt(formData.get("brandId") as string, 10) || 0;
     const typeId = parseInt(formData.get("typeId") as string, 10) || 0;
     const businessType =
-      parseInt(formData.get("businessType") as string, 10) ||
-      1;
+      parseInt(formData.get("businessType") as string, 10) || 1;
 
     // Auto-generate slug from product name
     const slug = generateSlugFromName(name);

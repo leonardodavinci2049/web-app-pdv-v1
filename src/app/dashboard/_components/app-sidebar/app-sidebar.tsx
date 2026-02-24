@@ -78,7 +78,7 @@ const data = {
       items: [
         {
           title: "Catálogo",
-          url: "#",
+          url: "/dashboard/products",
         },
         {
           title: "Novos Produtos",
