@@ -1,0 +1,227 @@
+import "server-only";
+
+import { envs } from "@/core/config";
+import {
+  API_STATUS_CODES,
+  isApiError,
+  isApiSuccess,
+  PTYPE_ENDPOINTS,
+} from "@/core/constants/api-constants";
+import { createLogger } from "@/core/logger";
+import { BaseApiService } from "@/lib/axios/base-api-service";
+
+import type {
+  PtypeCreateRequest,
+  PtypeCreateResponse,
+  PtypeDeleteRequest,
+  PtypeDeleteResponse,
+  PtypeDetail,
+  PtypeFindAllRequest,
+  PtypeFindAllResponse,
+  PtypeFindByIdRequest,
+  PtypeFindByIdResponse,
+  PtypeListItem,
+  PtypeUpdateRequest,
+  PtypeUpdateResponse,
+  StoredProcedureResponse,
+} from "./types/ptype-types";
+import { PtypeError, PtypeNotFoundError } from "./types/ptype-types";
+import {
+  PtypeCreateSchema,
+  PtypeDeleteSchema,
+  PtypeFindAllSchema,
+  PtypeFindByIdSchema,
+  PtypeUpdateSchema,
+} from "./validation/ptype-schemas";
+
+const logger = createLogger("PtypeServiceApi");
+
+export class PtypeServiceApi extends BaseApiService {
+  private buildBasePayload(
+    additionalData: Record<string, unknown> = {},
+  ): Record<string, unknown> {
+    return {
+      pe_app_id: envs.APP_ID,
+      pe_store_id: envs.STORE_ID,
+      ...additionalData,
+    };
+  }
+
+  async findAllPtypes(
+    params: Partial<PtypeFindAllRequest> = {},
+  ): Promise<PtypeFindAllResponse> {
+    try {
+      const validatedParams = PtypeFindAllSchema.partial().parse(params);
+      const requestBody = this.buildBasePayload({
+        pe_system_client_id: validatedParams.pe_system_client_id,
+        pe_organization_id: validatedParams.pe_organization_id,
+        pe_user_id: validatedParams.pe_user_id,
+        pe_user_name: validatedParams.pe_user_name,
+        pe_user_role: validatedParams.pe_user_role,
+        pe_person_id: validatedParams.pe_person_id,
+        pe_search: validatedParams.pe_search ?? "",
+        pe_limit: validatedParams.pe_limit ?? 100,
+      });
+
+      const response = await this.post<PtypeFindAllResponse>(
+        PTYPE_ENDPOINTS.FIND_ALL,
+        requestBody,
+      );
+
+      return this.normalizeEmptyPtypeFindAllResponse(response);
+    } catch (error) {
+      logger.error("Erro ao buscar todos os tipos", error);
+      throw error;
+    }
+  }
+
+  async findPtypeById(
+    params: PtypeFindByIdRequest,
+  ): Promise<PtypeFindByIdResponse> {
+    try {
+      const validatedParams = PtypeFindByIdSchema.parse(params);
+      const requestBody = this.buildBasePayload(validatedParams);
+
+      const response = await this.post<PtypeFindByIdResponse>(
+        PTYPE_ENDPOINTS.FIND_BY_ID,
+        requestBody,
+      );
+
+      if (response.statusCode === API_STATUS_CODES.NOT_FOUND) {
+        throw new PtypeNotFoundError(validatedParams);
+      }
+
+      if (isApiError(response.statusCode)) {
+        throw new PtypeError(
+          response.message || "Erro ao buscar tipo por ID",
+          "PTYPE_FIND_BY_ID_ERROR",
+          response.statusCode,
+        );
+      }
+
+      return response;
+    } catch (error) {
+      logger.error("Erro ao buscar tipo por ID", error);
+      throw error;
+    }
+  }
+
+  async createPtype(params: PtypeCreateRequest): Promise<PtypeCreateResponse> {
+    try {
+      const validatedParams = PtypeCreateSchema.parse(params);
+      const requestBody = this.buildBasePayload(validatedParams);
+
+      const response = await this.post<PtypeCreateResponse>(
+        PTYPE_ENDPOINTS.CREATE,
+        requestBody,
+      );
+
+      this.checkStoredProcedureError(response);
+      return response;
+    } catch (error) {
+      logger.error("Erro ao criar tipo", error);
+      throw error;
+    }
+  }
+
+  async updatePtype(params: PtypeUpdateRequest): Promise<PtypeUpdateResponse> {
+    try {
+      const validatedParams = PtypeUpdateSchema.parse(params);
+      const requestBody = this.buildBasePayload(validatedParams);
+
+      const response = await this.post<PtypeUpdateResponse>(
+        PTYPE_ENDPOINTS.UPDATE,
+        requestBody,
+      );
+
+      this.checkStoredProcedureError(response);
+      return response;
+    } catch (error) {
+      logger.error("Erro ao atualizar tipo", error);
+      throw error;
+    }
+  }
+
+  async deletePtype(params: PtypeDeleteRequest): Promise<PtypeDeleteResponse> {
+    try {
+      const validatedParams = PtypeDeleteSchema.parse(params);
+      const requestBody = this.buildBasePayload(validatedParams);
+
+      const response = await this.post<PtypeDeleteResponse>(
+        PTYPE_ENDPOINTS.DELETE,
+        requestBody,
+      );
+
+      this.checkStoredProcedureError(response);
+      return response;
+    } catch (error) {
+      logger.error("Erro ao excluir tipo", error);
+      throw error;
+    }
+  }
+
+  private checkStoredProcedureError(
+    response: PtypeCreateResponse | PtypeUpdateResponse | PtypeDeleteResponse,
+  ): void {
+    const spResponse = response.data?.[0] as StoredProcedureResponse;
+    if (spResponse && spResponse.sp_error_id !== 0) {
+      throw new PtypeError(
+        spResponse.sp_message || "Erro na operação de tipo",
+        "PTYPE_OPERATION_ERROR",
+        spResponse.sp_error_id,
+      );
+    }
+  }
+
+  private normalizeEmptyPtypeFindAllResponse(
+    response: PtypeFindAllResponse,
+  ): PtypeFindAllResponse {
+    if (
+      response.statusCode === API_STATUS_CODES.NOT_FOUND ||
+      response.statusCode === API_STATUS_CODES.EMPTY_RESULT
+    ) {
+      return {
+        ...response,
+        statusCode: API_STATUS_CODES.SUCCESS,
+        quantity: 0,
+        data: {
+          "Type find All": [],
+        },
+      };
+    }
+    return response;
+  }
+
+  extractPtypes(response: PtypeFindAllResponse): PtypeListItem[] {
+    return response.data?.["Type find All"] ?? [];
+  }
+
+  extractPtypeById(response: PtypeFindByIdResponse): PtypeDetail | null {
+    return response.data?.["Type find Id"]?.[0] ?? null;
+  }
+
+  extractStoredProcedureResult(
+    response: PtypeCreateResponse | PtypeUpdateResponse | PtypeDeleteResponse,
+  ): StoredProcedureResponse | null {
+    return (response.data?.[0] as StoredProcedureResponse) ?? null;
+  }
+
+  isValidPtypeList(response: PtypeFindAllResponse): boolean {
+    return (
+      isApiSuccess(response.statusCode) &&
+      response.data &&
+      Array.isArray(response.data["Type find All"])
+    );
+  }
+
+  isValidPtypeDetail(response: PtypeFindByIdResponse): boolean {
+    return (
+      isApiSuccess(response.statusCode) &&
+      response.data &&
+      Array.isArray(response.data["Type find Id"]) &&
+      response.data["Type find Id"].length > 0
+    );
+  }
+}
+
+export const ptypeServiceApi = new PtypeServiceApi();

@@ -62,9 +62,39 @@ export const CART_ENDPOINTS = {
   CLEAR_ALL: "/cart/v1/cart-clear-all",
 } as const;
 
-// Endpoints de Cliente
+// Endpoints de Cliente (Legacy - Cart)
 export const CUSTOMER_ENDPOINTS = {
   CHECK_CUSTOMER: "/cart/v1/cart-check-customer",
+} as const;
+
+// Endpoints de Cliente (General)
+export const CUSTOMER_GENERAL_ENDPOINTS = {
+  FIND_ALL: "/customer/v2/customer-find-all",
+  FIND_BY_ID: "/customer/v2/customer-find-by-id",
+  CREATE: "/customer/v2/customer-create",
+  FIND_LATEST_PRODUCTS: "/customer/v2/customer-find-latest-products",
+} as const;
+
+// Endpoints de Cliente (Update - seções do cadastro)
+export const CUSTOMER_UPD_ENDPOINTS = {
+  UPD_GENERAL: "/customer-upd/v2/customer-upd-general",
+  UPD_PERSONAL: "/customer-upd/v2/customer-upd-personal",
+  UPD_BUSINESS: "/customer-upd/v2/customer-upd-business",
+  UPD_ADDRESS: "/customer-upd/v2/customer-upd-address",
+  UPD_INTERNET: "/customer-upd/v2/customer-upd-internet",
+  UPD_FLAG: "/customer-upd/v2/customer-upd-flag",
+} as const;
+
+// Endpoints de Cliente (Inline Update - campo individual)
+export const CUSTOMER_INLINE_ENDPOINTS = {
+  UPD_EMAIL: "/customer-inline/v2/customer-upd-inline-email",
+  UPD_NAME: "/customer-inline/v2/customer-upd-inline-name",
+  UPD_NOTES: "/customer-inline/v2/customer-upd-inline-notes",
+  UPD_PHONE: "/customer-inline/v2/customer-upd-inline-phone",
+  UPD_SELLER_ID: "/customer-inline/v2/customer-upd-inline-seller-id",
+  UPD_TYPE_CUSTOMER: "/customer-inline/v2/customer-upd-inline-type-customer",
+  UPD_TYPE_PERSON: "/customer-inline/v2/customer-upd-inline-type-person",
+  UPD_WHATSAPP: "/customer-inline/v2/customer-upd-inline-whatsapp",
 } as const;
 
 // Endpoints de Category (Legacy)
@@ -101,6 +131,10 @@ export const TAXONOMY_ENDPOINTS = {
 // Endpoints de Product Type
 export const PTYPE_ENDPOINTS = {
   FIND_ALL: "/ptype/v2/ptype-find-all",
+  FIND_BY_ID: "/ptype/v2/ptype-find-id",
+  CREATE: "/ptype/v2/ptype-create",
+  UPDATE: "/ptype/v2/ptype-update",
+  DELETE: "/ptype/v2/ptype-delete",
 } as const;
 
 // Endpoints de Brand
@@ -112,9 +146,31 @@ export const BRAND_ENDPOINTS = {
   DELETE: "/brand/v2/brand-delete",
 } as const;
 
+// Endpoints de Product PDV
+export const PRODUCT_PDV_ENDPOINTS = {
+  FIND_ALL: "/product-pdv/v2/product-pdv-find-all",
+  FIND_BY_ID: "/product-pdv/v2/product-pdv-find-id",
+} as const;
+
+// Endpoints de Carrier
+export const CARRIER_ENDPOINTS = {
+  FIND_ALL: "/carrier/v2/carrier-find-all",
+  FIND_BY_ID: "/carrier/v2/carrier-find-id",
+  CREATE: "/carrier/v2/carrier-create",
+  UPDATE: "/carrier/v2/carrier-update",
+  DELETE: "/carrier/v2/carrier-delete",
+} as const;
+
 // Endpoints de Supplier
 export const SUPPLIER_ENDPOINTS = {
   FIND_ALL: "/supplier/v2/supplier-find-all",
+  FIND_BY_ID: "/supplier/v2/supplier-find-id",
+  CREATE: "/supplier/v2/supplier-create",
+  UPDATE: "/supplier/v2/supplier-update",
+  DELETE: "/supplier/v2/supplier-delete",
+  REL_CREATE: "/supplier/v2/supplier-rel-create",
+  REL_DELETE: "/supplier/v2/supplier-rel-delete",
+  REL_FIND_PROD_ALL: "/supplier/v2/supplier-rel-find-prod-all",
 } as const;
 
 // Endpoints de Account (Dashboard da Conta)
@@ -143,15 +199,76 @@ export const ACCOUNT_ENDPOINTS = {
   UPDATE_PASSWORD: "/account/v1/upd-account-password",
 } as const;
 
+// Endpoints de Order Items
+export const ORDER_ITEMS_ENDPOINTS = {
+  FIND_ALL: "/order-items/v2/order-items-find-all",
+  FIND_BY_ID: "/order-items/v2/order-items-find-id",
+  DELETE: "/order-items/v2/order-items-delete",
+  DISCOUNT: "/order-items/v2/order-items-discount",
+  DISCOUNT_ADM: "/order-items/v2/order-items-discount-adm",
+  FRETE_VL: "/order-items/v2/order-items-frete-vl",
+  INSURANCE_VL: "/order-items/v2/order-items-insurance-vl",
+  NOTES: "/order-items/v2/order-items-notes",
+  QT: "/order-items/v2/order-items-qt",
+  VALUE: "/order-items/v2/order-items-value",
+} as const;
+
+// Endpoints de Order Operations
+export const ORDER_OPERATIONS_ENDPOINTS = {
+  CREATE: "/order-operation/v2/order-oper-create",
+  ADD_ITEM: "/order-operation/v2/order-oper-add-item",
+  CLOSE: "/order-operation/v2/order-oper-close-id",
+  REVERSE: "/order-operation/v2/order-oper-reverse-id",
+  SENDING_BY_EMAIL: "/order-operation/v2/order-oper-sending-by-email",
+} as const;
+
+// Endpoints de Order Reports
+export const ORDER_REPORTS_ENDPOINTS = {
+  FIND_CUSTOMER_ALL: "/order-reports/v2/order-find-customer-all",
+  FIND_CUSTOMER_ID: "/order-reports/v2/order-find-customer-id",
+  FIND_LATEST_ALL: "/order-reports/v2/order-find-latest-all",
+  FIND_LATEST_ID: "/order-reports/v2/order-find-latest-id",
+  FIND_SALE_ALL: "/order-reports/v2/order-find-sale-all",
+  FIND_SALE_ID: "/order-reports/v2/order-find-sale-id",
+  FIND_SELLER_ALL: "/order-reports/v2/order-find-seller-all",
+} as const;
+
+// Endpoints de Order Sales
+export const ORDER_SALES_ENDPOINTS = {
+  FIND_CO_CARRIER_ID: "/order-sales/v2/order-find-co-carrier-id",
+  FIND_CO_CUSTOMER_ID: "/order-sales/v2/order-find-co-customer-id",
+  FIND_CO_DELIVERY_ID: "/order-sales/v2/order-find-co-delivery-id",
+  FIND_CO_HISTORY_ID: "/order-sales/v2/order-find-co-history-id",
+  FIND_CO_NF_ID: "/order-sales/v2/order-find-co-nf-id",
+  FIND_CO_PG_FORMA_ID: "/order-sales/v2/order-find-co-pg-forma-id",
+  FIND_CO_PROTOCOL_ID: "/order-sales/v2/order-find-co-protocol-id",
+  FIND_CO_SELLER_ID: "/order-sales/v2/order-find-co-seller-id",
+  FIND_CO_SUMMARY_ID: "/order-sales/v2/order-find-co-summary-id",
+  FIND_DASHBOARD_ID: "/order-sales/v2/order-find-dashboard-id",
+  FIND_EQUIPMENT_ID: "/order-sales/v2/order-find-equipment-id",
+} as const;
+
+// Endpoints de Order Update
+export const ORDER_UPD_ENDPOINTS = {
+  UPD_CUSTOMER_ID: "/order-upd/v2/order-upd-customer-id",
+  UPD_DISCOUNT_ID: "/order-upd/v2/order-upd-discount-id",
+  UPD_FRETE_ID: "/order-upd/v2/order-upd-frete-id",
+  UPD_NOTES_ID: "/order-upd/v2/order-upd-notes-id",
+  UPD_PG_METHOD_ID: "/order-upd/v2/order-upd-pg-method-id",
+  UPD_SELLER_ID: "/order-upd/v2/order-upd-seller-id",
+  UPD_STATUS_ID: "/order-upd/v2/order-upd-status-id",
+} as const;
+
 // Endpoints de Validação (Check if Exists)
 export const CHECK_ENDPOINTS = {
   STATUS: "/check", // Health check endpoint (GET)
-  EMAIL: "/check/v2/check-if-email-exists",
-  CPF: "/check/v2/check-if-cpf-exists",
-  CNPJ: "/check/v2/check-if-cnpj-exists",
-  TAXONOMY_SLUG: "/check/v2/check-if-taxonomy-slug-exists",
-  PRODUCT_NAME: "/check/v2/check-if-product-name-exists",
-  PRODUCT_SLUG: "/check/v2/check-if-product-slug-exists",
+  EMAIL: "/check/v3/check-if-email-exists",
+  CPF: "/check/v3/check-if-cpf-exists",
+  CNPJ: "/check/v3/check-if-cnpj-exists",
+  TAXONOMY_NAME: "/check/v3/check-if-taxonomy-name-exists",
+  TAXONOMY_SLUG: "/check/v3/check-if-taxonomy-slug-exists",
+  PRODUCT_NAME: "/check/v3/check-if-product-name-exists",
+  PRODUCT_SLUG: "/check/v3/check-if-product-slug-exists",
 } as const;
 
 // Configurações padrão do sistema
