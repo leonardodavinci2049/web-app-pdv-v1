@@ -24,6 +24,7 @@ export const CACHE_TAGS = {
   orderItem: (id: string) => `order-item-${id}`,
   orderReport: (id: string) => `order-report-${id}`,
   orderSale: (id: string) => `order-sale-${id}`,
+  productPdv: (id: string) => `product-pdv-${id}`,
 
   // Static tags
   products: "products",
@@ -37,6 +38,7 @@ export const CACHE_TAGS = {
   orderItems: "order-items",
   orderReports: "order-reports",
   orderSales: "order-sales",
+  productsPdv: "products-pdv",
   navigation: "navigation",
   banners: "banners",
   footer: "footer",

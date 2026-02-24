@@ -146,6 +146,12 @@ export const BRAND_ENDPOINTS = {
   DELETE: "/brand/v2/brand-delete",
 } as const;
 
+// Endpoints de Product PDV
+export const PRODUCT_PDV_ENDPOINTS = {
+  FIND_ALL: "/product-pdv/v2/product-pdv-find-all",
+  FIND_BY_ID: "/product-pdv/v2/product-pdv-find-id",
+} as const;
+
 // Endpoints de Carrier
 export const CARRIER_ENDPOINTS = {
   FIND_ALL: "/carrier/v2/carrier-find-all",
