@@ -7,9 +7,15 @@ export type {
   ProductPdvDetail,
   ProductPdvFindAllRequest,
   ProductPdvFindAllResponse,
+  ProductPdvFindByIdData,
   ProductPdvFindByIdRequest,
   ProductPdvFindByIdResponse,
+  ProductPdvFindSearchRequest,
+  ProductPdvFindSearchResponse,
   ProductPdvListItem,
+  ProductPdvRelatedCategory,
+  ProductPdvRelatedProduct,
+  ProductPdvSearchItem,
 } from "./types/product-pdv-types";
 
 export {

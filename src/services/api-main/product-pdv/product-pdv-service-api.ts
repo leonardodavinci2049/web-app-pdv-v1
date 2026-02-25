@@ -16,7 +16,12 @@ import type {
   ProductPdvFindAllResponse,
   ProductPdvFindByIdRequest,
   ProductPdvFindByIdResponse,
+  ProductPdvFindSearchRequest,
+  ProductPdvFindSearchResponse,
   ProductPdvListItem,
+  ProductPdvRelatedCategory,
+  ProductPdvRelatedProduct,
+  ProductPdvSearchItem,
 } from "./types/product-pdv-types";
 import {
   ProductPdvError,
@@ -25,6 +30,7 @@ import {
 import {
   ProductPdvFindAllSchema,
   ProductPdvFindByIdSchema,
+  ProductPdvFindSearchSchema,
 } from "./validation/product-pdv-schemas";
 
 const logger = createLogger("ProductPdvServiceApi");
@@ -107,6 +113,37 @@ export class ProductPdvServiceApi extends BaseApiService {
     }
   }
 
+  async findProductsPdvSearch(
+    params: Partial<ProductPdvFindSearchRequest> = {},
+  ): Promise<ProductPdvFindSearchResponse> {
+    try {
+      const validatedParams =
+        ProductPdvFindSearchSchema.partial().parse(params);
+      const requestBody = this.buildBasePayload({
+        pe_system_client_id: validatedParams.pe_system_client_id,
+        pe_organization_id: validatedParams.pe_organization_id,
+        pe_user_id: validatedParams.pe_user_id,
+        pe_user_name: validatedParams.pe_user_name,
+        pe_user_role: validatedParams.pe_user_role,
+        pe_person_id: validatedParams.pe_person_id,
+        pe_customer_id: validatedParams.pe_customer_id,
+        pe_search: validatedParams.pe_search ?? "",
+        pe_flag_stock: validatedParams.pe_flag_stock,
+        pe_limit: validatedParams.pe_limit,
+      });
+
+      const response = await this.post<ProductPdvFindSearchResponse>(
+        PRODUCT_PDV_ENDPOINTS.FIND_SEARCH,
+        requestBody,
+      );
+
+      return this.normalizeEmptyFindSearchResponse(response);
+    } catch (error) {
+      logger.error("Erro ao buscar produtos PDV por termo de pesquisa", error);
+      throw error;
+    }
+  }
+
   private normalizeEmptyFindAllResponse(
     response: ProductPdvFindAllResponse,
   ): ProductPdvFindAllResponse {
@@ -126,16 +163,53 @@ export class ProductPdvServiceApi extends BaseApiService {
     return response;
   }
 
+  private normalizeEmptyFindSearchResponse(
+    response: ProductPdvFindSearchResponse,
+  ): ProductPdvFindSearchResponse {
+    if (
+      response.statusCode === API_STATUS_CODES.NOT_FOUND ||
+      response.statusCode === API_STATUS_CODES.EMPTY_RESULT
+    ) {
+      return {
+        ...response,
+        statusCode: API_STATUS_CODES.SUCCESS,
+        quantity: 0,
+        data: {
+          "Product Pdv find Search": [],
+        },
+      };
+    }
+    return response;
+  }
+
   extractProductsPdv(
     response: ProductPdvFindAllResponse,
   ): ProductPdvListItem[] {
     return response.data?.["Product Pdv find All"] ?? [];
   }
 
+  extractProductsPdvSearch(
+    response: ProductPdvFindSearchResponse,
+  ): ProductPdvSearchItem[] {
+    return response.data?.["Product Pdv find Search"] ?? [];
+  }
+
   extractProductPdvById(
     response: ProductPdvFindByIdResponse,
   ): ProductPdvDetail | null {
     return response.data?.["Product Pdv find Id"]?.[0] ?? null;
+  }
+
+  extractRelatedCategories(
+    response: ProductPdvFindByIdResponse,
+  ): ProductPdvRelatedCategory[] {
+    return response.data?.["Related Categories"] ?? [];
+  }
+
+  extractRelatedProducts(
+    response: ProductPdvFindByIdResponse,
+  ): ProductPdvRelatedProduct[] {
+    return response.data?.["Related Products"] ?? [];
   }
 
   isValidProductPdvList(response: ProductPdvFindAllResponse): boolean {
@@ -152,6 +226,14 @@ export class ProductPdvServiceApi extends BaseApiService {
       response.data &&
       Array.isArray(response.data["Product Pdv find Id"]) &&
       response.data["Product Pdv find Id"].length > 0
+    );
+  }
+
+  isValidProductPdvSearchList(response: ProductPdvFindSearchResponse): boolean {
+    return (
+      isApiSuccess(response.statusCode) &&
+      response.data &&
+      Array.isArray(response.data["Product Pdv find Search"])
     );
   }
 }

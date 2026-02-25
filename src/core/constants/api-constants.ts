@@ -148,8 +148,9 @@ export const BRAND_ENDPOINTS = {
 
 // Endpoints de Product PDV
 export const PRODUCT_PDV_ENDPOINTS = {
-  FIND_ALL: "/product-pdv/v2/product-pdv-find-all",
-  FIND_BY_ID: "/product-pdv/v2/product-pdv-find-id",
+  FIND_ALL: "/product-pdv/v2/product-find-pdv-all",
+  FIND_BY_ID: "/product-pdv/v2/product-find-pdv-id",
+  FIND_SEARCH: "/product-pdv/v2/product-find-pdv-search",
 } as const;
 
 // Endpoints de Carrier

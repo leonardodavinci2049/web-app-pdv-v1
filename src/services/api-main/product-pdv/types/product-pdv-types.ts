@@ -40,10 +40,16 @@ export interface ProductPdvFindByIdRequest extends ProductPdvBaseRequest {
   pe_type_business?: number;
 }
 
+export interface ProductPdvFindSearchRequest extends ProductPdvBaseRequest {
+  pe_customer_id?: number;
+  pe_search?: string;
+  pe_flag_stock?: number;
+  pe_limit?: number;
+}
+
 // --- Entity Interfaces (campos retornados pela API) ---
 
 export interface ProductPdvListItem {
-  ID_TAXONOMY: number;
   ID_PRODUTO: number;
   SKU: number;
   PRODUTO: string;
@@ -51,19 +57,63 @@ export interface ProductPdvListItem {
   ETIQUETA: string;
   REF: string;
   MODELO: string;
+  ID_TIPO: number;
   TIPO: string;
+  ID_MARCA: number;
   MARCA: string;
   PATH_IMAGEM_MARCA: string;
+  ID_IMAGEM: number;
   PATH_IMAGEM: string;
+  PATH_PAGE: string;
   SLUG: string;
   ESTOQUE_LOJA: number;
   VL_ATACADO: string;
   VL_CORPORATIVO: string;
   VL_VAREJO: string;
+  TX_PRODUTO_LOJA: string;
   OURO: string;
   PRATA: string;
   BRONZE: string;
   DECONTO: string;
+  TEMPODEGARANTIA_MES: number;
+  TEMPODEGARANTIA_DIA: number;
+  DESCRICAO_VENDA: string | null;
+  IMPORTADO: number;
+  PROMOCAO: number;
+  LANCAMENTO: number;
+  CATEGORIAS: string;
+  DATADOCADASTRO: string;
+}
+
+export interface ProductPdvSearchItem {
+  ID_PRODUTO: number;
+  SKU: number;
+  PRODUTO: string;
+  ESTOQUE_LOJA: number;
+  TIPO_VALOR: string;
+  VALOR_PRODUTO: string;
+  VL_ATACADO: string;
+  VL_CORPORATIVO: string;
+  VL_VAREJO: string;
+  DESCRICAO_TAB: string;
+  ETIQUETA: string;
+  REF: string;
+  MODELO: string;
+  ID_TIPO: number;
+  TIPO: string;
+  ID_MARCA: number;
+  MARCA: string;
+  PATH_IMAGEM_MARCA: string;
+  ID_IMAGEM: number;
+  PATH_IMAGEM: string;
+  PATH_PAGE: string;
+  SLUG: string;
+  TX_PRODUTO_LOJA: string;
+  OURO: string;
+  PRATA: string;
+  BRONZE: string;
+  DECONTO: string;
+  TEMPODEGARANTIA_MES: number;
   TEMPODEGARANTIA_DIA: number;
   DESCRICAO_VENDA: string | null;
   IMPORTADO: number;
@@ -107,6 +157,35 @@ export interface ProductPdvDetail {
   IMPORTADO: number;
   DESCRICAO_VENDA: string | null;
   ANOTACOES: string | null;
+  DATADOCADASTRO: string;
+}
+
+export interface ProductPdvRelatedCategory {
+  ID_TAXONOMY: number;
+  PARENT_ID: number;
+  TAXONOMIA: string;
+  SLUG: string;
+  ORDEM: number;
+  LEVEL: number;
+}
+
+export interface ProductPdvRelatedProduct {
+  ID_TAXONOMY: number;
+  SKU: number;
+  PRODUTO: string;
+  DESCRICAO_TAB: string;
+  ETIQUETA: string;
+  REF: string;
+  MODELO: string;
+  PATH_IMAGEM: string;
+  SLUG: string;
+  ESTOQUE_LOJA: number;
+  VL_ATACADO: string;
+  VL_CORPORATIVO: string;
+  VL_VAREJO: string;
+  IMPORTADO: number;
+  PROMOCAO: number;
+  LANCAMENTO: number;
 }
 
 // --- Response Interfaces ---
@@ -115,8 +194,18 @@ export interface ProductPdvFindAllResponse extends ProductPdvBaseResponse {
   data: Record<string, ProductPdvListItem[]>;
 }
 
+export interface ProductPdvFindByIdData {
+  "Product Pdv find Id": ProductPdvDetail[];
+  "Related Categories": ProductPdvRelatedCategory[];
+  "Related Products": ProductPdvRelatedProduct[];
+}
+
 export interface ProductPdvFindByIdResponse extends ProductPdvBaseResponse {
-  data: Record<string, ProductPdvDetail[]>;
+  data: ProductPdvFindByIdData;
+}
+
+export interface ProductPdvFindSearchResponse extends ProductPdvBaseResponse {
+  data: Record<string, ProductPdvSearchItem[]>;
 }
 
 // --- Error Classes ---

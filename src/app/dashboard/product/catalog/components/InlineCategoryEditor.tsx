@@ -4,6 +4,10 @@ import { Edit2, Loader2, Plus, Tag, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
+  deleteTaxonomyRelationship,
+  fetchProductCategories,
+} from "@/app/actions/action-taxonomy";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -31,10 +35,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { ProductCategory } from "../../../../../types/types";
-import {
-  deleteTaxonomyRelationship,
-  fetchProductCategories,
-} from "@/app/actions/action-taxonomy";
 import { AddCategoryInlineDialog } from "./AddCategoryInlineDialog";
 
 interface InlineCategoryEditorProps {
