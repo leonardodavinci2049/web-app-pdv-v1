@@ -1,17 +1,13 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { z } from "zod";
-import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
+import { fetchProductDetails } from "@/app/dashboard/product/[id]/action/action-product details";
 import {
   ProductDetailsLayout,
   ProductDetailsLayoutSkeleton,
 } from "@/app/dashboard/product/[id]/components/ProductDetailsLayout";
+import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
 import { createLogger } from "@/lib/logger";
-import { ProductServiceApi } from "@/services/api/product/product-service-api";
-import type {
-  ProductDetail,
-  ProductRelatedTaxonomy,
-} from "@/services/api/product/types/product-types";
 
 const logger = createLogger("ProductDetailsPageV2");
 
@@ -29,38 +25,10 @@ interface ProductDetailsPageProps {
 
 // Server Component - Fetch data directly
 async function ProductDetailsPageContent({ productId }: { productId: number }) {
-  let product: ProductDetail | null = null;
-  let relatedTaxonomies: ProductRelatedTaxonomy[] = [];
-  let hasError = false;
+  const { success, product, relatedTaxonomies } =
+    await fetchProductDetails(productId);
 
-  try {
-    // Call the API service to get product details
-    const response = await ProductServiceApi.findProductById({
-      pe_type_business: 1, // Default business type
-      pe_id_produto: productId,
-      pe_slug_produto: "", // Search by ID, not slug
-    });
-
-    // Validate response
-    if (!ProductServiceApi.isValidProductDetailResponse(response)) {
-      hasError = true;
-      logger.error("Invalid product detail response:", response);
-    } else {
-      product = ProductServiceApi.extractProductDetail(response);
-      relatedTaxonomies = ProductServiceApi.extractRelatedTaxonomies(response);
-
-      if (!product) {
-        hasError = true;
-        logger.error("Product not found in response:", response);
-      }
-    }
-  } catch (error) {
-    hasError = true;
-    logger.error("Error fetching product details:", error);
-  }
-
-  // Show 404 if product not found
-  if (hasError || !product) {
+  if (!success || !product) {
     logger.warn(`Product not found or error occurred for ID: ${productId}`);
     notFound();
   }

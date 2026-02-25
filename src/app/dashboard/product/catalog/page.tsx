@@ -1,9 +1,8 @@
 import { Suspense } from "react";
-import { fetchProducts } from "@/app/actions/action-products";
 import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
-
 import { createLogger } from "@/lib/logger";
 import type { Product } from "@/types/types";
+import { fetchProducts } from "./action/action-products";
 import { ProductCatalogContent } from "./components/ProductCatalogContent";
 import { ProductGridSkeleton } from "./components/ProductSkeleton";
 

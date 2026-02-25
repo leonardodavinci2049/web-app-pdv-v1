@@ -3,9 +3,9 @@
 import { Check, Edit2, Package, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { updateProductStock } from "@/app/actions/action-product-updates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { updateProductStock } from "@/app/actions/action-product-updates";
 
 interface InlineStockEditorProps {
   productId: number;
