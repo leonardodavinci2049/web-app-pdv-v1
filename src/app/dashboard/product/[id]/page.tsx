@@ -5,7 +5,7 @@ import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-hea
 import {
   ProductDetailsLayout,
   ProductDetailsLayoutSkeleton,
-} from "@/components/dashboard/product/ProductDetails/ProductDetailsLayout";
+} from "@/app/dashboard/product/[id]/components/ProductDetailsLayout";
 import { createLogger } from "@/lib/logger";
 import { ProductServiceApi } from "@/services/api/product/product-service-api";
 import type {
