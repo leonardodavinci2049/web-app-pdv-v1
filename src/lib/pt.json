@@ -1,0 +1,761 @@
+{
+  "auth": {
+    "login": {
+      "title": "Faça login na sua conta",
+      "subtitle": "Digite seu email abaixo para fazer login",
+      "email": "Email",
+      "emailPlaceholder": "Digite seu email",
+      "password": "Senha",
+      "passwordPlaceholder": "Digite sua senha",
+      "forgotPassword": "Esqueceu sua senha?",
+      "loginButton": "Entrar",
+      "loggingIn": "Entrando...",
+      "loginWithGoogle": "Entrar com Google",
+      "orContinueWith": "Ou continue com",
+      "noAccount": "Não tem uma conta?",
+      "signUp": "Cadastre-se",
+      "rememberMe": "Lembrar de mim",
+      "errors": {
+        "required": "Este campo é obrigatório",
+        "invalidEmail": "Email inválido",
+        "invalidPassword": "Senha deve ter pelo menos 6 caracteres",
+        "invalidCredentials": "Email ou senha inválidos",
+        "serverError": "Erro interno do servidor"
+      }
+    },
+    "signup": {
+      "title": "Criar nova conta",
+      "subtitle": "Digite suas informações para criar uma conta",
+      "firstName": "Nome",
+      "firstNamePlaceholder": "Digite seu nome",
+      "lastName": "Sobrenome",
+      "lastNamePlaceholder": "Digite seu sobrenome",
+      "email": "Email",
+      "emailPlaceholder": "Digite seu email",
+      "password": "Senha",
+      "passwordPlaceholder": "Digite sua senha",
+      "confirmPassword": "Confirmar Senha",
+      "confirmPasswordPlaceholder": "Confirme sua senha",
+      "createAccount": "Criar Conta",
+      "hasAccount": "Já tem uma conta?",
+      "signIn": "Faça login",
+      "termsAndConditions": "Aceito os termos e condições",
+      "success": {
+        "title": "Cadastro Realizado com Sucesso!",
+        "subtitle": "Sua conta foi criada! Siga os próximos passos para ativar sua conta:",
+        "step1": {
+          "title": "Confirme seu Email",
+          "message": "Enviamos um link de confirmação para seu email. Clique no link para verificar seu endereço de email."
+        },
+        "step2": {
+          "title": "Aguarde a Aprovação",
+          "message": "Após confirmar seu email, nossa equipe analisará seu cadastro. Você receberá uma notificação por email quando sua conta for aprovada."
+        },
+        "emailNote": "Não esqueça de verificar sua caixa de spam caso não encontre o email de confirmação.",
+        "backToLogin": "Voltar para o Login",
+        "thankYou": "Obrigado por se cadastrar!"
+      },
+      "errors": {
+        "required": "Este campo é obrigatório",
+        "invalidEmail": "Email inválido",
+        "passwordTooShort": "Senha deve ter pelo menos 6 caracteres",
+        "passwordsDoNotMatch": "As senhas não coincidem",
+        "emailAlreadyExists": "Este email já está cadastrado",
+        "termsRequired": "Você deve aceitar os termos e condições"
+      }
+    },
+    "forgotPassword": {
+      "title": "Esqueceu sua senha?",
+      "subtitle": "Digite seu email para receber instruções de recuperação",
+      "email": "Email",
+      "submit": "Enviar instruções",
+      "sendInstructions": "Enviar instruções",
+      "backToLogin": "Voltar ao login",
+      "checkEmail": "Verifique seu email",
+      "emailSent": "Enviamos instruções de recuperação para seu email"
+    },
+    "resetPassword": {
+      "title": "Redefinir senha",
+      "subtitle": "Digite sua nova senha",
+      "newPassword": "Nova senha",
+      "confirmPassword": "Confirmar nova senha",
+      "resetButton": "Redefinir senha",
+      "success": "Senha redefinida com sucesso",
+      "errors": {
+        "invalidToken": "Link de recuperação inválido ou expirado",
+        "passwordsDoNotMatch": "As senhas não coincidem"
+      }
+    },
+    "logout": {
+      "title": "Fazer logout",
+      "message": "Você tem certeza que deseja sair?",
+      "confirm": "Sair",
+      "cancel": "Cancelar"
+    }
+  },
+  "dashboard": {
+    "navigation": {
+      "dashboard": "Dashboard",
+      "products": "Produtos",
+      "customers": "Clientes",
+      "orders": "Pedidos",
+      "users": "Usuários",
+      "settings": "Configurações",
+      "profile": "Perfil",
+      "logout": "Sair",
+      "categories": "Categorias",
+      "brands": "Marcas",
+      "suppliers": "Fornecedores",
+      "carriers": "Transportadoras",
+      "productEntry": "Entrada de Produtos",
+      "reports": "Relatórios",
+      "analytics": "Analytics"
+    },
+    "breadcrumb": {
+      "home": "Início",
+      "dashboard": "Dashboard",
+      "products": "Produtos",
+      "customers": "Clientes",
+      "orders": "Pedidos",
+      "users": "Usuários",
+      "settings": "Configurações",
+      "profile": "Perfil"
+    },
+    "common": {
+      "loading": "Carregando...",
+      "error": "Erro",
+      "success": "Sucesso",
+      "warning": "Atenção",
+      "info": "Informação",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "save": "Salvar",
+      "edit": "Editar",
+      "delete": "Excluir",
+      "add": "Adicionar",
+      "create": "Criar",
+      "update": "Atualizar",
+      "view": "Visualizar",
+      "search": "Pesquisar",
+      "filter": "Filtrar",
+      "clearFilters": "Limpar Filtros",
+      "export": "Exportar",
+      "import": "Importar",
+      "refresh": "Atualizar",
+      "back": "Voltar",
+      "next": "Próximo",
+      "previous": "Anterior",
+      "yes": "Sim",
+      "no": "Não",
+      "name": "Nome",
+      "description": "Descrição",
+      "status": "Status",
+      "date": "Data",
+      "actions": "Ações",
+      "total": "Total",
+      "noData": "Nenhum dado encontrado",
+      "selectAll": "Selecionar todos",
+      "clearSelection": "Limpar seleção"
+    },
+    "table": {
+      "rowsPerPage": "Linhas por página",
+      "of": "de",
+      "page": "Página",
+      "goToFirstPage": "Ir para primeira página",
+      "goToPreviousPage": "Ir para página anterior",
+      "goToNextPage": "Ir para próxima página",
+      "goToLastPage": "Ir para última página",
+      "sortAscending": "Ordenar crescente",
+      "sortDescending": "Ordenar decrescente",
+      "unsorted": "Não ordenado",
+      "filterColumn": "Filtrar coluna",
+      "hideColumn": "Ocultar coluna",
+      "showColumn": "Mostrar coluna"
+    },
+    "products": {
+      "title": "Produtos",
+      "addProduct": "Adicionar Produto",
+      "editProduct": "Editar Produto",
+      "deleteProduct": "Excluir Produto",
+      "productName": "Nome do Produto",
+      "productPrice": "Preço",
+      "productCategory": "Categoria",
+      "productStock": "Estoque",
+      "productDescription": "Descrição",
+      "productImage": "Imagem",
+      "inStock": "Em estoque",
+      "outOfStock": "Fora de estoque",
+      "lowStock": "Estoque baixo",
+      "imageError": "Erro ao carregar imagem",
+      "imageNotFound": "Imagem não encontrada",
+      "imageInvalidDomain": "Domínio de imagem não permitido",
+      "imageInvalidFormat": "Formato de imagem inválido",
+      "noImageAvailable": "Sem imagem disponível",
+      "search": {
+        "placeholder": "Buscar por nome ou SKU..."
+      },
+      "details": {
+        "title": "Detalhes do Produto",
+        "loading": "Carregando informações do produto...",
+        "notFound": "Produto não encontrado",
+        "errorLoading": "Erro ao carregar produto",
+        "tryAgain": "Tentar novamente",
+        "backToCatalog": "Voltar para o catálogo",
+        "breadcrumbCatalog": "Catálogo",
+        "breadcrumbDetails": "Detalhes",
+        "priceLabel": "Preço",
+        "stockLabel": "Estoque",
+        "categoryLabel": "Categoria",
+        "brandLabel": "Marca",
+        "referenceLabel": "Referência",
+        "modelLabel": "Modelo",
+        "descriptionLabel": "Descrição",
+        "productId": "ID do Produto",
+        "sku": "SKU",
+        "status": "Status",
+        "retailPrice": "Preço Varejo",
+        "wholesalePrice": "Preço Atacado",
+        "corporatePrice": "Preço Corporativo",
+        "availableStock": "Estoque Disponível",
+        "createdAt": "Data de Criação",
+        "updatedAt": "Última Atualização",
+        "basicInfo": "Informações Básicas",
+        "pricing": "Preços",
+        "inventory": "Estoque",
+        "metadata": "Metadados",
+        "active": "Ativo",
+        "inactive": "Inativo",
+        "actions": {
+          "edit": "Editar",
+          "delete": "Excluir",
+          "duplicate": "Duplicar"
+        },
+        "gallery": {
+          "title": "Galeria de Imagens",
+          "mainImage": "Imagem Principal",
+          "addImage": "Adicionar Imagem",
+          "uploadImages": "Enviar Imagens",
+          "dragDropHint": "Arraste e solte imagens aqui ou clique para selecionar",
+          "uploadSuccess": "{{count}} imagem(s) adicionada(s) com sucesso!",
+          "uploadError": "Erro ao fazer upload das imagens",
+          "deleteImage": "Excluir Imagem",
+          "deleteConfirm": "Tem certeza que deseja remover esta imagem?",
+          "deleteSuccess": "Imagem removida com sucesso!",
+          "deleteError": "Erro ao remover imagem",
+          "zoomHint": "Use ← → para navegar | ESC para fechar",
+          "imageCounter": "{{current}} de {{total}}",
+          "imageNotAvailable": "Imagem não disponível",
+          "uploading": "Enviando...",
+          "dropHere": "Soltar aqui"
+        },
+        "inlineEdit": {
+          "title": "Edição Inline",
+          "subtitle": "Edite informações do produto diretamente na página",
+          "demonstration": "Demonstração de Edição Inline",
+          "demonstrationDesc": "Esta é uma implementação de demonstração dos componentes de edição inline. Em uma aplicação real, as funções de salvamento fariam chamadas reais para a API.",
+          "basicInfoSection": "Informações Básicas",
+          "basicInfoDesc": "Clique no ícone de edição ao lado de cada campo para editar inline",
+          "pricingSection": "Preços",
+          "pricingDesc": "Edite os preços do produto diretamente",
+          "stockSection": "Estoque e Características",
+          "stockDesc": "Informações de estoque e características físicas",
+          "fields": {
+            "productName": "Nome do Produto",
+            "reference": "Referência",
+            "description": "Descrição",
+            "retailPrice": "Preço Varejo",
+            "wholesalePrice": "Preço Atacado",
+            "corporatePrice": "Preço Corporativo",
+            "stock": "Quantidade em Estoque",
+            "weight": "Peso"
+          },
+          "placeholders": {
+            "productName": "Digite o nome do produto",
+            "reference": "Digite a referência do produto",
+            "description": "Digite a descrição do produto",
+            "price": "Digite o preço",
+            "stock": "Digite a quantidade",
+            "weight": "Digite o peso"
+          },
+          "actions": {
+            "save": "Salvar",
+            "saving": "Salvando...",
+            "cancel": "Cancelar",
+            "edit": "Editar"
+          },
+          "messages": {
+            "saveSuccess": "{{field}} atualizado com sucesso!",
+            "saveError": "Erro ao salvar alterações"
+          },
+          "validation": {
+            "required": "Este campo é obrigatório",
+            "invalidNumber": "Valor deve ser um número válido",
+            "minValue": "Valor deve ser maior ou igual a {{min}}",
+            "maxValue": "Valor deve ser menor ou igual a {{max}}",
+            "positiveNumber": "Valor deve ser um número positivo"
+          },
+          "notInformed": "Não informado"
+        },
+        "shortDescription": {
+          "title": "Descrição Curta de Vendas",
+          "editButton": "Editar",
+          "saveButton": "Salvar",
+          "cancelButton": "Cancelar",
+          "placeholder": "Digite a descrição curta de vendas do produto...",
+          "empty": "Nenhuma descrição curta cadastrada. Clique em editar para adicionar.",
+          "updateSuccess": "Descrição curta atualizada com sucesso!",
+          "updateError": "Erro ao atualizar descrição curta",
+          "emptyError": "A descrição curta não pode estar vazia",
+          "maxLengthError": "A descrição não pode ter mais de {{max}} caracteres",
+          "charactersRemaining": "{{count}} caracteres restantes",
+          "overLimit": "{{over}} caracteres acima do limite"
+        },
+        "productName": {
+          "editButton": "Editar",
+          "saveButton": "Salvar",
+          "cancelButton": "Cancelar",
+          "placeholder": "Digite o nome do produto...",
+          "updateSuccess": "Nome do produto atualizado com sucesso!",
+          "updateError": "Erro ao atualizar nome do produto",
+          "emptyError": "O nome do produto não pode estar vazio",
+          "maxLengthError": "O nome não pode ter mais de {{max}} caracteres",
+          "charactersRemaining": "{{count}} caracteres restantes",
+          "overLimit": "{{over}} caracteres acima do limite",
+          "doubleClickHint": "Clique duas vezes para editar",
+          "keyboardHint": "Pressione Ctrl+Enter para salvar ou Esc para cancelar"
+        },
+        "categories": {
+          "add": "Adicionar Categoria",
+          "addDialog": {
+            "title": "Adicionar Categoria ao Produto",
+            "description": "Selecione uma categoria para adicionar ao produto",
+            "searchPlaceholder": "Pesquisar categorias...",
+            "noResults": "Nenhuma categoria encontrada",
+            "level": "Nível"
+          }
+        },
+        "type": {
+          "changeButton": "Alterar",
+          "changeDialog": {
+            "title": "Alterar Tipo do Produto",
+            "description": "Tipo atual: {{currentType}}. Selecione um novo tipo para o produto",
+            "searchPlaceholder": "Pesquisar tipos...",
+            "noResults": "Nenhum tipo encontrado",
+            "currentType": "Tipo atual",
+            "sameTypeSelected": "Este já é o tipo atual do produto",
+            "successMessage": "Tipo do produto atualizado com sucesso!",
+            "errorMessage": "Erro ao atualizar tipo do produto",
+            "loadError": "Erro ao carregar tipos"
+          }
+        },
+        "brand": {
+          "changeButton": "Alterar",
+          "changeDialog": {
+            "title": "Alterar Marca do Produto",
+            "description": "Marca atual: {{currentBrand}}. Selecione uma nova marca para o produto",
+            "searchPlaceholder": "Pesquisar marcas...",
+            "noResults": "Nenhuma marca encontrada",
+            "currentBrand": "Marca atual",
+            "sameBrandSelected": "Esta já é a marca atual do produto",
+            "successMessage": "Marca do produto atualizada com sucesso!",
+            "errorMessage": "Erro ao atualizar marca do produto",
+            "loadError": "Erro ao carregar marcas"
+          }
+        }
+      },
+      "filters": {
+        "title": "Filtros",
+        "category": "Categoria",
+        "subcategory": "Subcategoria",
+        "selectCategory": "Selecione uma categoria",
+        "selectCategoryFirst": "Selecione uma categoria primeiro",
+        "selectSubcategory": "Selecione uma subcategoria",
+        "allCategories": "Todas as Categorias",
+        "allSubcategories": "Todas as Subcategorias",
+        "activeFilters": "Filtros ativos",
+        "inStockOnly": "APENAS EM ESTOQUE",
+        "sortBy": "Ordenar por",
+        "showingResults": "Mostrando {{displayed}} de {{total}} produtos"
+      },
+      "new": {
+        "title": "Adicionar Novo Produto",
+        "subtitle": "Crie um novo produto para adicionar ao seu catálogo",
+        "sections": {
+          "basicInfo": "Informações Básicas",
+          "basicInfoDesc": "Dados principais do produto",
+          "description": "Descrição e Categorização",
+          "descriptionDesc": "Descrições e informações de categorização",
+          "pricing": "Preços",
+          "pricingDesc": "Valores de venda e controle de estoque",
+          "additional": "Informações Adicionais",
+          "additionalDesc": "Informações complementares sobre o produto",
+          "settings": "Configurações Adicionais",
+          "settingsDesc": "Configurações avançadas do produto"
+        },
+        "fields": {
+          "name": "Nome do Produto",
+          "slug": "Slug (URL)",
+          "reference": "Referência/Código",
+          "model": "Modelo",
+          "description": "Descrição",
+          "tags": "Etiquetas/Tags",
+          "brand": "Marca",
+          "retailPrice": "Preço de Venda (Varejo)",
+          "stock": "Estoque Inicial",
+          "businessType": "Tipo de Negócio",
+          "additionalInfo": "Informações Adicionais"
+        },
+        "placeholders": {
+          "name": "Digite o nome do produto",
+          "slug": "slug-do-produto",
+          "reference": "REF001",
+          "model": "Modelo XYZ",
+          "description": "Descreva o produto...",
+          "tags": "eletrônicos, smartphones",
+          "selectBrand": "Selecione uma marca",
+          "retailPrice": "0,00",
+          "stock": "0",
+          "additionalInfo": "Informações extras sobre o produto..."
+        },
+        "help": {
+          "name": "Nome que será exibido para o produto",
+          "slug": "URL amigável gerada automaticamente",
+          "reference": "Código de referência interno",
+          "model": "Modelo ou versão do produto",
+          "description": "Descrição detalhada do produto",
+          "tags": "Palavras-chave separadas por vírgula",
+          "brand": "Marca fabricante do produto",
+          "retailPrice": "Preço de venda ao consumidor final",
+          "stock": "Quantidade inicial em estoque",
+          "businessType": "Configuração do tipo de negócio",
+          "additionalInfo": "Informações complementares"
+        },
+        "buttons": {
+          "cancel": "Cancelar",
+          "create": "Criar Produto",
+          "creating": "Criando produto..."
+        },
+        "actions": {
+          "cancel": "Cancelar",
+          "create": "Criar Produto",
+          "creating": "Criando produto..."
+        }
+      },
+      "messages": {
+        "createdSuccess": "Produto criado com sucesso!",
+        "createFailed": "Falha ao criar produto",
+        "unexpectedError": "Erro inesperado ao criar produto"
+      },
+      "errors": {
+        "loadBrandsFailed": "Erro ao carregar marcas",
+        "nameRequired": "Nome do produto é obrigatório",
+        "slugRequired": "Slug é obrigatório",
+        "invalidSlug": "Slug deve conter apenas letras minúsculas, números e hífens",
+        "priceInvalid": "Preço deve ser um número válido",
+        "stockInvalid": "Estoque deve ser um número inteiro"
+      },
+      "validation": {
+        "nameMinLength": "Nome deve ter pelo menos 2 caracteres",
+        "nameMaxLength": "Nome não pode ter mais de 200 caracteres",
+        "slugMinLength": "Slug deve ter pelo menos 2 caracteres",
+        "slugMaxLength": "Slug não pode ter mais de 100 caracteres",
+        "slugFormat": "Slug deve conter apenas letras minúsculas, números e hífens",
+        "referenceMaxLength": "Referência não pode ter mais de 50 caracteres",
+        "modelMaxLength": "Modelo não pode ter mais de 100 caracteres",
+        "descriptionMaxLength": "Descrição não pode ter mais de 1000 caracteres",
+        "tagsMaxLength": "Etiquetas não podem ter mais de 200 caracteres",
+        "priceMin": "Preço deve ser maior ou igual a 0",
+        "stockMin": "Estoque deve ser maior ou igual a 0",
+        "additionalInfoMaxLength": "Informações adicionais não podem ter mais de 500 caracteres"
+      },
+      "catalog": {
+        "upload": {
+          "addImage": "Adicionar Imagem",
+          "clickOrDrag": "Clique ou arraste",
+          "success": "Imagem enviada com sucesso!",
+          "error": "Erro ao enviar imagem",
+          "invalidFileType": "Por favor, selecione apenas arquivos de imagem",
+          "fileTooLarge": "Arquivo muito grande. Limite: 10MB",
+          "ariaLabel": "Enviar imagem do produto"
+        }
+      }
+    },
+    "customers": {
+      "title": "Clientes",
+      "addCustomer": "Adicionar Cliente",
+      "editCustomer": "Editar Cliente",
+      "deleteCustomer": "Excluir Cliente",
+      "customerName": "Nome do Cliente",
+      "customerEmail": "Email",
+      "customerPhone": "Telefone",
+      "customerAddress": "Endereço",
+      "registrationDate": "Data de Cadastro",
+      "lastOrder": "Último Pedido",
+      "totalOrders": "Total de Pedidos"
+    },
+    "orders": {
+      "title": "Pedidos",
+      "orderNumber": "Número do Pedido",
+      "orderDate": "Data do Pedido",
+      "customer": "Cliente",
+      "amount": "Valor",
+      "status": "Status",
+      "pending": "Pendente",
+      "processing": "Processando",
+      "shipped": "Enviado",
+      "delivered": "Entregue",
+      "cancelled": "Cancelado",
+      "refunded": "Reembolsado"
+    },
+    "taxonomies": {
+      "title": "Taxonomias",
+      "subtitle": "Gerencie as categorias e classificações dos produtos",
+      "addTaxonomy": "Adicionar Taxonomia",
+      "editTaxonomy": "Editar Taxonomia",
+      "deleteTaxonomy": "Excluir Taxonomia",
+      "taxonomyName": "Nome da Taxonomia",
+      "taxonomySlug": "Slug",
+      "taxonomyParent": "Categoria Pai",
+      "taxonomyLevel": "Nível",
+      "taxonomyOrder": "Ordem",
+      "searchPlaceholder": "Buscar por nome ou ID...",
+      "searchByName": "Buscar por nome",
+      "searchById": "Buscar por ID",
+      "clearSearch": "Limpar busca",
+      "noResults": "Nenhuma taxonomia encontrada",
+      "loadingResults": "Carregando taxonomias...",
+      "errorLoading": "Erro ao carregar taxonomias",
+      "foundResults": "{{count}} taxonomia(s) encontrada(s)",
+      "columns": {
+        "id": "ID",
+        "name": "Nome",
+        "slug": "Slug",
+        "parent": "Categoria Pai",
+        "level": "Nível",
+        "order": "Ordem",
+        "actions": "Ações"
+      }
+    },
+    "category": {
+      "list": {
+        "title": "Categorias",
+        "subtitle": "Gerencie categorias de produtos",
+        "searchPlaceholder": "Buscar categoria...",
+        "searchByName": "Buscar por Nome",
+        "searchById": "Buscar por ID",
+        "buttonSearch": "Buscar",
+        "buttonClear": "Limpar",
+        "buttonLoadMore": "Carregar Mais",
+        "buttonDetail": "Detalhe",
+        "buttonDelete": "Excluir",
+        "sortBy": "Ordenar por",
+        "sortNameAsc": "Nome (A-Z)",
+        "sortNameDesc": "Nome (Z-A)",
+        "sortMostRecent": "Mais Recente",
+        "sortQuantityAsc": "QT Crescente",
+        "sortQuantityDesc": "QT Decrescente",
+        "filterStatus": "Status",
+        "statusAll": "Todos",
+        "statusActive": "Ativos",
+        "statusInactive": "Inativos",
+        "viewMode": "Visualização",
+        "viewModeGrid": "Visualização em grade",
+        "viewModeList": "Visualização em lista",
+        "emptyState": "Nenhuma categoria encontrada",
+        "emptyStateDescription": "Tente ajustar os filtros ou busca",
+        "loading": "Carregando...",
+        "errorLoading": "Erro ao carregar categorias",
+        "cardId": "ID",
+        "cardSlug": "Slug",
+        "cardParent": "Categoria Pai",
+        "cardLevel": "Nível",
+        "cardProducts": "Produtos",
+        "noImage": "Sem imagem",
+        "rootCategory": "Raiz",
+        "showing": "Mostrando {{displayed}} de {{total}} categorias",
+        "allLoaded": "Todas as categorias foram carregadas",
+        "activeFilters": "{{count}} filtro{{plural}} ativo{{plural}}",
+        "delete": {
+          "title": "Confirmar exclusão",
+          "description": "Tem certeza que deseja excluir a categoria \"{{name}}\"? Esta ação não pode ser desfeita.",
+          "confirmButton": "Excluir",
+          "cancelButton": "Cancelar",
+          "deleting": "Excluindo...",
+          "success": "Categoria excluída com sucesso!",
+          "error": "Erro ao excluir categoria"
+        }
+      },
+      "new": {
+        "title": "Nova Categoria",
+        "subtitle": "Criar uma nova categoria de produtos",
+        "breadcrumb": {
+          "dashboard": "Dashboard",
+          "categories": "Categorias",
+          "new": "Nova Categoria"
+        },
+        "sections": {
+          "basicInfo": "Informações Básicas",
+          "basicInfoDesc": "Dados principais da categoria",
+          "settings": "Configurações",
+          "settingsDesc": "Ordem e configurações visuais",
+          "seo": "SEO",
+          "seoDesc": "Otimização para motores de busca",
+          "notes": "Notas",
+          "notesDesc": "Informações adicionais"
+        },
+        "loading": "Criando categoria...",
+        "success": "Categoria criada com sucesso!",
+        "successRedirect": "Redirecionando...",
+        "backToList": "Voltar para lista"
+      },
+      "fields": {
+        "name": "Nome da Categoria",
+        "slug": "Slug (URL amigável)",
+        "parent": "Categoria Pai",
+        "level": "Nível",
+        "order": "Ordem",
+        "imagePath": "Caminho da Imagem",
+        "metaTitle": "Meta Title (SEO)",
+        "metaDescription": "Meta Description (SEO)",
+        "notes": "Anotações",
+        "status": "Status"
+      },
+      "placeholders": {
+        "name": "Ex: Eletrônicos",
+        "slug": "ex-eletronicos",
+        "selectParent": "Selecione a categoria pai",
+        "order": "1",
+        "imagePath": "/images/categories/electronics.jpg",
+        "metaTitle": "Eletrônicos e Tecnologia - Melhores Produtos",
+        "metaDescription": "Descubra nossa ampla linha de produtos eletrônicos",
+        "notes": "Informações adicionais sobre a categoria"
+      },
+      "help": {
+        "name": "Nome único e descritivo da categoria",
+        "slug": "Slug para URL amigável, use hífen para separar palavras",
+        "parent": "Selecione a categoria pai ou deixe vazio para categoria raiz",
+        "level": "Nível hierárquico (calculado automaticamente)",
+        "order": "Ordem de exibição na lista",
+        "imagePath": "Caminho relativo da imagem da categoria",
+        "metaTitle": "Máximo 60 caracteres para melhor exibição",
+        "metaDescription": "Máximo 160 caracteres para melhor exibição",
+        "notes": "Notas internas sobre a categoria",
+        "status": "Marque como inativo para ocultar a categoria"
+      },
+      "validation": {
+        "nameRequired": "Nome da categoria é obrigatório",
+        "nameMinLength": "Nome deve ter pelo menos 2 caracteres",
+        "nameMaxLength": "Nome não pode ter mais de 100 caracteres",
+        "slugRequired": "Slug é obrigatório",
+        "slugMinLength": "Slug deve ter pelo menos 2 caracteres",
+        "slugMaxLength": "Slug não pode ter mais de 100 caracteres",
+        "slugFormat": "Slug deve conter apenas letras, números e hífens",
+        "parentIdInvalid": "ID da categoria pai inválido",
+        "levelInvalid": "Nível deve estar entre 1 e 5",
+        "orderInvalid": "Ordem deve ser um número positivo",
+        "imagePathMaxLength": "Caminho da imagem não pode ter mais de 500 caracteres",
+        "metaTitleMaxLength": "Meta title não pode ter mais de 60 caracteres",
+        "metaDescriptionMaxLength": "Meta description não pode ter mais de 160 caracteres"
+      },
+      "status": {
+        "active": "Ativo",
+        "inactive": "Inativo"
+      },
+      "buttons": {
+        "save": "Salvar",
+        "saving": "Salvando...",
+        "create": "Criar Categoria",
+        "creating": "Criando...",
+        "cancel": "Cancelar",
+        "detail": "Detalhe",
+        "saveAll": "Salvar Tudo"
+      },
+      "errors": {
+        "nameRequired": "Nome da categoria é obrigatório",
+        "createFailed": "Falha ao criar categoria",
+        "updateFailed": "Falha ao atualizar categoria",
+        "unexpectedError": "Erro inesperado ao processar formulário",
+        "loadCategoriesFailed": "Erro ao carregar lista de categorias"
+      },
+      "messages": {
+        "createdSuccess": "Categoria criada com sucesso!",
+        "updatedSuccess": "Categoria atualizada com sucesso!"
+      },
+      "options": {
+        "rootCategory": "Categoria Raiz",
+        "loading": "Carregando opções..."
+      },
+      "overviews": {
+        "title": "Visão Geral das Categorias",
+        "subtitle": "Visualize a estrutura hierárquica de categorias de produtos"
+      },
+      "details": {
+        "title": "Detalhes da Categoria",
+        "subtitle": "Visualize e edite informações detalhadas da categoria",
+        "basicInfo": "Informações Básicas",
+        "media": "Mídia",
+        "seo": "SEO",
+        "notes": "Anotações"
+      },
+      "noParent": "Sem categoria pai"
+    }
+  },
+  "common": {
+    "language": "Idioma",
+    "theme": "Tema",
+    "welcome": "Bem-vindo",
+    "hello": "Olá, {{name}}!",
+    "version": "Versão",
+    "copyright": "Todos os direitos reservados",
+    "poweredBy": "Desenvolvido com",
+    "selectLanguage": "Selecionar idioma",
+    "portuguese": "Português",
+    "english": "Inglês",
+    "settings": {
+      "title": "Configurações",
+      "general": "Geral",
+      "appearance": "Aparência",
+      "notifications": "Notificações",
+      "privacy": "Privacidade",
+      "account": "Conta"
+    },
+    "notifications": {
+      "success": "Operação realizada com sucesso!",
+      "error": "Ocorreu um erro. Tente novamente.",
+      "warning": "Atenção! Verifique as informações.",
+      "info": "Informação importante.",
+      "saved": "Alterações salvas com sucesso!",
+      "deleted": "Item excluído com sucesso!",
+      "created": "Item criado com sucesso!",
+      "updated": "Item atualizado com sucesso!"
+    },
+    "assets": {
+      "entityType": {
+        "product": "Produto",
+        "profile": "Perfil",
+        "order": "Pedido",
+        "invoice": "Fatura",
+        "banner": "Banner",
+        "logo": "Logo",
+        "gallery": "Galeria",
+        "category": "Categoria",
+        "brand": "Marca",
+        "article": "Artigo",
+        "event": "Evento",
+        "document": "Documento",
+        "other": "Outro"
+      },
+      "fileType": {
+        "image": "Imagem",
+        "document": "Documento",
+        "spreadsheet": "Planilha"
+      },
+      "fileStatus": {
+        "active": "Ativo",
+        "processing": "Processando",
+        "archived": "Arquivado",
+        "deleted": "Excluído"
+      }
+    }
+  }
+}
