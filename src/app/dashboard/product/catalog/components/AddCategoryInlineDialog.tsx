@@ -3,6 +3,7 @@
 import { Search } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { createTaxonomyRelationship } from "@/app/actions/action-taxonomy";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,7 +15,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { TaxonomyData } from "@/services/api/taxonomy/types/taxonomy-types";
-import { createTaxonomyRelationship } from "@/app/actions/action-taxonomy";
 
 interface AddCategoryInlineDialogProps {
   productId: number;

@@ -26,45 +26,50 @@ product-pdv/
 - **Valida** todos os parâmetros de entrada com Zod
 - **Constrói** payload base com context IDs (app, store)
 - **Normaliza** respostas de API (NOT_FOUND/EMPTY_RESULT → SUCCESS com array vazio)
-- **Extrai** dados da estrutura de resposta da API (`extractProductsPdv`, `extractProductPdvById`)
-- **Valida** respostas da API (`isValidProductPdvList`, `isValidProductPdvDetail`)
+- **Extrai** dados da estrutura de resposta da API (`extractProductsPdv`, `extractProductPdvById`, `extractRelatedCategories`, `extractRelatedProducts`, `extractProductsPdvSearch`)
+- **Valida** respostas da API (`isValidProductPdvList`, `isValidProductPdvDetail`, `isValidProductPdvSearchList`)
 - **Lança** erros específicos (`ProductPdvError`, `ProductPdvNotFoundError`)
 - **Não usa cache** - apenas comunicação direta
 - **Exporta** instância singleton `productPdvServiceApi`
 
 ### 2. `product-pdv-cached-service.ts` (Camada de Cache - Apenas Leitura)
-- **Fornece** funções de leitura para Server Components (`getProductsPdv`, `getProductPdvById`)
+- **Fornece** funções de leitura para Server Components (`getProductsPdv`, `getProductPdvById`, `searchProductsPdv`)
 - **Usa** Next.js Cache com `cacheLife` e `cacheTag`
 - **Transforma** entidades API → DTOs UI via `transformers`
 - **Retorna** estruturas simplificadas (`UIProductPdv[]`, `UIProductPdv | undefined`)
 - **Trata erros** silenciosamente (return `[]` ou `undefined`)
 - **Usa** tags de cache para invalidação: `CACHE_TAGS.productsPdv`, `CACHE_TAGS.productPdv(id)`
-- **Guard check**: retorna `[]` imediatamente se `pe_system_client_id` não for fornecido em `getProductsPdv`
+- **Guard check**: retorna `[]` imediatamente se `pe_system_client_id` não for fornecido em `getProductsPdv` e `searchProductsPdv`
 - **Guard check**: retorna `undefined` imediatamente se `pe_system_client_id` não for fornecido em `getProductPdvById`
 
 ### 3. `types/product-pdv-types.ts`
 - Define interfaces base (`ProductPdvBaseRequest`, `ProductPdvBaseResponse`)
-- Define interfaces para **requests** (`ProductPdvFindAllRequest`, `ProductPdvFindByIdRequest`)
-- Define interfaces para **responses** (`ProductPdvFindAllResponse`, `ProductPdvFindByIdResponse`)
-- Define tipos para **entidades** API (`ProductPdvListItem`, `ProductPdvDetail`)
+- Define interfaces para **requests** (`ProductPdvFindAllRequest`, `ProductPdvFindByIdRequest`, `ProductPdvFindSearchRequest`)
+- Define interfaces para **responses** (`ProductPdvFindAllResponse`, `ProductPdvFindByIdResponse`, `ProductPdvFindSearchResponse`)
+- Define tipo para **dados tipados do findById** (`ProductPdvFindByIdData`) com 3 result sets
+- Define tipos para **entidades** API (`ProductPdvListItem`, `ProductPdvDetail`, `ProductPdvSearchItem`)
+- Define tipos para **entidades relacionadas** (`ProductPdvRelatedCategory`, `ProductPdvRelatedProduct`)
 - Define classes de erro customizadas (`ProductPdvError`, `ProductPdvNotFoundError`, `ProductPdvValidationError`)
 
 ### 4. `validation/product-pdv-schemas.ts`
 - **Valida** entrada de dados com Zod
-- Exporta tipos inferidos (`ProductPdvFindAllInput`, `ProductPdvFindByIdInput`)
+- Exporta tipos inferidos (`ProductPdvFindAllInput`, `ProductPdvFindByIdInput`, `ProductPdvFindSearchInput`)
 - Define constraints específicas da API (max length, min values, int)
 - Parâmetros de contexto são `.optional()` nos schemas
 
 ### 5. `transformers/transformers.ts`
 - Define interface `UIProductPdv` para uso no front-end
-- **Converte** entidades da API (`ProductPdvListItem`, `ProductPdvDetail`) → DTOs UI (`UIProductPdv`)
+- Define interface `UIProductPdvRelatedCategory` para categorias relacionadas
+- Define interface `UIProductPdvRelatedProduct` para produtos relacionados
+- **Converte** entidades da API (`ProductPdvListItem`, `ProductPdvDetail`, `ProductPdvSearchItem`) → DTOs UI (`UIProductPdv`)
+- **Converte** entidades relacionadas (`ProductPdvRelatedCategory`, `ProductPdvRelatedProduct`) → DTOs UI
 - **Normaliza** tipos (ex: `IMPORTADO: number` → `imported: boolean`, `PROMOCAO` → `promotion`)
 - **Handle** campos opcionais/null
-- Funções: `transformProductPdvListItem`, `transformProductPdvDetail`, `transformProductPdvList`, `transformProductPdvDetailList`, `transformProductPdv`
+- Funções: `transformProductPdvListItem`, `transformProductPdvDetail`, `transformProductPdvSearchItem`, `transformProductPdvList`, `transformProductPdvDetailList`, `transformProductPdvSearchList`, `transformProductPdv`, `transformRelatedCategory`, `transformRelatedCategories`, `transformRelatedProduct`, `transformRelatedProducts`
 
 ### 6. `index.ts` (Exportações Públicas)
 - Exporta `ProductPdvServiceApi` classe e instância singleton
-- Exporta todos os tipos de `product-pdv-types.ts` (requests, responses, entities, errors)
+- Exporta todos os tipos de `product-pdv-types.ts` (requests, responses, entities, related entities, errors)
 - **Nota**: Funções do `product-pdv-cached-service.ts` devem ser importadas diretamente do arquivo
 
 ## Padrões de Código
@@ -96,6 +101,8 @@ pe_column_id: number         // Coluna para ordenação
 pe_order_id: number          // Tipo de ordenação (1=ASC, 2=DESC)
 pe_product_id: number        // ID do produto
 pe_type_business: number     // Tipo de negócio
+pe_customer_id: number       // ID do cliente
+pe_limit: number             // Limite de registros retornados
 ```
 
 ### Estrutura de Resposta da API
@@ -119,7 +126,22 @@ pe_type_business: number     // Tipo de negócio
   message: string,
   recordId: string,
   data: {
-    "Product Pdv find Id": ProductPdvDetail[]
+    "Product Pdv find Id": ProductPdvDetail[],
+    "Related Categories": ProductPdvRelatedCategory[],
+    "Related Products": ProductPdvRelatedProduct[]
+  },
+  quantity: number,
+  errorId: number,
+  info1?: string
+}
+
+// FindSearch Response
+{
+  statusCode: number,
+  message: string,
+  recordId: string,
+  data: {
+    "Product Pdv find Search": ProductPdvSearchItem[]
   },
   quantity: number,
   errorId: number,
@@ -143,7 +165,8 @@ cacheTag(CACHE_TAGS.productPdv(String(id)), CACHE_TAGS.productsPdv)
 ### Endpoints
 ```typescript
 PRODUCT_PDV_ENDPOINTS = {
-  FIND_ALL: "/product-pdv/v2/product-pdv-find-all",
-  FIND_BY_ID: "/product-pdv/v2/product-pdv-find-id",
+  FIND_ALL: "/product-pdv/v2/product-find-pdv-all",
+  FIND_BY_ID: "/product-pdv/v2/product-find-pdv-id",
+  FIND_SEARCH: "/product-pdv/v2/product-find-pdv-search",
 }
 ```

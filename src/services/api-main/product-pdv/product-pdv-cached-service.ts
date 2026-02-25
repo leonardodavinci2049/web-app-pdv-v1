@@ -8,6 +8,7 @@ import { productPdvServiceApi } from "./product-pdv-service-api";
 import {
   transformProductPdv,
   transformProductPdvList,
+  transformProductPdvSearchList,
   type UIProductPdv,
 } from "./transformers/transformers";
 
@@ -110,5 +111,49 @@ export async function getProductPdvById(
   } catch (error) {
     logger.error(`Erro ao buscar produto PDV por ID ${id}:`, error);
     return undefined;
+  }
+}
+
+export async function searchProductsPdv(
+  params: {
+    search?: string;
+    customerId?: number;
+    flagStock?: number;
+    limit?: number;
+    pe_system_client_id?: number;
+    pe_organization_id?: string;
+    pe_user_id?: string;
+    pe_user_name?: string;
+    pe_user_role?: string;
+    pe_person_id?: number;
+  } = {},
+): Promise<UIProductPdv[]> {
+  "use cache";
+  cacheLife("seconds");
+  cacheTag(CACHE_TAGS.productsPdv);
+
+  if (!params.pe_system_client_id) {
+    return [];
+  }
+
+  try {
+    const response = await productPdvServiceApi.findProductsPdvSearch({
+      pe_search: params.search,
+      pe_customer_id: params.customerId,
+      pe_flag_stock: params.flagStock,
+      pe_limit: params.limit,
+      pe_system_client_id: params.pe_system_client_id,
+      pe_organization_id: params.pe_organization_id,
+      pe_user_id: params.pe_user_id,
+      pe_user_name: params.pe_user_name,
+      pe_user_role: params.pe_user_role,
+      pe_person_id: params.pe_person_id,
+    });
+
+    const products = productPdvServiceApi.extractProductsPdvSearch(response);
+    return transformProductPdvSearchList(products);
+  } catch (error) {
+    logger.error("Erro ao buscar produtos PDV por termo de pesquisa:", error);
+    return [];
   }
 }
