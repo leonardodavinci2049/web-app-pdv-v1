@@ -4,9 +4,9 @@ import { Check, Edit2, Type, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-import { updateProductName } from "@/app/actions/action-product-updates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { updateProductName } from "@/app/actions/action-product-updates";
 
 interface InlineNameEditorProps {
   productId: number;
