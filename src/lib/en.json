@@ -1,0 +1,562 @@
+{
+  "auth": {
+    "login": {
+      "title": "Login to your account",
+      "subtitle": "Enter your email below to login to your account",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot your password?",
+      "loginButton": "Login",
+      "loggingIn": "Logging in...",
+      "loginWithGoogle": "Login with Google",
+      "orContinueWith": "Or continue with",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "rememberMe": "Remember me",
+      "errors": {
+        "required": "This field is required",
+        "invalidEmail": "Invalid email",
+        "invalidPassword": "Password must be at least 6 characters",
+        "invalidCredentials": "Invalid email or password",
+        "serverError": "Internal server error"
+      }
+    },
+    "signup": {
+      "title": "Create new account",
+      "subtitle": "Enter your information to create an account",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "createAccount": "Create Account",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "termsAndConditions": "I accept the terms and conditions",
+      "success": {
+        "title": "Registration Successful!",
+        "subtitle": "Your account has been created! Follow the next steps to activate your account:",
+        "step1": {
+          "title": "Confirm your Email",
+          "message": "We sent a confirmation link to your email. Click the link to verify your email address."
+        },
+        "step2": {
+          "title": "Wait for Approval",
+          "message": "After confirming your email, our team will review your registration. You will receive an email notification when your account is approved."
+        },
+        "emailNote": "Don't forget to check your spam folder if you can't find the confirmation email.",
+        "backToLogin": "Back to Login",
+        "thankYou": "Thank you for registering!"
+      },
+      "errors": {
+        "required": "This field is required",
+        "invalidEmail": "Invalid email",
+        "passwordTooShort": "Password must be at least 6 characters",
+        "passwordsDoNotMatch": "Passwords do not match",
+        "emailAlreadyExists": "This email is already registered",
+        "termsRequired": "You must accept the terms and conditions"
+      }
+    },
+    "forgotPassword": {
+      "title": "Forgot your password?",
+      "subtitle": "Enter your email to receive recovery instructions",
+      "email": "Email",
+      "sendInstructions": "Send instructions",
+      "backToLogin": "Back to login",
+      "checkEmail": "Check your email",
+      "emailSent": "We sent recovery instructions to your email"
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "subtitle": "Enter your new password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "resetButton": "Reset password",
+      "success": "Password reset successfully",
+      "errors": {
+        "invalidToken": "Invalid or expired recovery link",
+        "passwordsDoNotMatch": "Passwords do not match"
+      }
+    },
+    "logout": {
+      "title": "Logout",
+      "message": "Are you sure you want to logout?",
+      "confirm": "Logout",
+      "cancel": "Cancel"
+    }
+  },
+  "dashboard": {
+    "navigation": {
+      "dashboard": "Dashboard",
+      "products": "Products",
+      "customers": "Customers",
+      "orders": "Orders",
+      "users": "Users",
+      "settings": "Settings",
+      "profile": "Profile",
+      "logout": "Logout",
+      "categories": "Categories",
+      "brands": "Brands",
+      "suppliers": "Suppliers",
+      "carriers": "Carriers",
+      "productEntry": "Product Entry",
+      "reports": "Reports",
+      "analytics": "Analytics"
+    },
+    "breadcrumb": {
+      "home": "Home",
+      "dashboard": "Dashboard",
+      "products": "Products",
+      "customers": "Customers",
+      "orders": "Orders",
+      "users": "Users",
+      "settings": "Settings",
+      "profile": "Profile"
+    },
+    "common": {
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success",
+      "warning": "Warning",
+      "info": "Information",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "save": "Save",
+      "edit": "Edit",
+      "delete": "Delete",
+      "add": "Add",
+      "create": "Create",
+      "update": "Update",
+      "view": "View",
+      "search": "Search",
+      "filter": "Filter",
+      "export": "Export",
+      "import": "Import",
+      "refresh": "Refresh",
+      "back": "Back",
+      "next": "Next",
+      "previous": "Previous",
+      "yes": "Yes",
+      "no": "No",
+      "name": "Name",
+      "description": "Description",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions",
+      "total": "Total",
+      "noData": "No data found",
+      "selectAll": "Select all",
+      "clearSelection": "Clear selection"
+    },
+    "table": {
+      "rowsPerPage": "Rows per page",
+      "of": "of",
+      "page": "Page",
+      "goToFirstPage": "Go to first page",
+      "goToPreviousPage": "Go to previous page",
+      "goToNextPage": "Go to next page",
+      "goToLastPage": "Go to last page",
+      "sortAscending": "Sort ascending",
+      "sortDescending": "Sort descending",
+      "unsorted": "Unsorted",
+      "filterColumn": "Filter column",
+      "hideColumn": "Hide column",
+      "showColumn": "Show column"
+    },
+    "products": {
+      "title": "Products",
+      "addProduct": "Add Product",
+      "editProduct": "Edit Product",
+      "deleteProduct": "Delete Product",
+      "productName": "Product Name",
+      "productPrice": "Price",
+      "productCategory": "Category",
+      "productStock": "Stock",
+      "productDescription": "Description",
+      "productImage": "Image",
+      "inStock": "In stock",
+      "outOfStock": "Out of stock",
+      "lowStock": "Low stock",
+      "details": {
+        "title": "Product Details",
+        "loading": "Loading product information...",
+        "notFound": "Product not found",
+        "errorLoading": "Error loading product",
+        "tryAgain": "Try again",
+        "backToCatalog": "Back to catalog",
+        "breadcrumbCatalog": "Catalog",
+        "breadcrumbDetails": "Details",
+        "priceLabel": "Price",
+        "stockLabel": "Stock",
+        "categoryLabel": "Category",
+        "brandLabel": "Brand",
+        "referenceLabel": "Reference",
+        "modelLabel": "Model",
+        "descriptionLabel": "Description",
+        "productId": "Product ID",
+        "sku": "SKU",
+        "status": "Status",
+        "retailPrice": "Retail Price",
+        "wholesalePrice": "Wholesale Price",
+        "corporatePrice": "Corporate Price",
+        "availableStock": "Available Stock",
+        "createdAt": "Created At",
+        "updatedAt": "Last Updated",
+        "basicInfo": "Basic Information",
+        "pricing": "Pricing",
+        "inventory": "Inventory",
+        "metadata": "Metadata",
+        "active": "Active",
+        "inactive": "Inactive",
+        "actions": {
+          "edit": "Edit",
+          "delete": "Delete",
+          "duplicate": "Duplicate"
+        },
+        "gallery": {
+          "title": "Image Gallery",
+          "mainImage": "Main Image",
+          "addImage": "Add Image",
+          "uploadImages": "Upload Images",
+          "dragDropHint": "Drag and drop images here or click to select",
+          "uploadSuccess": "{{count}} image(s) added successfully!",
+          "uploadError": "Error uploading images",
+          "deleteImage": "Delete Image",
+          "deleteConfirm": "Are you sure you want to remove this image?",
+          "deleteSuccess": "Image removed successfully!",
+          "deleteError": "Error removing image",
+          "zoomHint": "Use ← → to navigate | ESC to close",
+          "imageCounter": "{{current}} of {{total}}",
+          "imageNotAvailable": "Image not available",
+          "uploading": "Uploading...",
+          "dropHere": "Drop here"
+        },
+        "inlineEdit": {
+          "title": "Inline Editing",
+          "subtitle": "Edit product information directly on the page",
+          "demonstration": "Inline Editing Demonstration",
+          "demonstrationDesc": "This is a demonstration implementation of inline editing components. In a real application, save functions would make actual API calls.",
+          "basicInfoSection": "Basic Information",
+          "basicInfoDesc": "Click the edit icon next to each field to edit inline",
+          "pricingSection": "Pricing",
+          "pricingDesc": "Edit product prices directly",
+          "stockSection": "Stock and Characteristics",
+          "stockDesc": "Stock information and physical characteristics",
+          "fields": {
+            "productName": "Product Name",
+            "reference": "Reference",
+            "description": "Description",
+            "retailPrice": "Retail Price",
+            "wholesalePrice": "Wholesale Price",
+            "corporatePrice": "Corporate Price",
+            "stock": "Stock Quantity",
+            "weight": "Weight"
+          },
+          "placeholders": {
+            "productName": "Enter product name",
+            "reference": "Enter product reference",
+            "description": "Enter product description",
+            "price": "Enter price",
+            "stock": "Enter quantity",
+            "weight": "Enter weight"
+          },
+          "actions": {
+            "save": "Save",
+            "saving": "Saving...",
+            "cancel": "Cancel",
+            "edit": "Edit"
+          },
+          "messages": {
+            "saveSuccess": "{{field}} updated successfully!",
+            "saveError": "Error saving changes"
+          },
+          "validation": {
+            "required": "This field is required",
+            "invalidNumber": "Value must be a valid number",
+            "minValue": "Value must be greater than or equal to {{min}}",
+            "maxValue": "Value must be less than or equal to {{max}}",
+            "positiveNumber": "Value must be a positive number"
+          },
+          "notInformed": "Not informed"
+        },
+        "shortDescription": {
+          "title": "Short Sales Description",
+          "editButton": "Edit",
+          "saveButton": "Save",
+          "cancelButton": "Cancel",
+          "placeholder": "Enter product short sales description...",
+          "empty": "No short description registered. Click edit to add.",
+          "updateSuccess": "Short description updated successfully!",
+          "updateError": "Error updating short description",
+          "emptyError": "Short description cannot be empty",
+          "maxLengthError": "Description cannot exceed {{max}} characters",
+          "charactersRemaining": "{{count}} characters remaining",
+          "overLimit": "{{over}} characters over limit"
+        },
+        "productName": {
+          "editButton": "Edit",
+          "saveButton": "Save",
+          "cancelButton": "Cancel",
+          "placeholder": "Enter product name...",
+          "updateSuccess": "Product name updated successfully!",
+          "updateError": "Error updating product name",
+          "emptyError": "Product name cannot be empty",
+          "maxLengthError": "Name cannot exceed {{max}} characters",
+          "charactersRemaining": "{{count}} characters remaining",
+          "overLimit": "{{over}} characters over limit",
+          "doubleClickHint": "Double-click to edit",
+          "keyboardHint": "Press Ctrl+Enter to save or Esc to cancel"
+        },
+        "categories": {
+          "add": "Add Category",
+          "addDialog": {
+            "title": "Add Category to Product",
+            "description": "Select a category to add to the product",
+            "searchPlaceholder": "Search categories...",
+            "noResults": "No categories found",
+            "level": "Level"
+          }
+        },
+        "type": {
+          "changeButton": "Change",
+          "changeDialog": {
+            "title": "Change Product Type",
+            "description": "Current type: {{currentType}}. Select a new type for the product",
+            "searchPlaceholder": "Search types...",
+            "noResults": "No types found",
+            "currentType": "Current type",
+            "sameTypeSelected": "This is already the current product type",
+            "successMessage": "Product type updated successfully!",
+            "errorMessage": "Error updating product type",
+            "loadError": "Error loading types"
+          }
+        },
+        "brand": {
+          "changeButton": "Change",
+          "changeDialog": {
+            "title": "Change Product Brand",
+            "description": "Current brand: {{currentBrand}}. Select a new brand for the product",
+            "searchPlaceholder": "Search brands...",
+            "noResults": "No brands found",
+            "currentBrand": "Current brand",
+            "sameBrandSelected": "This is already the current product brand",
+            "successMessage": "Product brand updated successfully!",
+            "errorMessage": "Error updating product brand",
+            "loadError": "Error loading brands"
+          }
+        }
+      },
+      "catalog": {
+        "upload": {
+          "addImage": "Add Image",
+          "clickOrDrag": "Click or drag",
+          "success": "Image uploaded successfully!",
+          "error": "Error uploading image",
+          "invalidFileType": "Please select only image files",
+          "fileTooLarge": "File too large. Limit: 10MB",
+          "ariaLabel": "Upload product image"
+        }
+      }
+    },
+    "customers": {
+      "title": "Customers",
+      "addCustomer": "Add Customer",
+      "editCustomer": "Edit Customer",
+      "deleteCustomer": "Delete Customer",
+      "customerName": "Customer Name",
+      "customerEmail": "Email",
+      "customerPhone": "Phone",
+      "customerAddress": "Address",
+      "registrationDate": "Registration Date",
+      "lastOrder": "Last Order",
+      "totalOrders": "Total Orders"
+    },
+    "orders": {
+      "title": "Orders",
+      "orderNumber": "Order Number",
+      "orderDate": "Order Date",
+      "customer": "Customer",
+      "amount": "Amount",
+      "status": "Status",
+      "pending": "Pending",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
+    },
+    "category": {
+      "list": {
+        "title": "Categories",
+        "subtitle": "Manage product categories",
+        "searchPlaceholder": "Search category...",
+        "searchByName": "Search by Name",
+        "searchById": "Search by ID",
+        "buttonSearch": "Search",
+        "buttonClear": "Clear",
+        "buttonLoadMore": "Load More",
+        "buttonDetail": "Detail",
+        "buttonDelete": "Delete",
+        "sortBy": "Sort by",
+        "sortNameAsc": "Name (A-Z)",
+        "sortNameDesc": "Name (Z-A)",
+        "sortMostRecent": "Most Recent",
+        "sortQuantityAsc": "QT Ascending",
+        "sortQuantityDesc": "QT Descending",
+        "filterStatus": "Status",
+        "statusAll": "All",
+        "statusActive": "Active",
+        "statusInactive": "Inactive",
+        "viewMode": "View",
+        "viewModeGrid": "Grid view",
+        "viewModeList": "List view",
+        "emptyState": "No categories found",
+        "emptyStateDescription": "Try adjusting filters or search",
+        "loading": "Loading...",
+        "errorLoading": "Error loading categories",
+        "cardId": "ID",
+        "cardSlug": "Slug",
+        "cardParent": "Parent Category",
+        "cardLevel": "Level",
+        "cardProducts": "Products",
+        "noImage": "No image",
+        "rootCategory": "Root",
+        "showing": "Showing {{displayed}} of {{total}} categories",
+        "allLoaded": "All categories have been loaded",
+        "activeFilters": "{{count}} filter{{plural}} active{{plural}}",
+        "delete": {
+          "title": "Confirm deletion",
+          "description": "Are you sure you want to delete the category \"{{name}}\"? This action cannot be undone.",
+          "confirmButton": "Delete",
+          "cancelButton": "Cancel",
+          "deleting": "Deleting...",
+          "success": "Category deleted successfully!",
+          "error": "Error deleting category"
+        }
+      },
+      "fields": {
+        "name": "Category Name",
+        "slug": "Slug (URL-friendly)",
+        "parent": "Parent Category",
+        "order": "Order",
+        "imagePath": "Image Path",
+        "metaTitle": "Meta Title (SEO)",
+        "metaDescription": "Meta Description (SEO)",
+        "notes": "Notes",
+        "status": "Status"
+      },
+      "placeholders": {
+        "name": "Ex: Electronics",
+        "slug": "ex-electronics",
+        "imagePath": "/images/categories/electronics.jpg",
+        "metaTitle": "Electronics and Technology - Best Products",
+        "metaDescription": "Discover our wide range of electronic products",
+        "notes": "Additional information about the category"
+      },
+      "help": {
+        "name": "Unique and descriptive category name",
+        "slug": "URL-friendly slug, use hyphens to separate words",
+        "parent": "Parent category ID (0 for root category)",
+        "order": "Display order in the list",
+        "imagePath": "Relative path to the category image",
+        "metaTitle": "Maximum 60 characters for best display",
+        "metaDescription": "Maximum 160 characters for best display",
+        "notes": "Internal notes about the category",
+        "status": "Mark as inactive to hide the category"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "buttons": {
+        "save": "Save",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "detail": "Detail",
+        "saveAll": "Save All"
+      },
+      "errors": {
+        "nameRequired": "Category name is required",
+        "updateFailed": "Failed to update category",
+        "unexpectedError": "Unexpected error while processing form"
+      },
+      "messages": {
+        "updatedSuccess": "Category updated successfully!"
+      },
+      "details": {
+        "title": "Category Details",
+        "subtitle": "View and edit detailed category information",
+        "basicInfo": "Basic Information",
+        "media": "Media",
+        "seo": "SEO",
+        "notes": "Notes"
+      },
+      "noParent": "No parent category"
+    }
+  },
+  "common": {
+    "language": "Language",
+    "theme": "Theme",
+    "welcome": "Welcome",
+    "hello": "Hello, {{name}}!",
+    "version": "Version",
+    "copyright": "All rights reserved",
+    "poweredBy": "Powered by",
+    "selectLanguage": "Select language",
+    "portuguese": "Portuguese",
+    "english": "English",
+    "settings": {
+      "title": "Settings",
+      "general": "General",
+      "appearance": "Appearance",
+      "notifications": "Notifications",
+      "privacy": "Privacy",
+      "account": "Account"
+    },
+    "notifications": {
+      "success": "Operation completed successfully!",
+      "error": "An error occurred. Please try again.",
+      "warning": "Warning! Please check the information.",
+      "info": "Important information.",
+      "saved": "Changes saved successfully!",
+      "deleted": "Item deleted successfully!",
+      "created": "Item created successfully!",
+      "updated": "Item updated successfully!"
+    },
+    "assets": {
+      "entityType": {
+        "product": "Product",
+        "profile": "Profile",
+        "order": "Order",
+        "invoice": "Invoice",
+        "banner": "Banner",
+        "logo": "Logo",
+        "gallery": "Gallery",
+        "category": "Category",
+        "brand": "Brand",
+        "article": "Article",
+        "event": "Event",
+        "document": "Document",
+        "other": "Other"
+      },
+      "fileType": {
+        "image": "Image",
+        "document": "Document",
+        "spreadsheet": "Spreadsheet"
+      },
+      "fileStatus": {
+        "active": "Active",
+        "processing": "Processing",
+        "archived": "Archived",
+        "deleted": "Deleted"
+      }
+    }
+  }
+}
