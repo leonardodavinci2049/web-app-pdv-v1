@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { z } from "zod";
-import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
 import {
   ProductDetailsLayout,
   ProductDetailsLayoutSkeleton,
 } from "@/app/dashboard/product/[id]/components/ProductDetailsLayout";
+import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
 import { createLogger } from "@/lib/logger";
 import { ProductServiceApi } from "@/services/api/product/product-service-api";
 import type {

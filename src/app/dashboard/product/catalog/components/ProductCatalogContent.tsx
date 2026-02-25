@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { fetchProductsWithFilters } from "@/app/actions/action-products";
 import { createLogger } from "@/lib/logger";
 import type { Category, FilterOptions, Product, ViewMode } from "@/types/types";
+import { fetchProductsWithFilters } from "../action/action-products";
 import { ProductFiltersImproved } from "./ProductFiltersImproved";
 import { ProductGrid } from "./ProductGrid";
 
