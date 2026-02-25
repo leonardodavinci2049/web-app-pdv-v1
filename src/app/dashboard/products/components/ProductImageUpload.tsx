@@ -5,7 +5,6 @@ import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { uploadProductImageAction } from "@/app/actions/action-product-images";
 
-
 interface ProductImageUploadProps {
   productId: string;
   productName: string;
@@ -63,9 +62,7 @@ export function ProductImageUpload({
             await onUploadSuccess();
           }
         } else {
-          toast.error(
-            result.error || "Erro ao enviar imagem",
-          );
+          toast.error(result.error || "Erro ao enviar imagem");
         }
       } catch (error) {
         console.error("Error uploading image:", error);

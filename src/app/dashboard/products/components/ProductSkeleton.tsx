@@ -68,7 +68,13 @@ export function ProductGridSkeleton({
   );
 
   return (
-    <div className={viewMode === "grid" ? "product-grid-fluid" : "space-y-4"}>
+    <div
+      className={
+        viewMode === "grid"
+          ? "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6"
+          : "space-y-4"
+      }
+    >
       {items.map((key) => (
         <ProductSkeleton key={key} viewMode={viewMode} />
       ))}
