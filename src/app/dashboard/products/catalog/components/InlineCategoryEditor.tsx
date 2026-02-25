@@ -34,7 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { ProductCategory } from "../../../../types/types";
+import type { ProductCategory } from "../../../../../types/types";
 import { AddCategoryInlineDialog } from "./AddCategoryInlineDialog";
 
 interface InlineCategoryEditorProps {

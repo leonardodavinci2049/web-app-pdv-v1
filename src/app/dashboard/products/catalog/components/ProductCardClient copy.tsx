@@ -5,11 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import type { Product } from "../../../../types/types";
+import type { Product } from "../../../../../types/types";
 import {
   createImageErrorHandler,
   getValidImageUrl,
-} from "../../../../utils/image-utils";
+} from "../../../../../utils/image-utils";
 import { ProductImageUpload } from "./ProductImageUpload";
 
 interface ProductCardClientProps {
