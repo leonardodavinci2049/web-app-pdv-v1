@@ -1,9 +1,9 @@
 import { Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type {
-  ProductDetail,
-  ProductRelatedTaxonomy,
-} from "@/services/api/product/types/product-types";
+  UIProductPdv,
+  UIProductPdvRelatedCategory,
+} from "@/services/api-main/product-pdv/transformers/transformers";
 import { ProductCategoriesCard } from "./ProductCategoriesCard";
 import { ProductNameEditor } from "./ProductNameEditor";
 import { ProductPricingCard } from "./ProductPricingCard";
@@ -11,8 +11,8 @@ import { ShortDescriptionEditor } from "./ShortDescriptionEditor";
 import { ProductStockCard } from "./tab-card-components/ProductStockCard";
 
 interface ProductInfoDisplayProps {
-  product: ProductDetail;
-  relatedTaxonomies: ProductRelatedTaxonomy[];
+  product: UIProductPdv;
+  relatedCategories: UIProductPdvRelatedCategory[];
   stockStatus: {
     label: string;
     variant: "default" | "destructive" | "secondary";
@@ -30,7 +30,7 @@ interface ProductInfoDisplayProps {
 
 export function ProductInfoDisplay({
   product,
-  relatedTaxonomies,
+  relatedCategories,
   stockStatus,
   retailPrice,
   wholesalePrice,
@@ -47,24 +47,8 @@ export function ProductInfoDisplay({
       {/* Product Header */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          {product.INATIVO === 1 ? (
-            <Badge
-              variant="destructive"
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Inativo
-            </Badge>
-          ) : (
-            <Badge
-              variant="default"
-              className="bg-green-600 hover:bg-green-700"
-            >
-              Ativo
-            </Badge>
-          )}
-
-          {/* Stock badge based on ESTOQUE_LOJA */}
-          {product.ESTOQUE_LOJA > 3 && (
+          {/* Stock badge based on storeStock */}
+          {product.storeStock > 3 && (
             <Badge
               variant="default"
               className="bg-green-600 hover:bg-green-700"
@@ -72,41 +56,24 @@ export function ProductInfoDisplay({
               Estoque
             </Badge>
           )}
-          {product.ESTOQUE_LOJA > 0 && product.ESTOQUE_LOJA < 2 && (
+          {product.storeStock > 0 && product.storeStock < 2 && (
             <Badge variant="secondary">Estoque Baixo</Badge>
           )}
-          {product.ESTOQUE_LOJA <= 0 && (
+          {product.storeStock <= 0 && (
             <Badge variant="destructive">Sem Estoque</Badge>
-          )}
-
-          {/* Online/Offline status */}
-          {product.FLAG_WEBSITE_OFF === 1 ? (
-            <Badge
-              variant="secondary"
-              className="bg-orange-600 hover:bg-orange-700 text-white dark:bg-orange-700 dark:hover:bg-orange-800"
-            >
-              Offline
-            </Badge>
-          ) : (
-            <Badge
-              variant="default"
-              className="bg-green-600 hover:bg-green-700"
-            >
-              Online
-            </Badge>
           )}
         </div>
 
         <div>
           <ProductNameEditor
-            productId={product.ID_PRODUTO}
-            initialName={product.PRODUTO}
+            productId={product.id}
+            initialName={product.name}
           />
-          {product.SKU && (
-            <p className="text-muted-foreground mt-1">SKU: {product.SKU}</p>
+          {product.sku && (
+            <p className="text-muted-foreground mt-1">SKU: {product.sku}</p>
           )}
-          {product.MODELO && (
-            <p className="text-muted-foreground">Modelo: {product.MODELO}</p>
+          {product.model && (
+            <p className="text-muted-foreground">Modelo: {product.model}</p>
           )}
         </div>
 
@@ -130,7 +97,7 @@ export function ProductInfoDisplay({
 
       {/* Pricing Card */}
       <ProductPricingCard
-        productId={product.ID_PRODUTO}
+        productId={product.id}
         retailPrice={retailPrice}
         wholesalePrice={wholesalePrice}
         corporatePrice={corporatePrice}
@@ -141,7 +108,7 @@ export function ProductInfoDisplay({
 
       {/* Stock Info Card */}
       <ProductStockCard
-        productId={product.ID_PRODUTO}
+        productId={product.id}
         stockLevel={stockLevel}
         isOutOfStock={isOutOfStock}
         isLowStock={isLowStock}
@@ -150,14 +117,14 @@ export function ProductInfoDisplay({
 
       {/* Categories Card */}
       <ProductCategoriesCard
-        relatedTaxonomies={relatedTaxonomies}
-        productId={product.ID_PRODUTO}
+        relatedCategories={relatedCategories}
+        productId={product.id}
       />
 
       {/* Short Description Editor - Inline editing for sales description */}
       <ShortDescriptionEditor
-        productId={product.ID_PRODUTO}
-        initialDescription={product.DESCRICAO_VENDA}
+        productId={product.id}
+        initialDescription={product.salesDescription ?? null}
       />
     </div>
   );

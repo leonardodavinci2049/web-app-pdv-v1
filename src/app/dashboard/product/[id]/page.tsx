@@ -1,13 +1,15 @@
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { z } from "zod";
-import { fetchProductDetails } from "@/app/dashboard/product/[id]/action/action-product details";
 import {
   ProductDetailsLayout,
   ProductDetailsLayoutSkeleton,
 } from "@/app/dashboard/product/[id]/components/ProductDetailsLayout";
 import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
 import { createLogger } from "@/lib/logger";
+import { getAuthContext } from "@/server/auth-context";
+import { getProductPdvById } from "@/services/api-main/product-pdv/product-pdv-cached-service";
 
 const logger = createLogger("ProductDetailsPageV2");
 
@@ -25,13 +27,20 @@ interface ProductDetailsPageProps {
 
 // Server Component - Fetch data directly
 async function ProductDetailsPageContent({ productId }: { productId: number }) {
-  const { success, product, relatedTaxonomies } =
-    await fetchProductDetails(productId);
+  await connection();
+  const { apiContext } = await getAuthContext();
 
-  if (!success || !product) {
+  const result = await getProductPdvById(productId, {
+    ...apiContext,
+    pe_type_business: 1,
+  });
+
+  if (!result) {
     logger.warn(`Product not found or error occurred for ID: ${productId}`);
     notFound();
   }
+
+  const { product, relatedCategories } = result;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -42,7 +51,7 @@ async function ProductDetailsPageContent({ productId }: { productId: number }) {
             <ProductDetailsLayout
               product={product}
               productId={productId}
-              relatedTaxonomies={relatedTaxonomies}
+              relatedCategories={relatedCategories}
             />
           </div>
         </div>

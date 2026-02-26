@@ -9,7 +9,9 @@ import {
   transformProductPdv,
   transformProductPdvList,
   transformProductPdvSearchList,
+  transformRelatedCategories,
   type UIProductPdv,
+  type UIProductPdvRelatedCategory,
 } from "./transformers/transformers";
 
 const logger = createLogger("product-pdv-cached-service");
@@ -81,7 +83,10 @@ export async function getProductPdvById(
     pe_person_id?: number;
     pe_type_business?: number;
   } = {},
-): Promise<UIProductPdv | undefined> {
+): Promise<
+  | { product: UIProductPdv; relatedCategories: UIProductPdvRelatedCategory[] }
+  | undefined
+> {
   "use cache";
   cacheLife("hours");
   cacheTag(CACHE_TAGS.productPdv(String(id)), CACHE_TAGS.productsPdv);
@@ -102,12 +107,21 @@ export async function getProductPdvById(
       pe_person_id: params.pe_person_id,
     });
 
-    const product = productPdvServiceApi.extractProductPdvById(response);
+    const productEntity = productPdvServiceApi.extractProductPdvById(response);
+    if (!productEntity) {
+      return undefined;
+    }
+
+    const product = transformProductPdv(productEntity);
     if (!product) {
       return undefined;
     }
 
-    return transformProductPdv(product) ?? undefined;
+    const categoriesEntities =
+      productPdvServiceApi.extractRelatedCategories(response);
+    const relatedCategories = transformRelatedCategories(categoriesEntities);
+
+    return { product, relatedCategories };
   } catch (error) {
     logger.error(`Erro ao buscar produto PDV por ID ${id}:`, error);
     return undefined;

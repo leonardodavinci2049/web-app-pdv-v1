@@ -8,12 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { ProductRelatedTaxonomy } from "@/services/api/product/types/product-types";
+import type { UIProductPdvRelatedCategory } from "@/services/api-main/product-pdv/transformers/transformers";
 import { AddCategoryDialog } from "./AddCategoryDialog";
 import { DeleteCategoryButton } from "./DeleteCategoryButton";
 
 interface ProductCategoriesCardProps {
-  relatedTaxonomies: ProductRelatedTaxonomy[];
+  relatedCategories: UIProductPdvRelatedCategory[];
   productId: number;
 }
 
@@ -25,11 +25,11 @@ interface ProductCategoriesCardProps {
  * Allows adding and deleting category relationships.
  */
 export function ProductCategoriesCard({
-  relatedTaxonomies,
+  relatedCategories,
   productId,
 }: ProductCategoriesCardProps) {
-  const hasTaxonomies = relatedTaxonomies.length > 0;
-  const existingCategoryIds = relatedTaxonomies.map((t) => t.ID_TAXONOMY);
+  const hasTaxonomies = relatedCategories.length > 0;
+  const existingCategoryIds = relatedCategories.map((t) => t.taxonomyId);
 
   return (
     <Card>
@@ -58,19 +58,19 @@ export function ProductCategoriesCard({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {relatedTaxonomies.map((taxonomy) => (
-                  <TableRow key={taxonomy.ID_TAXONOMY}>
+                {relatedCategories.map((category) => (
+                  <TableRow key={category.taxonomyId}>
                     <TableCell className="font-medium">
-                      {taxonomy.ID_TAXONOMY}
+                      {category.taxonomyId}
                     </TableCell>
-                    <TableCell>{taxonomy.TAXONOMIA}</TableCell>
+                    <TableCell>{category.name}</TableCell>
                     <TableCell className="text-center">
-                      {taxonomy.LEVEL ?? "-"}
+                      {category.level ?? "-"}
                     </TableCell>
                     <TableCell className="text-center">
                       <DeleteCategoryButton
-                        taxonomyId={taxonomy.ID_TAXONOMY}
-                        taxonomyName={taxonomy.TAXONOMIA}
+                        taxonomyId={category.taxonomyId}
+                        taxonomyName={category.name}
                         productId={productId}
                       />
                     </TableCell>
