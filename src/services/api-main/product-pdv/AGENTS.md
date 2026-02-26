@@ -43,9 +43,12 @@ product-pdv/
 - **Guard check**: retorna `undefined` imediatamente se `pe_system_client_id` não for fornecido em `getProductPdvById`
 
 ### 3. `types/product-pdv-types.ts`
-- Define interfaces base (`ProductPdvBaseRequest`, `ProductPdvBaseResponse`)
+- Define interfaces base (`ProductPdvBaseRequest`, `ProductPdvBaseResponse` com `recordId: string`)
 - Define interfaces para **requests** (`ProductPdvFindAllRequest`, `ProductPdvFindByIdRequest`, `ProductPdvFindSearchRequest`)
-- Define interfaces para **responses** (`ProductPdvFindAllResponse`, `ProductPdvFindByIdResponse`, `ProductPdvFindSearchResponse`)
+- Define interfaces para **responses** com chaves tipadas nos dados:
+  - `ProductPdvFindAllResponse` → `data: { "Product Pdv find All": ProductPdvListItem[] }`
+  - `ProductPdvFindByIdResponse` → `data: ProductPdvFindByIdData` (3 result sets tipados)
+  - `ProductPdvFindSearchResponse` → `data: { "Product Pdv find Search": ProductPdvSearchItem[] }`
 - Define tipo para **dados tipados do findById** (`ProductPdvFindByIdData`) com 3 result sets
 - Define tipos para **entidades** API (`ProductPdvListItem`, `ProductPdvDetail`, `ProductPdvSearchItem`)
 - Define tipos para **entidades relacionadas** (`ProductPdvRelatedCategory`, `ProductPdvRelatedProduct`)
@@ -58,12 +61,16 @@ product-pdv/
 - Parâmetros de contexto são `.optional()` nos schemas
 
 ### 5. `transformers/transformers.ts`
-- Define interface `UIProductPdv` para uso no front-end
+- Define interface `UIProductPdv` para uso no front-end (inclui campos `valueType` e `productValue` específicos do search)
 - Define interface `UIProductPdvRelatedCategory` para categorias relacionadas
 - Define interface `UIProductPdvRelatedProduct` para produtos relacionados
 - **Converte** entidades da API (`ProductPdvListItem`, `ProductPdvDetail`, `ProductPdvSearchItem`) → DTOs UI (`UIProductPdv`)
 - **Converte** entidades relacionadas (`ProductPdvRelatedCategory`, `ProductPdvRelatedProduct`) → DTOs UI
 - **Normaliza** tipos (ex: `IMPORTADO: number` → `imported: boolean`, `PROMOCAO` → `promotion`)
+- **Mapeia** campos específicos do search: `TIPO_VALOR` → `valueType`, `VALOR_PRODUTO` → `productValue`, `ID_IMAGEM` → `imageId`, `TEMPODEGARANTIA_MES` → `warrantyMonths`, `TX_PRODUTO_LOJA` → `storeFee`
+- **Mapeia** campos fiscais/tributários do detail: `CFOP` → `cfop`, `CST` → `cst`, `EAN` → `ean`, `NCM` → `ncm`, `NBM` → `nbm`, `PPB` → `ppb`, `TEMP` → `temp`
+- **Mapeia** campos SEO do detail: `META_TITLE` → `metaTitle`, `META_DESCRIPTION` → `metaDescription`
+- **Mapeia** campo de atualização do detail: `DT_UPDATE` → `updatedAt`
 - **Handle** campos opcionais/null
 - Funções: `transformProductPdvListItem`, `transformProductPdvDetail`, `transformProductPdvSearchItem`, `transformProductPdvList`, `transformProductPdvDetailList`, `transformProductPdvSearchList`, `transformProductPdv`, `transformRelatedCategory`, `transformRelatedCategories`, `transformRelatedProduct`, `transformRelatedProducts`
 
@@ -111,7 +118,7 @@ pe_limit: number             // Limite de registros retornados
 {
   statusCode: number,
   message: string,
-  recordId: number,
+  recordId: string,
   data: {
     "Product Pdv find All": ProductPdvListItem[]
   },

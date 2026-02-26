@@ -1,283 +1,104 @@
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
-import { toast } from "sonner";
-import { createLogger } from "@/lib/logger";
-import type { Category, FilterOptions, Product, ViewMode } from "@/types/types";
-import { fetchProductsWithFilters } from "../action/action-products";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useState, useTransition } from "react";
+import type { UIProductPdv } from "@/services/api-main/product-pdv/transformers/transformers";
+import type { FilterOptions, ViewMode } from "@/types/types";
 import { ProductFiltersImproved } from "./ProductFiltersImproved";
 import { ProductGrid } from "./ProductGrid";
 
-const logger = createLogger("ProductCatalogContent");
-
-// Key for sessionStorage
-const CATALOG_FILTERS_KEY = "product-catalog-filters";
-
 interface ProductCatalogContentProps {
-  initialProducts: Product[];
-  initialTotal: number;
-  categories: Category[];
-  hasError?: boolean;
-  errorMessage?: string;
+  products: UIProductPdv[];
 }
 
 export function ProductCatalogContent({
-  initialProducts,
-  initialTotal,
-  categories,
-  hasError = false,
-  errorMessage,
+  products,
 }: ProductCatalogContentProps) {
-  // State management
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [total, setTotal] = useState(initialTotal);
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [filters, setFilters] = useState<FilterOptions>(() => {
-    // Initialize filters from sessionStorage on mount
-    if (typeof window === "undefined") {
-      return {
-        searchTerm: "",
-        selectedCategory: "all",
-        selectedSubcategory: undefined,
-        selectedSubgroup: undefined,
-        selectedBrand: undefined,
-        selectedPtype: undefined,
-        onlyInStock: false,
-        sortBy: "newest",
-      };
-    }
-
-    try {
-      const saved = sessionStorage.getItem(CATALOG_FILTERS_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved) as FilterOptions;
-        logger.info("Restored filters from sessionStorage:", parsed);
-        return parsed;
-      }
-    } catch (error) {
-      logger.error("Error loading saved filters:", error);
-    }
-
-    return {
-      searchTerm: "",
-      selectedCategory: "all",
-      selectedSubcategory: undefined,
-      selectedSubgroup: undefined,
-      selectedBrand: undefined,
-      selectedPtype: undefined,
-      onlyInStock: false,
-      sortBy: "newest",
-    };
-  });
-  const [loadedQuantity, setLoadedQuantity] = useState(20); // Track total quantity loaded
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [reachedEnd, setReachedEnd] = useState(false); // Track if we reached the end of the list
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  // React 18 useTransition for better UX
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
-  // Show error toast if initial load failed
-  if (hasError && errorMessage) {
-    toast.error(errorMessage);
-  }
+  const currentLimit = Number(searchParams.get("limit")) || 20;
 
-  // Handle filter updates
-  const updateFilters = useCallback(
-    async (newFilters: FilterOptions) => {
-      startTransition(async () => {
-        try {
-          setFilters(newFilters);
-          setLoadedQuantity(20); // Reset loaded quantity
-          setReachedEnd(false); // Reset end state
-
-          logger.info("Updating filters:", {
-            ...newFilters,
-            categoryFilterActive: newFilters.selectedCategory !== "all",
-          });
-
-          const result = await fetchProductsWithFilters(
-            newFilters.searchTerm,
-            newFilters.selectedCategory, // This will be the category ID or "all"
-            newFilters.onlyInStock,
-            newFilters.sortBy,
-            1, // First page
-            20, // Products per page
-          );
-
-          if (result.success) {
-            setProducts(result.products);
-            setTotal(result.total);
-
-            // Check if we reached the end on initial load or filter change
-            if (result.products.length < 20) {
-              setReachedEnd(true);
-            } else {
-              setReachedEnd(false);
-            }
-          } else {
-            toast.error(result.error || "Erro ao filtrar produtos");
-            logger.error("Filter error:", result.error);
-          }
-        } catch (error) {
-          toast.error("Erro inesperado ao filtrar produtos");
-          logger.error("Unexpected filter error:", error);
-        }
-      });
-    },
-    [], // startTransition is stable, no dependencies needed
-  );
-
-  // Restore filters on mount and fetch products if there are saved filters
-  useEffect(() => {
-    if (isInitialized) return;
-
-    const hasActiveFilters =
-      filters.searchTerm !== "" ||
-      filters.selectedCategory !== "all" ||
-      filters.onlyInStock ||
-      filters.sortBy !== "newest";
-
-    if (hasActiveFilters) {
-      logger.info("Restoring active filters and fetching products");
-      // Apply saved filters
-      updateFilters(filters);
-    }
-
-    setIsInitialized(true);
-  }, [
-    isInitialized,
-    filters,
-    filters.searchTerm,
-    filters.selectedCategory,
-    filters.onlyInStock,
-    filters.sortBy,
-    updateFilters,
-  ]);
-
-  // Save filters to sessionStorage whenever they change
-  useEffect(() => {
-    if (!isInitialized) return;
-
-    try {
-      sessionStorage.setItem(CATALOG_FILTERS_KEY, JSON.stringify(filters));
-      logger.info("Saved filters to sessionStorage:", filters);
-    } catch (error) {
-      logger.error("Error saving filters:", error);
-    }
-  }, [filters, isInitialized]);
-
-  // Reset filters to default
-  const resetFilters = () => {
-    const defaultFilters: FilterOptions = {
-      searchTerm: "",
-      selectedCategory: "all",
-      selectedSubcategory: undefined,
-      selectedSubgroup: undefined,
-      selectedBrand: undefined,
-      selectedPtype: undefined,
-      onlyInStock: false,
-      sortBy: "newest", // Default to newest products first
-    };
-
-    setLoadedQuantity(20); // Reset loaded quantity
-    setReachedEnd(false); // Reset end state
-    updateFilters(defaultFilters);
-  }; // Load more products (increment quantity)
-  const loadMore = async () => {
-    if (isLoadingMore || reachedEnd) return;
-
-    try {
-      setIsLoadingMore(true);
-      const newQuantity = loadedQuantity + 20;
-
-      logger.info(`Loading more products - total quantity: ${newQuantity}`);
-
-      const result = await fetchProductsWithFilters(
-        filters.searchTerm,
-        filters.selectedCategory,
-        filters.onlyInStock,
-        filters.sortBy,
-        1, // Always use page 1 (will be converted to 0 in API)
-        newQuantity, // Increment total quantity
-      );
-
-      if (result.success) {
-        setProducts(result.products); // Replace all products with new expanded list
-        setLoadedQuantity(newQuantity);
-
-        // Check if we reached the end (returned less products than requested)
-        if (result.products.length < newQuantity) {
-          setReachedEnd(true);
-        }
-      } else {
-        toast.error(result.error || "Erro ao carregar mais produtos");
-        logger.error("Load more error:", result.error);
-      }
-    } catch (error) {
-      toast.error("Erro inesperado ao carregar mais produtos");
-      logger.error("Unexpected load more error:", error);
-    } finally {
-      setIsLoadingMore(false);
-    }
+  const filters: FilterOptions = {
+    searchTerm: searchParams.get("search") || "",
+    selectedCategory: searchParams.get("category") || "all",
+    selectedSubcategory: undefined,
+    selectedSubgroup: undefined,
+    selectedBrand: searchParams.get("brand") || undefined,
+    selectedPtype: searchParams.get("type") || undefined,
+    onlyInStock: searchParams.get("stock") === "1",
+    sortBy: (searchParams.get("sort") as FilterOptions["sortBy"]) || "newest",
   };
 
-  // Handle product details view
-  const handleViewDetails = (productId: string) => {
-    logger.info("Navigating to product details:", productId);
-    // Navigate to product details page using dynamic route
+  const updateUrl = useCallback(
+    (params: URLSearchParams) => {
+      startTransition(() => {
+        router.replace(`${pathname}?${params.toString()}`);
+      });
+    },
+    [pathname, router],
+  );
+
+  const updateFilters = useCallback(
+    (newFilters: FilterOptions) => {
+      const params = new URLSearchParams();
+
+      if (newFilters.searchTerm) params.set("search", newFilters.searchTerm);
+      if (newFilters.selectedCategory && newFilters.selectedCategory !== "all")
+        params.set("category", newFilters.selectedCategory);
+      if (newFilters.selectedBrand)
+        params.set("brand", newFilters.selectedBrand);
+      if (newFilters.selectedPtype)
+        params.set("type", newFilters.selectedPtype);
+      if (newFilters.onlyInStock) params.set("stock", "1");
+      if (newFilters.sortBy && newFilters.sortBy !== "newest")
+        params.set("sort", newFilters.sortBy);
+
+      updateUrl(params);
+    },
+    [updateUrl],
+  );
+
+  const resetFilters = useCallback(() => {
+    startTransition(() => {
+      router.replace(pathname);
+    });
+  }, [pathname, router]);
+
+  const loadMore = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("limit", String(currentLimit + 20));
+    updateUrl(params);
+  }, [searchParams, currentLimit, updateUrl]);
+
+  const handleViewDetails = (productId: number) => {
     window.location.href = `/dashboard/product/${productId}`;
   };
 
-  // Handle image upload success - reload products to show updated images
-  const handleImageUploadSuccess = async () => {
-    try {
-      logger.info("Reloading products after image upload");
-
-      const result = await fetchProductsWithFilters(
-        filters.searchTerm,
-        filters.selectedCategory,
-        filters.onlyInStock,
-        filters.sortBy,
-        1, // First page
-        loadedQuantity, // Keep current loaded quantity
-      );
-
-      if (result.success) {
-        setProducts(result.products);
-        setTotal(result.total);
-      } else {
-        logger.error(
-          "Error reloading products after image upload:",
-          result.error,
-        );
-      }
-    } catch (error) {
-      logger.error("Unexpected error reloading products:", error);
-    }
+  const handleImageUploadSuccess = () => {
+    router.refresh();
   };
 
-  // Calculate display values
-  const displayedProducts = products.length;
-  const hasMore = !reachedEnd; // Show button unless we reached the end
-  const isLoading = isPending || isLoadingMore;
+  const hasMore = products.length >= currentLimit;
+  const isLoading = isPending;
 
   return (
     <>
-      {/* Filtros */}
       <ProductFiltersImproved
         filters={filters}
-        categories={categories}
+        categories={[]}
         viewMode={viewMode}
         onFiltersChange={updateFilters}
         onViewModeChange={setViewMode}
         onResetFilters={resetFilters}
-        totalProducts={total}
-        displayedProducts={displayedProducts}
+        totalProducts={products.length}
+        displayedProducts={products.length}
         isLoading={isPending}
       />
 
-      {/* Loading Overlay durante a busca */}
       {isPending && (
         <div className="relative">
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
@@ -293,7 +114,6 @@ export function ProductCatalogContent({
               </p>
             </div>
           </div>
-          {/* Grid de Produtos com overlay */}
           <div className="opacity-50">
             <ProductGrid
               products={products}
@@ -309,13 +129,12 @@ export function ProductCatalogContent({
         </div>
       )}
 
-      {/* Grid de Produtos normal */}
       {!isPending && (
         <ProductGrid
           products={products}
           viewMode={viewMode}
           isLoading={isLoading}
-          isInitialLoading={false} // We have initial data from server
+          isInitialLoading={false}
           hasMore={hasMore}
           onLoadMore={loadMore}
           onViewDetails={handleViewDetails}

@@ -2,18 +2,19 @@
 
 import { Loader2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Product, ViewMode } from "../../../../../types/types";
+import type { UIProductPdv } from "@/services/api-main/product-pdv/transformers/transformers";
+import type { ViewMode } from "@/types/types";
 import { ProductCard } from "./ProductCard";
 import { ProductGridSkeleton } from "./ProductSkeleton";
 
 interface ProductGridProps {
-  products: Product[];
+  products: UIProductPdv[];
   viewMode: ViewMode;
   isLoading?: boolean;
   isInitialLoading?: boolean;
   hasMore?: boolean;
   onLoadMore?: () => void;
-  onViewDetails?: (productId: string) => void;
+  onViewDetails?: (productId: number) => void;
   onImageUploadSuccess?: () => void;
 }
 

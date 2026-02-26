@@ -25,6 +25,8 @@ export interface UIProductPdv {
   pagePath?: string;
   slug?: string;
   storeStock: number;
+  valueType?: string;
+  productValue?: string;
   wholesalePrice: string;
   corporatePrice: string;
   retailPrice: string;
@@ -40,6 +42,13 @@ export interface UIProductPdv {
   widthMm?: number;
   heightMm?: number;
   diameterMm?: number;
+  cfop?: string;
+  cst?: string;
+  ean?: string;
+  ncm?: number;
+  nbm?: string;
+  ppb?: number;
+  temp?: string;
   salesDescription?: string;
   notes?: string;
   imported: boolean;
@@ -47,8 +56,11 @@ export interface UIProductPdv {
   launch: boolean;
   featured?: boolean;
   isService?: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
   categories?: string;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export function transformProductPdvListItem(
@@ -113,17 +125,22 @@ export function transformProductPdvSearchItem(
     brand: entity.MARCA,
     brandId: entity.ID_MARCA,
     brandImagePath: entity.PATH_IMAGEM_MARCA || undefined,
+    imageId: entity.ID_IMAGEM,
     imagePath: entity.PATH_IMAGEM || undefined,
     pagePath: entity.PATH_PAGE || undefined,
     slug: entity.SLUG || undefined,
     storeStock: entity.ESTOQUE_LOJA,
+    valueType: entity.TIPO_VALOR,
+    productValue: entity.VALOR_PRODUTO,
     wholesalePrice: entity.VL_ATACADO,
     corporatePrice: entity.VL_CORPORATIVO,
     retailPrice: entity.VL_VAREJO,
+    storeFee: entity.TX_PRODUTO_LOJA,
     goldPrice: entity.OURO,
     silverPrice: entity.PRATA,
     bronzePrice: entity.BRONZE,
     discount: entity.DECONTO,
+    warrantyMonths: entity.TEMPODEGARANTIA_MES,
     warrantyDays: entity.TEMPODEGARANTIA_DIA,
     salesDescription: entity.DESCRICAO_VENDA ?? undefined,
     imported: entity.IMPORTADO === 1,
@@ -172,6 +189,13 @@ export function transformProductPdvDetail(
     widthMm: entity.LARGURA_MM,
     heightMm: entity.ALTURA_MM,
     diameterMm: entity.DIAMETRO_MM,
+    cfop: entity.CFOP || undefined,
+    cst: entity.CST || undefined,
+    ean: entity.EAN || undefined,
+    ncm: entity.NCM,
+    nbm: entity.NBM || undefined,
+    ppb: entity.PPB,
+    temp: entity.TEMP || undefined,
     salesDescription: entity.DESCRICAO_VENDA ?? undefined,
     notes: entity.ANOTACOES ?? undefined,
     imported: entity.IMPORTADO === 1,
@@ -179,7 +203,10 @@ export function transformProductPdvDetail(
     launch: false,
     featured: entity.DESTAQUE === 1,
     isService: entity.FLAG_SERVICO === 1,
+    metaTitle: entity.META_TITLE ?? undefined,
+    metaDescription: entity.META_DESCRIPTION ?? undefined,
     createdAt: entity.DATADOCADASTRO,
+    updatedAt: entity.DT_UPDATE,
   };
 }
 

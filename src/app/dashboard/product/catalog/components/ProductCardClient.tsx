@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import type { Product } from "../../../../../types/types";
+import type { UIProductPdv } from "@/services/api-main/product-pdv/transformers/transformers";
 import {
   createImageErrorHandler,
   getValidImageUrl,
@@ -13,14 +13,14 @@ import {
 import { ProductImageUpload } from "./ProductImageUpload";
 
 interface ProductCardClientProps {
-  product: Product;
+  product: UIProductPdv;
   viewMode: "grid" | "list";
   onImageUploadSuccess?: () => void;
   hasPromotion?: boolean;
 }
 
 interface ProductImageSectionProps {
-  product: Product;
+  product: UIProductPdv;
   viewMode: "grid" | "list";
   onImageUploadSuccess?: () => void;
   hasPromotion?: boolean;
@@ -33,24 +33,21 @@ function ProductImageSection({
   hasPromotion = false,
 }: ProductImageSectionProps) {
   const [imageError, setImageError] = useState(false);
-  const isOutOfStock = product.stock === 0;
+  const isOutOfStock = product.storeStock === 0;
 
-  // Use validated image URL with fallback
-  const imageUrl = getValidImageUrl(product.image);
+  const imageUrl = getValidImageUrl(product.imagePath);
   const imageErrorHandler = createImageErrorHandler();
 
-  // Check if product has a real image (not the default fallback)
   const hasRealImage =
-    product.image &&
-    product.image.trim() !== "" &&
-    product.image !== "/images/product/no-image.jpeg" &&
+    product.imagePath &&
+    product.imagePath.trim() !== "" &&
+    product.imagePath !== "/images/product/no-image.jpeg" &&
     !imageError;
 
   if (!hasRealImage) {
-    // Show upload component for products without image
     return (
       <ProductImageUpload
-        productId={product.id || ""}
+        productId={String(product.id)}
         productName={product.name}
         viewMode={viewMode}
         onUploadSuccess={onImageUploadSuccess}
@@ -58,7 +55,6 @@ function ProductImageSection({
     );
   }
 
-  // Show image for products with image
   if (viewMode === "list") {
     const imageContent = (
       <div className="relative h-24 w-24 flex-shrink-0">
@@ -85,14 +81,11 @@ function ProductImageSection({
       </div>
     );
 
-    return product.id ? (
+    return (
       <Link href={`/dashboard/product/${product.id}`}>{imageContent}</Link>
-    ) : (
-      imageContent
     );
   }
 
-  // Grid view image
   const gridImageContent = (
     <div className="relative aspect-square overflow-hidden rounded-md">
       <Image
@@ -109,20 +102,19 @@ function ProductImageSection({
         onLoad={() => setImageError(false)}
       />
 
-      {/* Badges sobrepostos */}
       <div className="absolute top-2 left-2 flex flex-col gap-1">
         {hasPromotion && (
           <Badge className="bg-red-500 text-xs hover:bg-red-600">
             Promoção
           </Badge>
         )}
-        {product.isNew && (
+        {product.launch && (
           <Badge className="bg-blue-500 text-xs hover:bg-blue-600">
             <Star className="h-3 w-3 mr-1" />
             Novo
           </Badge>
         )}
-        {product.isImported && (
+        {product.imported && (
           <Badge variant="secondary" className="text-xs">
             <Plane className="h-3 w-3 mr-1" />
             Importado
@@ -138,10 +130,8 @@ function ProductImageSection({
     </div>
   );
 
-  return product.id ? (
+  return (
     <Link href={`/dashboard/product/${product.id}`}>{gridImageContent}</Link>
-  ) : (
-    gridImageContent
   );
 }
 

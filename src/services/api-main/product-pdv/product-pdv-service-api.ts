@@ -59,15 +59,15 @@ export class ProductPdvServiceApi extends BaseApiService {
         pe_user_role: validatedParams.pe_user_role,
         pe_person_id: validatedParams.pe_person_id,
         pe_search: validatedParams.pe_search ?? "",
-        pe_taxonomy_id: validatedParams.pe_taxonomy_id,
-        pe_type_id: validatedParams.pe_type_id,
-        pe_brand_id: validatedParams.pe_brand_id,
-        pe_flag_stock: validatedParams.pe_flag_stock,
-        pe_flag_service: validatedParams.pe_flag_service,
+        pe_taxonomy_id: validatedParams.pe_taxonomy_id ?? 0,
+        pe_type_id: validatedParams.pe_type_id ?? 0,
+        pe_brand_id: validatedParams.pe_brand_id ?? 0,
+        pe_flag_stock: validatedParams.pe_flag_stock ?? 0,
+        pe_flag_service: validatedParams.pe_flag_service ?? 0,
         pe_records_quantity: validatedParams.pe_records_quantity ?? 100,
         pe_page_id: validatedParams.pe_page_id ?? 1,
-        pe_column_id: validatedParams.pe_column_id,
-        pe_order_id: validatedParams.pe_order_id,
+        pe_column_id: validatedParams.pe_column_id ?? 1,
+        pe_order_id: validatedParams.pe_order_id ?? 3,
       });
 
       const response = await this.post<ProductPdvFindAllResponse>(

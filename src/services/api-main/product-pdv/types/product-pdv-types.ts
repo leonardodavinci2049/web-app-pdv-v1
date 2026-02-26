@@ -14,7 +14,7 @@ interface ProductPdvBaseRequest {
 interface ProductPdvBaseResponse {
   statusCode: number;
   message: string;
-  recordId: number;
+  recordId: string;
   quantity: number;
   errorId: number;
   info1?: string;
@@ -151,13 +151,23 @@ export interface ProductPdvDetail {
   LARGURA_MM: number;
   ALTURA_MM: number;
   DIAMETRO_MM: number;
+  CFOP: string;
+  CST: string;
+  EAN: string;
+  NCM: number;
+  NBM: string;
+  PPB: number;
+  TEMP: string;
   DESTAQUE: number;
   PROMOCAO: number;
   FLAG_SERVICO: number;
   IMPORTADO: number;
+  META_TITLE: string | null;
+  META_DESCRIPTION: string | null;
   DESCRICAO_VENDA: string | null;
   ANOTACOES: string | null;
   DATADOCADASTRO: string;
+  DT_UPDATE: string;
 }
 
 export interface ProductPdvRelatedCategory {
@@ -191,7 +201,9 @@ export interface ProductPdvRelatedProduct {
 // --- Response Interfaces ---
 
 export interface ProductPdvFindAllResponse extends ProductPdvBaseResponse {
-  data: Record<string, ProductPdvListItem[]>;
+  data: {
+    "Product Pdv find All": ProductPdvListItem[];
+  };
 }
 
 export interface ProductPdvFindByIdData {
@@ -205,7 +217,9 @@ export interface ProductPdvFindByIdResponse extends ProductPdvBaseResponse {
 }
 
 export interface ProductPdvFindSearchResponse extends ProductPdvBaseResponse {
-  data: Record<string, ProductPdvSearchItem[]>;
+  data: {
+    "Product Pdv find Search": ProductPdvSearchItem[];
+  };
 }
 
 // --- Error Classes ---
