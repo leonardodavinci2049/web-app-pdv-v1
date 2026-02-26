@@ -1,52 +1,64 @@
-import { Suspense } from "react";
+import { connection } from "next/server";
 import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
-import { createLogger } from "@/lib/logger";
-import type { Product } from "@/types/types";
-import { fetchProducts } from "./action/action-products";
+import { getAuthContext } from "@/server/auth-context";
+import { getProductsPdv } from "@/services/api-main/product-pdv/product-pdv-cached-service";
 import { ProductCatalogContent } from "./components/ProductCatalogContent";
-import { ProductGridSkeleton } from "./components/ProductSkeleton";
 
-const logger = createLogger("CatalogPage");
+interface CatalogoPageProps {
+  searchParams: Promise<{
+    search?: string;
+    category?: string;
+    brand?: string;
+    type?: string;
+    stock?: string;
+    sort?: string;
+    limit?: string;
+    page?: string;
+  }>;
+}
 
-// Server Component - Fetch data directly
-export default async function CatalogoPage() {
-  let initialProducts: {
-    success: boolean;
-    products: Product[];
-    total: number;
-    error?: string;
-  };
-  let hasError = false;
-  let errorMessage = "";
-
-  try {
-    // Fetch initial products data with newest first sorting
-    const result = await fetchProducts({
-      page: 1,
-      perPage: 20,
-      sortBy: "newest", // Show newest products first
-    });
-
-    initialProducts = result;
-
-    if (!result.success) {
-      hasError = true;
-      errorMessage = result.error || "Erro ao carregar produtos";
-      logger.error("Failed to fetch initial products:", result.error);
-    }
-  } catch (error) {
-    hasError = true;
-    errorMessage = "Erro inesperado ao carregar produtos";
-    logger.error("Unexpected error fetching products:", error);
-
-    // Fallback to empty result
-    initialProducts = {
-      success: false,
-      products: [],
-      total: 0,
-      error: errorMessage,
-    };
+function mapSortToApiParams(sortBy?: string): {
+  columnId: number;
+  orderId: number;
+} {
+  switch (sortBy) {
+    case "name-asc":
+      return { columnId: 1, orderId: 1 };
+    case "name-desc":
+      return { columnId: 1, orderId: 2 };
+    case "newest":
+      return { columnId: 2, orderId: 2 };
+    case "price-asc":
+      return { columnId: 3, orderId: 1 };
+    case "price-desc":
+      return { columnId: 3, orderId: 2 };
+    default:
+      return { columnId: 2, orderId: 2 };
   }
+}
+
+export default async function CatalogoPage(props: CatalogoPageProps) {
+  await connection();
+  const searchParams = await props.searchParams;
+  const { apiContext } = await getAuthContext();
+
+  const sort = mapSortToApiParams(searchParams.sort);
+  const limit = Number(searchParams.limit) || 20;
+
+  const products = await getProductsPdv({
+    search: searchParams.search,
+    taxonomyId: searchParams.category
+      ? Number(searchParams.category)
+      : undefined,
+    brandId: searchParams.brand ? Number(searchParams.brand) : undefined,
+    typeId: searchParams.type ? Number(searchParams.type) : undefined,
+    flagStock: searchParams.stock === "1" ? 1 : undefined,
+    recordsQuantity: limit,
+    pageId: Number(searchParams.page) || 1,
+    columnId: sort.columnId,
+    orderId: sort.orderId,
+    ...apiContext,
+  });
 
   return (
     <>
@@ -63,7 +75,6 @@ export default async function CatalogoPage() {
           <div className="flex flex-col gap-6 py-6">
             <div className="px-4 lg:px-6">
               <div className="space-y-6">
-                {/* Cabeçalho */}
                 <div>
                   <h1 className="text-3xl font-bold">Catálogo de Produtos</h1>
                   <p className="text-muted-foreground mt-2">
@@ -72,18 +83,7 @@ export default async function CatalogoPage() {
                   </p>
                 </div>
 
-                {/* Content with Suspense for better UX */}
-                <Suspense
-                  fallback={<ProductGridSkeleton viewMode="list" count={8} />}
-                >
-                  <ProductCatalogContent
-                    initialProducts={initialProducts.products}
-                    initialTotal={initialProducts.total}
-                    categories={[]}
-                    hasError={hasError}
-                    errorMessage={errorMessage}
-                  />
-                </Suspense>
+                <ProductCatalogContent products={products} />
               </div>
             </div>
           </div>
