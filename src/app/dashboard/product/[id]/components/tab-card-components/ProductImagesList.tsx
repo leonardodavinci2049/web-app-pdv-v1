@@ -14,11 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import type { ProductDetail } from "@/services/api/product/types/product-types";
+import type { UIProductPdv } from "@/services/api-main/product-pdv/transformers/transformers";
 import type { GalleryImage } from "@/types/api-assets";
 
 interface ProductImagesListProps {
-  product: ProductDetail;
+  product: UIProductPdv;
   productId: number;
   initialDescription?: string;
 }
@@ -63,7 +63,7 @@ const ProductImagesList = ({ product, productId }: ProductImagesListProps) => {
     fetchGallery();
   }, [fetchGallery]);
 
-  const pathImagem = product.PATH_IMAGEM;
+  const pathImagem = product.imagePath;
 
   // Verifica se há divergência entre PATH_IMAGEM e a imagem principal da galeria
   const syncInfo = useMemo(() => {

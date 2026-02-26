@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { ProductDetail } from "@/services/api/product/types/product-types";
+import type { UIProductPdv } from "@/services/api-main/product-pdv/transformers/transformers";
 import { ProductCharacteristicsCard } from "./ProductCharacteristicsCard";
 import { ProductGeneralDataCard } from "./ProductGeneralDataCard";
 import { ProductDescriptionEditor } from "./tab-card-components/ProductDescriptionEditor";
@@ -12,7 +12,7 @@ import { ProductTaxValuesCard } from "./tab-card-components/ProductTaxValuesCard
 import { ProductTechnicalDataCard } from "./tab-card-components/ProductTechnicalDataCard";
 
 interface ProductDetailsTabsProps {
-  product: ProductDetail;
+  product: UIProductPdv;
   productId: number;
 }
 
@@ -66,7 +66,7 @@ export function ProductDetailsTabs({
       <TabsContent value="description" className="space-y-4">
         <ProductDescriptionEditor
           productId={productId}
-          initialDescription={product.ANOTACOES || ""}
+          initialDescription={product.notes || ""}
         />
       </TabsContent>
 
@@ -78,34 +78,34 @@ export function ProductDetailsTabs({
         {/* Card 1 - Dados Gerais */}
         <ProductGeneralDataCard
           productId={productId}
-          productName={product.PRODUTO}
-          descriptionTab={product.DESCRICAO_TAB || ""}
-          label={product.ETIQUETA || ""}
-          reference={product.REF || ""}
-          model={product.MODELO || ""}
+          productName={product.name}
+          descriptionTab={product.shortDescription || ""}
+          label={product.label || ""}
+          reference={product.ref || ""}
+          model={product.model || ""}
         />
 
         {/* Card 2 - Características */}
         <ProductCharacteristicsCard
           productId={productId}
-          warrantyDays={product.TEMPODEGARANTIA_DIA}
-          weightGr={product.PESO_GR}
-          lengthMm={product.COMPRIMENTO_MM}
-          widthMm={product.LARGURA_MM}
-          heightMm={product.ALTURA_MM}
-          diameterMm={product.DIAMETRO_MM}
+          warrantyDays={product.warrantyDays}
+          weightGr={product.weightGr ?? 0}
+          lengthMm={product.lengthMm ?? 0}
+          widthMm={product.widthMm ?? 0}
+          heightMm={product.heightMm ?? 0}
+          diameterMm={product.diameterMm ?? 0}
         />
 
         {/* Card 3 - Taxas */}
         <ProductTaxValuesCard
           productId={productId}
-          cfop={product.CFOP}
-          cst={product.CST}
-          ean={product.EAN}
-          ncm={product.NCM}
-          nbm={product.NBM}
-          ppb={product.PPB}
-          temp={product.TEMP}
+          cfop={product.cfop}
+          cst={product.cst}
+          ean={product.ean}
+          ncm={product.ncm}
+          nbm={product.nbm}
+          ppb={product.ppb}
+          temp={product.temp}
         />
       </TabsContent>
 
@@ -119,11 +119,11 @@ export function ProductDetailsTabs({
 
       <TabsContent value="metadata" className="space-y-4">
         <ProductMetadataCard
-          metaTitle={product.META_TITLE}
-          metaDescription={product.META_DESCRIPTION}
-          createdAt={product.DATADOCADASTRO}
-          updatedAt={product.DATADOCADASTRO}
-          slug={product.SLUG}
+          metaTitle={product.metaTitle ?? null}
+          metaDescription={product.metaDescription ?? null}
+          createdAt={product.createdAt ?? ""}
+          updatedAt={product.updatedAt ?? null}
+          slug={product.slug ?? null}
         />
       </TabsContent>
     </Tabs>

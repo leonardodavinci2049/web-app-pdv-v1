@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { ProductDetail } from "@/services/api/product/types/product-types";
+import type { UIProductPdv } from "@/services/api-main/product-pdv/transformers/transformers";
 import { ChangeProductBrandDialog } from "../ChangeProductBrandDialog";
 import { ChangeProductTypeDialog } from "../ChangeProductTypeDialog";
 import { ProductFlagsCard } from "./ProductFlagsCard";
 
 interface ProductTechnicalDataCardProps {
-  product: ProductDetail;
+  product: UIProductPdv;
   productId: number;
   onDataChange?: () => void;
 }
@@ -23,7 +23,7 @@ export function ProductTechnicalDataCard({
           <CardTitle>Tipo</CardTitle>
         </CardHeader>
         <CardContent>
-          {product.ID_TIPO > 0 ? (
+          {product.typeId && product.typeId > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -41,13 +41,13 @@ export function ProductTechnicalDataCard({
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="py-2 px-2 text-sm">{product.ID_TIPO}</td>
-                    <td className="py-2 px-2 text-sm">{product.TIPO}</td>
+                    <td className="py-2 px-2 text-sm">{product.typeId}</td>
+                    <td className="py-2 px-2 text-sm">{product.type}</td>
                     <td className="py-2 px-2">
                       <ChangeProductTypeDialog
                         productId={productId}
-                        currentTypeId={product.ID_TIPO}
-                        currentTypeName={product.TIPO}
+                        currentTypeId={product.typeId}
+                        currentTypeName={product.type}
                         onSuccess={onDataChange}
                       />
                     </td>
@@ -69,7 +69,7 @@ export function ProductTechnicalDataCard({
           <CardTitle>Marca</CardTitle>
         </CardHeader>
         <CardContent>
-          {product.ID_MARCA > 0 ? (
+          {product.brandId && product.brandId > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -87,13 +87,13 @@ export function ProductTechnicalDataCard({
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="py-2 px-2 text-sm">{product.ID_MARCA}</td>
-                    <td className="py-2 px-2 text-sm">{product.MARCA}</td>
+                    <td className="py-2 px-2 text-sm">{product.brandId}</td>
+                    <td className="py-2 px-2 text-sm">{product.brand}</td>
                     <td className="py-2 px-2">
                       <ChangeProductBrandDialog
                         productId={productId}
-                        currentBrandId={product.ID_MARCA}
-                        currentBrandName={product.MARCA}
+                        currentBrandId={product.brandId}
+                        currentBrandName={product.brand}
                         onSuccess={onDataChange}
                       />
                     </td>
@@ -115,35 +115,24 @@ export function ProductTechnicalDataCard({
           <CardTitle>Fornecedor</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="grid gap-2">
-            {product.ID_FORNECEDOR && product.ID_FORNECEDOR > 0 && (
-              <div className="flex justify-between py-1">
-                <span className="text-muted-foreground">Fornecedor ID:</span>
-                <span>{product.ID_FORNECEDOR}</span>
-              </div>
-            )}
-          </div>
-
-          {!(product.ID_FORNECEDOR && product.ID_FORNECEDOR > 0) && (
-            <p className="text-muted-foreground italic text-sm">
-              Nenhum fornecedor definido
-            </p>
-          )}
+          <p className="text-muted-foreground italic text-sm">
+            Nenhum fornecedor definido
+          </p>
         </CardContent>
       </Card>
 
       {/* Card 1 - Flags */}
       <ProductFlagsCard
         productId={productId}
-        controleFisico={product.FLAG_CONTROLE_FISICO}
-        controlarEstoque={product.CONTROLAR_ESTOQUE}
-        consignado={product.CONSIGNADO}
-        destaque={product.DESTAQUE}
-        promocao={product.PROMOCAO}
-        servico={product.FLAG_SERVICO}
-        websiteOff={product.FLAG_WEBSITE_OFF}
-        inativo={product.INATIVO}
-        importado={product.IMPORTADO}
+        controleFisico={0}
+        controlarEstoque={0}
+        consignado={0}
+        destaque={product.featured ? 1 : 0}
+        promocao={product.promotion ? 1 : 0}
+        servico={product.isService ? 1 : 0}
+        websiteOff={0}
+        inativo={0}
+        importado={product.imported ? 1 : 0}
       />
     </div>
   );

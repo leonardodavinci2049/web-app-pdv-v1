@@ -1,9 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton";
 // Server Component - não usar hooks de cliente
 import type {
-  ProductDetail,
-  ProductRelatedTaxonomy,
-} from "@/services/api/product/types/product-types";
+  UIProductPdv,
+  UIProductPdvRelatedCategory,
+} from "@/services/api-main/product-pdv/transformers/transformers";
 import { formatCurrency } from "@/utils/common-utils";
 import { BackToCatalogButton } from "./BackToCatalogButton";
 import { ProductDetailsTabs } from "./ProductDetailsTabs";
@@ -11,24 +11,24 @@ import { ProductImageGalleryServer } from "./ProductImageGallery/ProductImageGal
 import { ProductInfoDisplay } from "./ProductInfoDisplay";
 
 interface ProductDetailsLayoutProps {
-  product: ProductDetail;
+  product: UIProductPdv;
   productId: number;
-  relatedTaxonomies: ProductRelatedTaxonomy[];
+  relatedCategories: UIProductPdvRelatedCategory[];
 }
 
 export function ProductDetailsLayout({
   product,
   productId,
-  relatedTaxonomies,
+  relatedCategories,
 }: ProductDetailsLayoutProps) {
   // Helper function to validate and get product image URL
   const getProductImageUrl = (): string => {
     const defaultImage = "/images/product/no-image.jpeg";
 
-    // Check if product has PATH_IMAGEM field
-    if (product.PATH_IMAGEM && typeof product.PATH_IMAGEM === "string") {
-      const pathImagem = product.PATH_IMAGEM;
-      // If PATH_IMAGEM looks like a URL (starts with http/https or /)
+    // Check if product has imagePath field
+    if (product.imagePath && typeof product.imagePath === "string") {
+      const pathImagem = product.imagePath;
+      // If imagePath looks like a URL (starts with http/https or /)
       if (pathImagem.startsWith("http") || pathImagem.startsWith("/")) {
         try {
           // Validate URL format for external URLs
@@ -47,27 +47,27 @@ export function ProductDetailsLayout({
       }
     }
 
-    // Check if SLUG could be an image path
-    if (product.SLUG && typeof product.SLUG === "string") {
-      // If SLUG looks like a URL (starts with http/https or /)
-      if (product.SLUG.startsWith("http") || product.SLUG.startsWith("/")) {
+    // Check if slug could be an image path
+    if (product.slug && typeof product.slug === "string") {
+      // If slug looks like a URL (starts with http/https or /)
+      if (product.slug.startsWith("http") || product.slug.startsWith("/")) {
         try {
           // Validate URL format for external URLs
-          if (product.SLUG.startsWith("http")) {
-            new URL(product.SLUG);
+          if (product.slug.startsWith("http")) {
+            new URL(product.slug);
           }
-          // Only use SLUG if it looks like an image file
-          if (product.SLUG.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
-            return product.SLUG;
+          // Only use slug if it looks like an image file
+          if (product.slug.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+            return product.slug;
           }
         } catch {
           // Invalid URL format, continue to next check
         }
       }
 
-      // If SLUG looks like an image filename, construct path
-      if (product.SLUG.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
-        return `/images/product/${product.SLUG}`;
+      // If slug looks like an image filename, construct path
+      if (product.slug.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+        return `/images/product/${product.slug}`;
       }
     }
 
@@ -78,14 +78,14 @@ export function ProductDetailsLayout({
   const productImage = getProductImageUrl();
 
   // Format prices - API returns strings like "320.000000"
-  const retailPriceRaw = product.VL_VAREJO
-    ? Number.parseFloat(product.VL_VAREJO)
+  const retailPriceRaw = product.retailPrice
+    ? Number.parseFloat(product.retailPrice)
     : 0;
-  const wholesalePriceRaw = product.VL_ATACADO
-    ? Number.parseFloat(product.VL_ATACADO)
+  const wholesalePriceRaw = product.wholesalePrice
+    ? Number.parseFloat(product.wholesalePrice)
     : 0;
-  const corporatePriceRaw = product.VL_CORPORATIVO
-    ? Number.parseFloat(product.VL_CORPORATIVO)
+  const corporatePriceRaw = product.corporatePrice
+    ? Number.parseFloat(product.corporatePrice)
     : 0;
 
   const retailPrice =
@@ -95,8 +95,8 @@ export function ProductDetailsLayout({
   const corporatePrice =
     corporatePriceRaw > 0 ? formatCurrency(corporatePriceRaw) : null;
 
-  // Stock status - use ESTOQUE_LOJA from API (not QT_ESTOQUE)
-  const stockLevel = product.ESTOQUE_LOJA ?? 0;
+  // Stock status - use storeStock from UIProductPdv
+  const stockLevel = product.storeStock ?? 0;
   const isOutOfStock = stockLevel === 0;
   const isLowStock = stockLevel > 0 && stockLevel <= 5;
 
@@ -133,14 +133,14 @@ export function ProductDetailsLayout({
         {/* Left Column - Images Gallery (Server Component with Client Component) */}
         <ProductImageGalleryServer
           productId={productId}
-          productName={product.PRODUTO}
+          productName={product.name}
           fallbackImage={productImage}
         />
 
         {/* Right Column - Product Info (Server Component) */}
         <ProductInfoDisplay
           product={product}
-          relatedTaxonomies={relatedTaxonomies}
+          relatedCategories={relatedCategories}
           stockStatus={stockStatus}
           retailPrice={retailPrice}
           wholesalePrice={wholesalePrice}
