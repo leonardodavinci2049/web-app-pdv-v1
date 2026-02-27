@@ -45,16 +45,19 @@ export class ErroExecucaoConsulta extends Error {
 
 class DatabaseService {
   private poolConnection: Pool | null = null;
-  private static instance: DatabaseService;
 
   private constructor() {}
 
-  // Singleton pattern - garante uma única instância
+  // Singleton pattern via globalThis - sobrevive re-avaliações de módulo no dev mode
   public static getInstance(): DatabaseService {
-    if (!DatabaseService.instance) {
-      DatabaseService.instance = new DatabaseService();
+    const globalKey = "__db_service_instance__" as const;
+    const g = globalThis as typeof globalThis & {
+      [K in typeof globalKey]?: DatabaseService;
+    };
+    if (!g[globalKey]) {
+      g[globalKey] = new DatabaseService();
     }
-    return DatabaseService.instance;
+    return g[globalKey];
   }
 
   // Conecta ao banco de dados MySQL
