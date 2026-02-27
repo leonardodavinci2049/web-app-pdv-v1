@@ -20,19 +20,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useBrands } from "@/hooks/use-brands";
-import { useCategories } from "@/hooks/use-categories";
-import { usePtypes } from "@/hooks/use-ptypes";
-import type {
-  Category,
-  FilterOptions,
-  SortOption,
-  ViewMode,
-} from "@/types/types";
+import type { UIBrand } from "@/services/api-main/brand/transformers/transformers";
+import type { UIPtype } from "@/services/api-main/ptype/transformers/transformers";
+import type { FilterOptions, SortOption, ViewMode } from "@/types/types";
+
+export interface CategoryOption {
+  id: number;
+  name: string;
+  level: number;
+  displayName: string;
+}
 
 interface ProductFiltersImprovedProps {
   filters: FilterOptions;
-  categories: Category[];
+  categories: CategoryOption[];
+  brands: UIBrand[];
+  ptypes: UIPtype[];
   viewMode: ViewMode;
   onFiltersChange: (filters: FilterOptions) => void;
   onViewModeChange: (mode: ViewMode) => void;
@@ -52,6 +55,9 @@ const sortOptions = [
 
 export function ProductFiltersImproved({
   filters,
+  categories,
+  brands,
+  ptypes,
   viewMode,
   onFiltersChange,
   onViewModeChange,
@@ -60,30 +66,13 @@ export function ProductFiltersImproved({
   displayedProducts,
   isLoading = false,
 }: ProductFiltersImprovedProps) {
-  // Hook para carregar categorias
-  const {
-    categories,
-    isLoading: categoriesLoading,
-    error: categoriesError,
-  } = useCategories();
-
-  // Hook para carregar marcas
-  const { brands, isLoading: brandsLoading, error: brandsError } = useBrands();
-
-  // Hook para carregar tipos de produto
-  const { ptypes, isLoading: ptypesLoading, error: ptypesError } = usePtypes();
-
   // Estado local para o input de busca
   const [searchInputValue, setSearchInputValue] = useState(filters.searchTerm);
-
-  // Estados removidos - subcategorias e subgrupos não são mais necessários
 
   // Sincronizar o input local quando os filtros mudam externamente
   useEffect(() => {
     setSearchInputValue(filters.searchTerm);
   }, [filters.searchTerm]);
-
-  // Effects removidos - não precisamos mais de lógica de hierarquia de categorias
 
   const updateFilter = <K extends keyof FilterOptions>(
     key: K,
@@ -313,25 +302,14 @@ export function ProductFiltersImproved({
                   <div className="space-y-2">
                     <div className="text-sm font-medium text-muted-foreground">
                       Categoria
-                      {categoriesError && (
-                        <span className="text-red-500 text-xs ml-2">
-                          (Erro ao carregar)
-                        </span>
-                      )}
                     </div>
                     <Select
                       value={filters.selectedCategory}
                       onValueChange={handleCategoryChange}
-                      disabled={isLoading || categoriesLoading}
+                      disabled={isLoading}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue
-                          placeholder={
-                            categoriesLoading
-                              ? "Carregando categorias..."
-                              : "Selecione uma categoria"
-                          }
-                        />
+                        <SelectValue placeholder="Selecione uma categoria" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todas as Categorias</SelectItem>
@@ -351,25 +329,14 @@ export function ProductFiltersImproved({
                   <div className="space-y-2">
                     <div className="text-sm font-medium text-muted-foreground">
                       Marca
-                      {brandsError && (
-                        <span className="text-red-500 text-xs ml-2">
-                          (Erro ao carregar)
-                        </span>
-                      )}
                     </div>
                     <Select
                       value={filters.selectedBrand || "all"}
                       onValueChange={handleBrandChange}
-                      disabled={isLoading || brandsLoading}
+                      disabled={isLoading}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue
-                          placeholder={
-                            brandsLoading
-                              ? "Carregando marcas..."
-                              : "Selecione uma marca"
-                          }
-                        />
+                        <SelectValue placeholder="Selecione uma marca" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todas as Marcas</SelectItem>
@@ -389,25 +356,14 @@ export function ProductFiltersImproved({
                   <div className="space-y-2">
                     <div className="text-sm font-medium text-muted-foreground">
                       Tipo
-                      {ptypesError && (
-                        <span className="text-red-500 text-xs ml-2">
-                          (Erro ao carregar)
-                        </span>
-                      )}
                     </div>
                     <Select
                       value={filters.selectedPtype || "all"}
                       onValueChange={handlePtypeChange}
-                      disabled={isLoading || ptypesLoading}
+                      disabled={isLoading}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue
-                          placeholder={
-                            ptypesLoading
-                              ? "Carregando tipos..."
-                              : "Selecione um tipo"
-                          }
-                        />
+                        <SelectValue placeholder="Selecione um tipo" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todos os Tipos</SelectItem>

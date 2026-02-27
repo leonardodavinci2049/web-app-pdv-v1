@@ -8,6 +8,18 @@ import {
 } from "mysql2/promise";
 import { envs } from "@/core/config/envs";
 
+// Tipos compatíveis com mysql2 v3.18+
+type SqlParam =
+  | string
+  | number
+  | bigint
+  | boolean
+  | Date
+  | null
+  | Buffer
+  | Uint8Array;
+type QueryParams = SqlParam[] | { [key: string]: SqlParam };
+
 // Classe de erro customizada para conexão com banco de dados
 export class ErroConexaoBancoDados extends Error {
   constructor(
@@ -33,16 +45,19 @@ export class ErroExecucaoConsulta extends Error {
 
 class DatabaseService {
   private poolConnection: Pool | null = null;
-  private static instance: DatabaseService;
 
   private constructor() {}
 
-  // Singleton pattern - garante uma única instância
+  // Singleton pattern via globalThis - sobrevive re-avaliações de módulo no dev mode
   public static getInstance(): DatabaseService {
-    if (!DatabaseService.instance) {
-      DatabaseService.instance = new DatabaseService();
+    const globalKey = "__db_service_instance__" as const;
+    const g = globalThis as typeof globalThis & {
+      [K in typeof globalKey]?: DatabaseService;
+    };
+    if (!g[globalKey]) {
+      g[globalKey] = new DatabaseService();
     }
-    return DatabaseService.instance;
+    return g[globalKey];
   }
 
   // Conecta ao banco de dados MySQL
@@ -99,7 +114,7 @@ class DatabaseService {
   // Método para SELECT (sem transação)
   async selectQuery<T extends RowDataPacket>(
     queryString: string,
-    params?: unknown[],
+    params?: QueryParams,
   ): Promise<T[]> {
     try {
       const pool = this.ensureConnection();
@@ -118,7 +133,7 @@ class DatabaseService {
   // Método para SELECT com segurança reforçada
   async selectExecute<T extends RowDataPacket>(
     queryString: string,
-    params?: unknown[],
+    params?: QueryParams,
   ): Promise<T[]> {
     try {
       const pool = this.ensureConnection();
@@ -137,7 +152,7 @@ class DatabaseService {
   // Insert/Update/Delete usando execute
   async ModifyExecute(
     queryString: string,
-    params?: unknown[],
+    params?: QueryParams,
   ): Promise<ResultSetHeader> {
     try {
       const pool = this.ensureConnection();
@@ -156,7 +171,7 @@ class DatabaseService {
   // Insert/Update/Delete usando query
   async ModifyQuery(
     queryString: string,
-    params?: unknown[],
+    params?: QueryParams,
   ): Promise<ResultSetHeader> {
     try {
       const pool = this.ensureConnection();

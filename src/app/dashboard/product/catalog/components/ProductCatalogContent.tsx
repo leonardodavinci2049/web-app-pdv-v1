@@ -2,17 +2,26 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
+import type { UIBrand } from "@/services/api-main/brand/transformers/transformers";
 import type { UIProductPdv } from "@/services/api-main/product-pdv/transformers/transformers";
+import type { UIPtype } from "@/services/api-main/ptype/transformers/transformers";
 import type { FilterOptions, ViewMode } from "@/types/types";
+import type { CategoryOption } from "./ProductFiltersImproved";
 import { ProductFiltersImproved } from "./ProductFiltersImproved";
 import { ProductGrid } from "./ProductGrid";
 
 interface ProductCatalogContentProps {
   products: UIProductPdv[];
+  brands: UIBrand[];
+  categories: CategoryOption[];
+  ptypes: UIPtype[];
 }
 
 export function ProductCatalogContent({
   products,
+  brands,
+  categories,
+  ptypes,
 }: ProductCatalogContentProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -89,7 +98,9 @@ export function ProductCatalogContent({
     <>
       <ProductFiltersImproved
         filters={filters}
-        categories={[]}
+        categories={categories}
+        brands={brands}
+        ptypes={ptypes}
         viewMode={viewMode}
         onFiltersChange={updateFilters}
         onViewModeChange={setViewMode}
