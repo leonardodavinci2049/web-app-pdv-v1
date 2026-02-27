@@ -19,23 +19,14 @@ export default function ForgotPasswordPage() {
             </div>
           </div>
         </div>
-        <div className="p-6 md:p-10">
-          <div className="relative h-full w-full overflow-hidden rounded-lg">
-            <Image
-              src="/images/auth/banner-auth-v2.png"
-              alt="Dashboard Background"
-              fill
-              className="object-contain object-left dark:hidden"
-              priority
-            />
-            <Image
-              src="/images/auth/banner-auth-v2.png"
-              alt="Dashboard Background"
-              fill
-              className="hidden object-contain object-left dark:block"
-              priority
-            />
-          </div>
+        <div className="relative flex items-center justify-center">
+          <Image
+            src="/images/auth/logo-winerp-banner-auth.png"
+            alt="Dashboard Background"
+            fill
+            className="object-contain object-center"
+            priority
+          />
         </div>
       </Card>
 
