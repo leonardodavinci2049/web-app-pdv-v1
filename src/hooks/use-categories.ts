@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { loadCategoriesMenuAction } from "@/app/actions/action-categories";
-import type { TaxonomyData } from "@/services/api/taxonomy/types/taxonomy-types";
+import type { UITaxonomyMenuItem } from "@/services/api-main/taxonomy-base/transformers/transformers";
 
 export interface CategoryOption {
   id: number;
@@ -13,7 +13,7 @@ export interface CategoryOption {
 
 /**
  * Hook for loading and managing categories from taxonomy API
- * Loads hierarchical categories and flattens them with proper formatting
+ * Loads categories and formats them with proper level display
  */
 export function useCategories() {
   const [categories, setCategories] = useState<CategoryOption[]>([]);
@@ -23,57 +23,41 @@ export function useCategories() {
   // Load categories on component mount
   useEffect(() => {
     /**
-     * Flattens hierarchical taxonomy data into a single array with formatted names
-     * @param taxonomies - Array of taxonomy data with hierarchical structure
-     * @param level - Current level for formatting (1, 2, 3)
-     * @returns Flattened array of category options
+     * Formats menu items into category options with display names
      */
-    const flattenCategories = (
-      taxonomies: TaxonomyData[],
-      level: number = 1,
+    const formatCategories = (
+      items: UITaxonomyMenuItem[],
     ): CategoryOption[] => {
-      const result: CategoryOption[] = [];
-
-      for (const taxonomy of taxonomies) {
-        // Format display name based on level
-        let displayName = taxonomy.TAXONOMIA;
-        if (level === 2) {
-          displayName = `- ${taxonomy.TAXONOMIA}`;
-        } else if (level === 3) {
-          displayName = `-- ${taxonomy.TAXONOMIA}`;
+      return items.map((item) => {
+        let displayName = item.name;
+        if (item.level === 2) {
+          displayName = `- ${item.name}`;
+        } else if (item.level >= 3) {
+          displayName = `-- ${item.name}`;
         }
 
-        result.push({
-          id: taxonomy.ID_TAXONOMY,
-          name: taxonomy.TAXONOMIA,
-          level,
+        return {
+          id: item.id,
+          name: item.name,
+          level: item.level,
           displayName,
-        });
-
-        // Recursively add children if they exist
-        if (taxonomy.children && taxonomy.children.length > 0) {
-          result.push(...flattenCategories(taxonomy.children, level + 1));
-        }
-      }
-
-      return result;
+        };
+      });
     };
 
     /**
      * Loads categories using Server Action
-     * Uses pe_id_tipo = 2 for product categories as per API documentation
      */
     const loadCategories = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        // Call Server Action to load categories
         const response = await loadCategoriesMenuAction();
 
         if (response.success) {
-          const flattenedCategories = flattenCategories(response.data);
-          setCategories(flattenedCategories);
+          const formattedCategories = formatCategories(response.data);
+          setCategories(formattedCategories);
         } else {
           throw new Error(response.message);
         }
@@ -99,33 +83,21 @@ export function useCategories() {
       const response = await loadCategoriesMenuAction();
 
       if (response.success) {
-        // Inline flattening for refetch
-        const flatten = (
-          taxonomies: TaxonomyData[],
-          level: number = 1,
-        ): CategoryOption[] => {
-          const result: CategoryOption[] = [];
-          for (const taxonomy of taxonomies) {
-            let displayName = taxonomy.TAXONOMIA;
-            if (level === 2) displayName = `- ${taxonomy.TAXONOMIA}`;
-            else if (level === 3) displayName = `-- ${taxonomy.TAXONOMIA}`;
+        const formattedCategories = response.data.map(
+          (item: UITaxonomyMenuItem) => {
+            let displayName = item.name;
+            if (item.level === 2) displayName = `- ${item.name}`;
+            else if (item.level >= 3) displayName = `-- ${item.name}`;
 
-            result.push({
-              id: taxonomy.ID_TAXONOMY,
-              name: taxonomy.TAXONOMIA,
-              level,
+            return {
+              id: item.id,
+              name: item.name,
+              level: item.level,
               displayName,
-            });
-
-            if (taxonomy.children && taxonomy.children.length > 0) {
-              result.push(...flatten(taxonomy.children, level + 1));
-            }
-          }
-          return result;
-        };
-
-        const flattenedCategories = flatten(response.data);
-        setCategories(flattenedCategories);
+            };
+          },
+        );
+        setCategories(formattedCategories);
       } else {
         throw new Error(response.message);
       }

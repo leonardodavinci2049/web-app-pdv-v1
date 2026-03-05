@@ -378,8 +378,9 @@ export function ProductImageGallery({
       {/* Main Image Display */}
       <Card className="overflow-hidden">
         <CardContent className="p-0">
-          <button
-            type="button"
+          {/* biome-ignore lint/a11y/useKeyWithClickEvents: zoom action is accessible via the inner Button */}
+          {/* biome-ignore lint/a11y/noStaticElementInteractions: can't use button here due to nested Button child */}
+          <div
             className="relative aspect-square bg-muted group cursor-zoom-in w-full"
             onClick={() => openZoomModal(selectedImageIndex)}
           >
@@ -409,7 +410,10 @@ export function ProductImageGallery({
                   variant="secondary"
                   size="icon"
                   className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => openZoomModal(selectedImageIndex)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openZoomModal(selectedImageIndex);
+                  }}
                 >
                   <ZoomIn className="h-4 w-4" />
                 </Button>
@@ -432,7 +436,7 @@ export function ProductImageGallery({
                 />
               </div>
             )}
-          </button>
+          </div>
         </CardContent>
       </Card>
 
