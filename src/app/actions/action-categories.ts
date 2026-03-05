@@ -11,8 +11,16 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth/auth";
 import { createLogger } from "@/lib/logger";
-import { TaxonomyServiceApi } from "@/services/api/taxonomy/taxonomy-service-api";
-import type { TaxonomyData } from "@/services/api/taxonomy/types/taxonomy-types";
+import { taxonomyBaseServiceApi } from "@/services/api-main/taxonomy-base";
+import type {
+  UITaxonomy,
+  UITaxonomyMenuItem,
+} from "@/services/api-main/taxonomy-base/transformers/transformers";
+import {
+  transformTaxonomyDetail,
+  transformTaxonomyList,
+  transformTaxonomyMenuList,
+} from "@/services/api-main/taxonomy-base/transformers/transformers";
 
 const logger = createLogger("ActionCategories");
 
@@ -35,7 +43,7 @@ export interface FindCategoriesParams {
  */
 export interface FindCategoriesResponse {
   success: boolean;
-  data: TaxonomyData[];
+  data: UITaxonomy[];
   hasMore: boolean;
   total: number;
   error?: string;
@@ -79,26 +87,12 @@ export async function findCategories(
       parentId = -1, // Buscar todos os níveis
     } = params;
 
-    // Construir parâmetros da API baseado no tipo de busca
-    const apiParams: Record<string, unknown> = {
-      pe_id_parent: parentId,
-      pe_flag_inativo: filterStatus,
-      pe_qt_registros: perPage,
-      pe_pagina_id: page,
-      pe_coluna_id: sortColumn,
-      pe_ordem_id: sortOrder,
-    };
-
-    // Adicionar parâmetro de busca baseado no tipo
+    // Construir parâmetros de busca
+    let searchParam = "";
     if (searchTerm) {
       if (searchType === "id") {
-        // Busca por ID
         const idNumber = Number.parseInt(searchTerm, 10);
-        if (!Number.isNaN(idNumber)) {
-          apiParams.pe_id_taxonomy = idNumber;
-          apiParams.pe_taxonomia = "";
-        } else {
-          // ID inválido, retornar vazio
+        if (Number.isNaN(idNumber)) {
           return {
             success: true,
             data: [],
@@ -106,22 +100,32 @@ export async function findCategories(
             total: 0,
           };
         }
+        searchParam = searchTerm;
       } else {
-        // Busca por nome
-        apiParams.pe_taxonomia = searchTerm;
-        apiParams.pe_id_taxonomy = 0;
+        searchParam = searchTerm;
       }
-    } else {
-      // Sem busca, definir valores padrão
-      apiParams.pe_taxonomia = "";
-      apiParams.pe_id_taxonomy = 0;
     }
 
-    // Chamar serviço da API
-    const response = await TaxonomyServiceApi.findTaxonomies(apiParams);
+    // Chamar novo serviço da API
+    const response = await taxonomyBaseServiceApi.findAllTaxonomies({
+      pe_parent_id: parentId,
+      pe_search: searchParam,
+      pe_flag_inactive: filterStatus,
+      pe_records_quantity: perPage,
+      pe_page_id: page,
+      pe_column_id: sortColumn,
+      pe_order_id: sortOrder,
+      pe_system_client_id: session.session?.systemId ?? 0,
+      pe_organization_id: session.session?.activeOrganizationId ?? "0",
+      pe_user_id: session.user.id ?? "0",
+      pe_user_name: session.user.name ?? "",
+      pe_user_role: session.user.role ?? "admin",
+      pe_person_id: 1,
+    });
 
-    // Extrair lista de taxonomias
-    const categories = TaxonomyServiceApi.extractTaxonomyList(response);
+    // Extrair e transformar lista de taxonomias
+    const rawCategories = taxonomyBaseServiceApi.extractTaxonomies(response);
+    const categories = transformTaxonomyList(rawCategories);
 
     // Verificar se há mais páginas
     // Se retornou a quantidade solicitada, provavelmente há mais
@@ -156,9 +160,7 @@ export async function findCategories(
  * @param id - ID da categoria
  * @returns Dados da categoria ou null
  */
-export async function findCategoryById(
-  id: number,
-): Promise<TaxonomyData | null> {
+export async function findCategoryById(id: number): Promise<UITaxonomy | null> {
   try {
     // Verificar autenticação
     const session = await auth.api.getSession({
@@ -170,15 +172,22 @@ export async function findCategoryById(
       return null;
     }
 
-    // Chamar serviço da API
-    const response = await TaxonomyServiceApi.findTaxonomyById({
-      pe_id_taxonomy: id,
+    // Chamar novo serviço da API
+    const response = await taxonomyBaseServiceApi.findTaxonomyById({
+      pe_taxonomy_id: id,
+      pe_system_client_id: session.session?.systemId ?? 0,
+      pe_organization_id: session.session?.activeOrganizationId ?? "0",
+      pe_user_id: session.user.id ?? "0",
+      pe_user_name: session.user.name ?? "",
+      pe_user_role: session.user.role ?? "admin",
+      pe_person_id: 1,
     });
 
-    // Extrair dados da taxonomia
-    const category = TaxonomyServiceApi.extractTaxonomyData(response);
+    // Extrair e transformar dados da taxonomia
+    const rawCategory = taxonomyBaseServiceApi.extractTaxonomyById(response);
+    if (!rawCategory) return null;
 
-    return category;
+    return transformTaxonomyDetail(rawCategory);
   } catch (error) {
     logger.error(`Erro ao buscar categoria ID ${id}`, error);
     return null;
@@ -198,7 +207,7 @@ export async function getCategoryParentName(parentId: number): Promise<string> {
 
   try {
     const parent = await findCategoryById(parentId);
-    return parent?.TAXONOMIA || `ID ${parentId}`;
+    return parent?.name || `ID ${parentId}`;
   } catch (error) {
     logger.error(`Erro ao buscar nome da categoria pai ${parentId}`, error);
     return `ID ${parentId}`;
@@ -227,7 +236,7 @@ export interface UpdateCategoryParams {
 export interface UpdateCategoryResponse {
   success: boolean;
   message: string;
-  data?: TaxonomyData;
+  data?: UITaxonomy;
   error?: string;
 }
 
@@ -268,29 +277,25 @@ export async function updateCategory(
       status = 0,
     } = params;
 
-    // Chamar serviço da API para atualizar
-    const response = await TaxonomyServiceApi.updateTaxonomy({
-      pe_id_taxonomy: id,
-      pe_taxonomia: name,
+    // Chamar novo serviço da API para atualizar
+    await taxonomyBaseServiceApi.updateTaxonomy({
+      pe_taxonomy_id: id,
+      pe_taxonomy_name: name,
       pe_slug: slug,
       pe_parent_id: parentId,
       pe_meta_title: metaTitle,
       pe_meta_description: metaDescription,
       pe_info: notes,
-      pe_ordem: order,
-      pe_path_imagem: imagePath,
-      pe_inativo: status,
+      pe_sort_order: order,
+      pe_image_path: imagePath,
+      pe_inactive: status,
+      pe_system_client_id: session.session?.systemId ?? 0,
+      pe_organization_id: session.session?.activeOrganizationId ?? "0",
+      pe_user_id: session.user.id ?? "0",
+      pe_user_name: session.user.name ?? "",
+      pe_user_role: session.user.role ?? "admin",
+      pe_person_id: 1,
     });
-
-    // Validar resposta
-    if (!TaxonomyServiceApi.isValidOperationResponse(response)) {
-      throw new Error("Resposta inválida da API");
-    }
-
-    // Verificar se a operação foi bem-sucedida
-    if (!TaxonomyServiceApi.isOperationSuccessful(response)) {
-      throw new Error("Falha ao atualizar categoria na API");
-    }
 
     // Buscar dados atualizados
     const updatedCategory = await findCategoryById(id);
@@ -334,7 +339,7 @@ export interface CreateCategoryResponse {
   success: boolean;
   message: string;
   recordId?: number;
-  data?: TaxonomyData;
+  data?: UITaxonomy;
   error?: string;
 }
 
@@ -360,21 +365,29 @@ export async function loadCategoriesMenuAction() {
     }
 
     // Use pe_id_tipo = 2 for product categories (based on API documentation)
-    const response = await TaxonomyServiceApi.findTaxonomyMenu({
-      pe_id_tipo: 2, // Product categories type
+    const response = await taxonomyBaseServiceApi.findTaxonomyMenu({
+      pe_type_id: 2,
+      pe_parent_id: 0,
+      pe_system_client_id: session.session?.systemId ?? 0,
+      pe_organization_id: session.session?.activeOrganizationId ?? "0",
+      pe_user_id: session.user.id ?? "0",
+      pe_user_name: session.user.name ?? "",
+      pe_user_role: session.user.role ?? "admin",
+      pe_person_id: 1,
     });
 
-    if (TaxonomyServiceApi.isValidTaxonomyMenuResponse(response)) {
-      const taxonomies = TaxonomyServiceApi.extractTaxonomyMenuList(response);
+    if (taxonomyBaseServiceApi.isValidTaxonomyMenu(response)) {
+      const rawTaxonomies =
+        taxonomyBaseServiceApi.extractTaxonomyMenu(response);
+      const taxonomies = transformTaxonomyMenuList(rawTaxonomies);
 
       return {
         success: true,
         data: taxonomies,
         message: "Categorias carregadas com sucesso",
       };
-    } else {
-      throw new Error("Resposta inválida da API de taxonomias");
     }
+    throw new Error("Resposta inválida da API de taxonomias");
   } catch (error) {
     logger.error("Error loading categories menu in server action", error);
 
@@ -396,7 +409,7 @@ export async function loadCategoriesMenuAction() {
  *
  * @returns Lista de categorias para seleção (níveis 1 e 2)
  */
-export async function getCategoryOptions(): Promise<TaxonomyData[]> {
+export async function getCategoryOptions(): Promise<UITaxonomyMenuItem[]> {
   try {
     // Verificar autenticação
     const session = await auth.api.getSession({
@@ -409,51 +422,28 @@ export async function getCategoryOptions(): Promise<TaxonomyData[]> {
     }
 
     // Buscar hierarquia de categorias usando endpoint de menu
-    const response = await TaxonomyServiceApi.findTaxonomyMenu({
-      pe_id_tipo: 1, // Tipo de taxonomia (categorias)
-      // pe_parent_id omitido para buscar desde a raiz
+    const response = await taxonomyBaseServiceApi.findTaxonomyMenu({
+      pe_type_id: 1,
+      pe_parent_id: 0,
+      pe_system_client_id: session.session?.systemId ?? 0,
+      pe_organization_id: session.session?.activeOrganizationId ?? "0",
+      pe_user_id: session.user.id ?? "0",
+      pe_user_name: session.user.name ?? "",
+      pe_user_role: session.user.role ?? "admin",
+      pe_person_id: 1,
     });
 
     // Verificar se resposta é válida
-    if (!TaxonomyServiceApi.isValidTaxonomyMenuResponse(response)) {
+    if (!taxonomyBaseServiceApi.isValidTaxonomyMenu(response)) {
       logger.error("Resposta inválida do endpoint de menu");
       return [];
     }
 
-    // Extrair hierarquia de taxonomias
-    const hierarchicalCategories =
-      TaxonomyServiceApi.extractTaxonomyMenuList(response);
+    // Extrair e transformar hierarquia de taxonomias
+    const rawMenuItems = taxonomyBaseServiceApi.extractTaxonomyMenu(response);
+    const menuItems = transformTaxonomyMenuList(rawMenuItems);
 
-    // Flatten hierarchy to include only levels 1 and 2
-    // This prevents having level 4 categories (we only allow up to level 3)
-    // Parent can only be level 1 (Family) or level 2 (Group), never level 3 (Subgroup)
-    const flattenedOptions: TaxonomyData[] = [];
-
-    for (const rootCategory of hierarchicalCategories) {
-      // Add root category (level 1 - Family)
-      flattenedOptions.push({
-        ...rootCategory,
-        LEVEL: rootCategory.LEVEL ?? 1,
-      });
-
-      // Add direct children (level 2 - Group) if they exist
-      // Do NOT include level 3 (Subgroup) to prevent level 4 creation
-      if (rootCategory.children && rootCategory.children.length > 0) {
-        for (const childCategory of rootCategory.children) {
-          flattenedOptions.push({
-            ...childCategory,
-            LEVEL: childCategory.LEVEL ?? 2,
-            children: undefined, // Remove children property to flatten structure
-          });
-        }
-      }
-    }
-
-    /*     logger.info(
-      `Opções de categorias carregadas: ${flattenedOptions.length} (níveis 1 e 2)`,
-    ); */
-
-    return flattenedOptions;
+    return menuItems;
   } catch (error) {
     logger.error("Erro ao buscar opções de categorias", error);
     return [];
@@ -514,31 +504,27 @@ export async function createCategoryAction(formData: FormData) {
       throw new Error("Usuário não autenticado");
     }
 
-    // 4. Chamar serviço da API para criar
-    const response = await TaxonomyServiceApi.createTaxonomy({
-      pe_taxonomia: validated.name,
+    // 4. Chamar novo serviço da API para criar
+    const response = await taxonomyBaseServiceApi.createTaxonomy({
+      pe_taxonomy_name: validated.name,
       pe_slug: slug,
       pe_parent_id: validated.parentId,
       pe_level: 1,
-      pe_id_tipo: 1, // Valor padrão conforme API reference
+      pe_type_id: 1,
+      pe_system_client_id: session.session?.systemId ?? 0,
+      pe_organization_id: session.session?.activeOrganizationId ?? "0",
+      pe_user_id: session.user.id ?? "0",
+      pe_user_name: session.user.name ?? "",
+      pe_user_role: session.user.role ?? "admin",
+      pe_person_id: 1,
     });
 
-    // 5. Validar resposta
-    if (!TaxonomyServiceApi.isValidOperationResponse(response)) {
-      throw new Error("Resposta inválida da API");
-    }
-
-    // 6. Verificar se operação foi bem-sucedida
-    if (!TaxonomyServiceApi.isOperationSuccessful(response)) {
-      logger.error("Falha ao criar categoria");
+    // 5. Extrair resultado - novo serviço lança exceção em caso de erro
+    const spResult =
+      taxonomyBaseServiceApi.extractStoredProcedureResult(response);
+    if (!spResult || spResult.sp_return_id <= 0) {
       throw new Error("Falha ao criar categoria");
     }
-
-    /*     logger.info("Categoria criada com sucesso", {
-      name: validated.name,
-      slug,
-      level: 1,
-    }); */
 
     // 7. Redirect automático em caso de sucesso (Next.js 15 pattern)
     const { redirect } = await import("next/navigation");
@@ -586,39 +572,34 @@ export async function createCategory(
       type = 2, // Valor padrão conforme API reference
     } = params;
 
-    // Chamar serviço da API para criar (apenas campos suportados)
-    const response = await TaxonomyServiceApi.createTaxonomy({
-      pe_taxonomia: name,
+    // Chamar novo serviço da API para criar (apenas campos suportados)
+    const response = await taxonomyBaseServiceApi.createTaxonomy({
+      pe_taxonomy_name: name,
       pe_slug: slug,
       pe_parent_id: parentId,
       pe_level: level,
-      pe_id_tipo: type,
+      pe_type_id: type,
+      pe_system_client_id: session.session?.systemId ?? 0,
+      pe_organization_id: session.session?.activeOrganizationId ?? "0",
+      pe_user_id: session.user.id ?? "0",
+      pe_user_name: session.user.name ?? "",
+      pe_user_role: session.user.role ?? "admin",
+      pe_person_id: 1,
     });
 
-    // Validar resposta
-    if (!TaxonomyServiceApi.isValidOperationResponse(response)) {
-      throw new Error("Resposta inválida da API");
-    }
+    // Extrair resultado - novo serviço lança exceção em caso de erro
+    const spResult =
+      taxonomyBaseServiceApi.extractStoredProcedureResult(response);
+    const recordId = spResult?.sp_return_id;
 
-    // Verificar se a operação foi bem-sucedida
-    if (!TaxonomyServiceApi.isOperationSuccessful(response)) {
+    if (!recordId || recordId <= 0) {
       const errorMsg =
-        TaxonomyServiceApi.extractStoredProcedureResponse(response)
-          ?.sp_message || "Falha ao criar categoria na API";
+        spResult?.sp_message || "Falha ao criar categoria na API";
       throw new Error(errorMsg);
-    }
-
-    // Extrair ID do registro criado
-    const recordId = TaxonomyServiceApi.extractRecordId(response);
-
-    if (!recordId) {
-      throw new Error("ID do registro criado não foi retornado");
     }
 
     // Buscar dados da categoria criada
     const createdCategory = await findCategoryById(recordId);
-
-    // logger.info(`Categoria criada com sucesso: ID ${recordId}, Nome: ${name}`);
 
     return {
       success: true,
@@ -673,37 +654,24 @@ export async function deleteCategory(
 
     // logger.info(`Deletando categoria: ID ${categoryId}`);
 
-    // Chamar serviço de API para deletar
-    const response = await TaxonomyServiceApi.deleteTaxonomy({
-      pe_id_taxonomy: categoryId,
+    // Chamar novo serviço de API para deletar
+    const response = await taxonomyBaseServiceApi.deleteTaxonomy({
+      pe_taxonomy_id: categoryId,
+      pe_system_client_id: session.session?.systemId ?? 0,
+      pe_organization_id: session.session?.activeOrganizationId ?? "0",
+      pe_user_id: session.user.id ?? "0",
+      pe_user_name: session.user.name ?? "",
+      pe_user_role: session.user.role ?? "admin",
+      pe_person_id: 1,
     });
-
-    // Validar resposta
-    if (!TaxonomyServiceApi.isValidOperationResponse(response)) {
-      throw new Error("Resposta inválida da API");
-    }
-
-    // Verificar se a operação foi bem-sucedida
-    if (!TaxonomyServiceApi.isOperationSuccessful(response)) {
-      const errorMsg =
-        TaxonomyServiceApi.extractStoredProcedureResponse(response)
-          ?.sp_message || "Falha ao deletar categoria";
-      return {
-        success: false,
-        message: errorMsg,
-        error: errorMsg,
-      };
-    }
 
     // Extrair mensagem de sucesso da stored procedure
     const spResponse =
-      TaxonomyServiceApi.extractStoredProcedureResponse(response);
+      taxonomyBaseServiceApi.extractStoredProcedureResult(response);
     const successMessage =
       spResponse?.sp_message ||
       response.message ||
       "Categoria deletada com sucesso";
-
-    // logger.info(`Categoria deletada com sucesso: ID ${categoryId}`);
 
     return {
       success: true,
