@@ -2,11 +2,11 @@ import { connection } from "next/server";
 import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
 import { createLogger } from "@/core/logger";
 import { getAuthContext } from "@/server/auth-context";
-import { TaxonomyServiceApi } from "@/services/api/taxonomy/taxonomy-service-api";
-import type { TaxonomyData } from "@/services/api/taxonomy/types/taxonomy-types";
 import { getBrands } from "@/services/api-main/brand/brand-cached-service";
 import { getProductsPdv } from "@/services/api-main/product-pdv/product-pdv-cached-service";
 import { getPtypes } from "@/services/api-main/ptype/ptype-cached-service";
+import { getTaxonomyMenu } from "@/services/api-main/taxonomy-base/taxonomy-base-cached-service";
+import type { UITaxonomyMenuItem } from "@/services/api-main/taxonomy-base/transformers/transformers";
 import { ProductCatalogContent } from "./components/ProductCatalogContent";
 import type { CategoryOption } from "./components/ProductFiltersImproved";
 
@@ -45,40 +45,41 @@ function mapSortToApiParams(sortBy?: string): {
   }
 }
 
-function flattenCategories(
-  taxonomies: TaxonomyData[],
+function flattenMenuItems(
+  items: UITaxonomyMenuItem[],
+  allItems: UITaxonomyMenuItem[],
   level: number = 1,
 ): CategoryOption[] {
   const result: CategoryOption[] = [];
-  for (const taxonomy of taxonomies) {
-    let displayName = taxonomy.TAXONOMIA;
-    if (level === 2) displayName = `- ${taxonomy.TAXONOMIA}`;
-    else if (level === 3) displayName = `-- ${taxonomy.TAXONOMIA}`;
+  for (const item of items) {
+    let displayName = item.name;
+    if (level === 2) displayName = `- ${item.name}`;
+    else if (level === 3) displayName = `-- ${item.name}`;
 
     result.push({
-      id: taxonomy.ID_TAXONOMY,
-      name: taxonomy.TAXONOMIA,
+      id: item.id,
+      name: item.name,
       level,
       displayName,
     });
 
-    if (taxonomy.children && taxonomy.children.length > 0) {
-      result.push(...flattenCategories(taxonomy.children, level + 1));
+    // Encontrar filhos pelo parentId
+    const children = allItems.filter((child) => child.parentId === item.id);
+    if (children.length > 0) {
+      result.push(...flattenMenuItems(children, allItems, level + 1));
     }
   }
   return result;
 }
 
-async function getCategories(): Promise<CategoryOption[]> {
+async function getCategories(
+  apiContext: Record<string, unknown>,
+): Promise<CategoryOption[]> {
   try {
-    const response = await TaxonomyServiceApi.findTaxonomyMenu({
-      pe_id_tipo: 2,
-    });
-    if (TaxonomyServiceApi.isValidTaxonomyMenuResponse(response)) {
-      const taxonomies = TaxonomyServiceApi.extractTaxonomyMenuList(response);
-      return flattenCategories(taxonomies);
-    }
-    return [];
+    const menuItems = await getTaxonomyMenu(2, 0, apiContext);
+    // Filtrar itens raiz (parentId === 0) e construir hierarquia flat
+    const rootItems = menuItems.filter((item) => item.parentId === 0);
+    return flattenMenuItems(rootItems, menuItems);
   } catch (error) {
     logger.error("Erro ao buscar categorias:", error);
     return [];
@@ -109,7 +110,7 @@ export default async function CatalogoPage(props: CatalogoPageProps) {
       ...apiContext,
     }),
     getBrands({ limit: 100, ...apiContext }),
-    getCategories(),
+    getCategories(apiContext),
     getPtypes({ limit: 100, ...apiContext }),
   ]);
 

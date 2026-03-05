@@ -34,8 +34,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { UITaxonomyRelProduct } from "@/services/api-main/taxonomy-rel/transformers/transformers";
 import type { ProductCategory } from "../../../../../types/types";
 import { AddCategoryInlineDialog } from "./AddCategoryInlineDialog";
+
+/**
+ * Converte UITaxonomyRelProduct para ProductCategory (formato legado usado nos componentes de UI)
+ */
+function mapToProductCategory(item: UITaxonomyRelProduct): ProductCategory {
+  return {
+    ID_TAXONOMY: item.taxonomyId,
+    TAXONOMIA: item.name,
+  };
+}
 
 interface InlineCategoryEditorProps {
   productId: number;
@@ -69,10 +80,11 @@ export function InlineCategoryEditor({
       const result = await fetchProductCategories(productId);
 
       if (result.success) {
-        setCategories(result.data);
+        const mapped = result.data.map(mapToProductCategory);
+        setCategories(mapped);
         setHasLoadedOnce(true);
         // Notify parent about updated categories
-        onCategoriesUpdated?.(result.data);
+        onCategoriesUpdated?.(mapped);
       } else {
         setError(result.message);
         setCategories([]);
