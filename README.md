@@ -304,7 +304,7 @@ Contribuições são bem-vindas! Para contribuir:
 
 ## 📝 Licença
 
-Este projeto é de uso privado. Todos os direitos reservados.
+Este projeto está licenciado sob a [MIT License](LICENSE).
 
 ---
 
