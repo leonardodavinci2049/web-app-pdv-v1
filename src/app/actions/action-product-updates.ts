@@ -1,7 +1,11 @@
 "use server";
 
-import { createLogger } from "@/lib/logger";
-import { ProductServiceApi } from "@/services/api/product/product-service-api";
+import { revalidateTag } from "next/cache";
+import { createLogger } from "@/core/logger";
+import { CACHE_TAGS } from "@/lib/cache-config";
+import { getAuthContext } from "@/server/auth-context";
+import { productInlineServiceApi } from "@/services/api-main/product-inline";
+import { productUpdateServiceApi } from "@/services/api-main/product-update";
 
 const logger = createLogger("ProductUpdateActions");
 
@@ -35,27 +39,18 @@ export async function updateProductName(
     }
 
     // Call API service
-    const response = await ProductServiceApi.updateProductName({
-      pe_id_produto: productId,
-      pe_nome_produto: name.trim(),
+    const { apiContext } = await getAuthContext();
+
+    await productInlineServiceApi.updateProductNameInline({
+      pe_product_id: productId,
+      pe_product_name: name.trim(),
+      ...apiContext,
     });
 
-    // Check if operation was successful
-    if (!ProductServiceApi.isOperationSuccessful(response)) {
-      const spResponse =
-        ProductServiceApi.extractStoredProcedureResponse(response);
-      const errorMessage =
-        spResponse?.sp_message || "Erro ao atualizar nome do produto";
-
-      logger.error("API returned error:", { spResponse, errorMessage });
-
-      return {
-        success: false,
-        error: errorMessage,
-      };
-    }
-
     logger.info("Product name updated successfully:", { productId, name });
+
+    revalidateTag(CACHE_TAGS.productBase(String(productId)), "hours");
+    revalidateTag(CACHE_TAGS.productsBase, "seconds");
 
     return {
       success: true,
@@ -105,29 +100,20 @@ export async function updateProductShortDescription(
     }
 
     // Call API service
-    const response = await ProductServiceApi.updateProductShortDescription({
-      pe_id_produto: productId,
-      pe_descricao_venda: shortDescription.trim(),
+    const { apiContext } = await getAuthContext();
+
+    await productInlineServiceApi.updateProductShortDescriptionInline({
+      pe_product_id: productId,
+      pe_descricao_curta: shortDescription.trim(),
+      ...apiContext,
     });
-
-    // Check if operation was successful
-    if (!ProductServiceApi.isOperationSuccessful(response)) {
-      const spResponse =
-        ProductServiceApi.extractStoredProcedureResponse(response);
-      const errorMessage =
-        spResponse?.sp_message || "Erro ao atualizar descrição curta";
-
-      logger.error("API returned error:", { spResponse, errorMessage });
-
-      return {
-        success: false,
-        error: errorMessage,
-      };
-    }
 
     logger.info("Product short description updated successfully:", {
       productId,
     });
+
+    revalidateTag(CACHE_TAGS.productBase(String(productId)), "hours");
+    revalidateTag(CACHE_TAGS.productsBase, "seconds");
 
     return {
       success: true,
@@ -177,27 +163,18 @@ export async function updateProductDescription(
     }
 
     // Call API service
-    const response = await ProductServiceApi.updateProductDescription({
-      pe_id_produto: productId,
-      pe_produto_descricao: description.trim(),
+    const { apiContext } = await getAuthContext();
+
+    await productInlineServiceApi.updateProductDescriptionInline({
+      pe_product_id: productId,
+      pe_product_description: description.trim(),
+      ...apiContext,
     });
 
-    // Check if operation was successful
-    if (!ProductServiceApi.isOperationSuccessful(response)) {
-      const spResponse =
-        ProductServiceApi.extractStoredProcedureResponse(response);
-      const errorMessage =
-        spResponse?.sp_message || "Erro ao atualizar descrição completa";
-
-      logger.error("API returned error:", { spResponse, errorMessage });
-
-      return {
-        success: false,
-        error: errorMessage,
-      };
-    }
-
     logger.info("Product description updated successfully:", { productId });
+
+    revalidateTag(CACHE_TAGS.productBase(String(productId)), "hours");
+    revalidateTag(CACHE_TAGS.productsBase, "seconds");
 
     return {
       success: true,
@@ -247,27 +224,18 @@ export async function updateProductImagePath(
     }
 
     // Call API service
-    const response = await ProductServiceApi.updateProductImagePath({
-      pe_id_produto: productId,
+    const { apiContext } = await getAuthContext();
+
+    await productInlineServiceApi.updateProductImagePathInline({
+      pe_product_id: productId,
       pe_path_imagem: imagePath.trim(),
+      ...apiContext,
     });
 
-    // Check if operation was successful
-    if (!ProductServiceApi.isOperationSuccessful(response)) {
-      const spResponse =
-        ProductServiceApi.extractStoredProcedureResponse(response);
-      const errorMessage =
-        spResponse?.sp_message || "Erro ao atualizar caminho da imagem";
-
-      logger.error("API returned error:", { spResponse, errorMessage });
-
-      return {
-        success: false,
-        error: errorMessage,
-      };
-    }
-
     logger.info("Product image path updated successfully:", { productId });
+
+    revalidateTag(CACHE_TAGS.productBase(String(productId)), "hours");
+    revalidateTag(CACHE_TAGS.productsBase, "seconds");
 
     return {
       success: true,
@@ -318,29 +286,25 @@ export async function updateProductStock(
       };
     }
 
-    // Call API service
-    const response = await ProductServiceApi.updateProductStock({
-      pe_id_produto: productId,
-      pe_qt_estoque: stock,
-      pe_qt_minimo: minStock,
+    // Call API service — novo serviço separa stock e stock_min
+    const { apiContext } = await getAuthContext();
+
+    await productInlineServiceApi.updateProductStockInline({
+      pe_product_id: productId,
+      pe_stock: stock,
+      ...apiContext,
     });
 
-    // Check if operation was successful
-    if (!ProductServiceApi.isOperationSuccessful(response)) {
-      const spResponse =
-        ProductServiceApi.extractStoredProcedureResponse(response);
-      const errorMessage =
-        spResponse?.sp_message || "Erro ao atualizar estoque";
-
-      logger.error("API returned error:", { spResponse, errorMessage });
-
-      return {
-        success: false,
-        error: errorMessage,
-      };
-    }
+    await productInlineServiceApi.updateProductStockMinInline({
+      pe_product_id: productId,
+      pe_stock_min: minStock,
+      ...apiContext,
+    });
 
     logger.info("Product stock updated successfully:", { productId, stock });
+
+    revalidateTag(CACHE_TAGS.productBase(String(productId)), "hours");
+    revalidateTag(CACHE_TAGS.productsBase, "seconds");
 
     return {
       success: true,
@@ -394,28 +358,20 @@ export async function updateProductPrice(
     }
 
     // Call API service
-    const response = await ProductServiceApi.updateProductPrice({
-      pe_id_produto: productId,
-      pe_preco_venda_atac: wholesalePrice,
-      pe_preco_venda_corporativo: corporatePrice,
-      pe_preco_venda_vare: retailPrice,
+    const { apiContext } = await getAuthContext();
+
+    await productUpdateServiceApi.updateProductPrice({
+      pe_product_id: productId,
+      pe_wholesale_price: wholesalePrice,
+      pe_corporate_price: corporatePrice,
+      pe_retail_price: retailPrice,
+      ...apiContext,
     });
 
-    // Check if operation was successful
-    if (!ProductServiceApi.isOperationSuccessful(response)) {
-      const spResponse =
-        ProductServiceApi.extractStoredProcedureResponse(response);
-      const errorMessage = spResponse?.sp_message || "Erro ao atualizar preços";
-
-      logger.error("API returned error:", { spResponse, errorMessage });
-
-      return {
-        success: false,
-        error: errorMessage,
-      };
-    }
-
     logger.info("Product prices updated successfully:", { productId });
+
+    revalidateTag(CACHE_TAGS.productBase(String(productId)), "hours");
+    revalidateTag(CACHE_TAGS.productsBase, "seconds");
 
     return {
       success: true,
@@ -466,30 +422,20 @@ export async function updateProductType(
     }
 
     // Call API service
-    const response = await ProductServiceApi.updateProductType({
-      pe_id_produto: productId,
-      pe_id_tipo: typeId,
+    const { apiContext } = await getAuthContext();
+
+    await productInlineServiceApi.updateProductTypeInline({
+      pe_product_id: productId,
+      pe_type_id: typeId,
+      ...apiContext,
     });
 
-    // Check if operation was successful
-    if (!ProductServiceApi.isOperationSuccessful(response)) {
-      const spResponse =
-        ProductServiceApi.extractStoredProcedureResponse(response);
-      const errorMessage =
-        spResponse?.sp_message || "Erro ao atualizar tipo do produto";
-
-      return {
-        success: false,
-        error: errorMessage,
-      };
-    }
-
-    const spResponse =
-      ProductServiceApi.extractStoredProcedureResponse(response);
+    revalidateTag(CACHE_TAGS.productBase(String(productId)), "hours");
+    revalidateTag(CACHE_TAGS.productsBase, "seconds");
 
     return {
       success: true,
-      message: spResponse?.sp_message || "Tipo atualizado com sucesso",
+      message: "Tipo atualizado com sucesso",
     };
   } catch (error) {
     logger.error("Error updating product type:", error);
@@ -537,30 +483,20 @@ export async function updateProductBrand(
     }
 
     // Call API service
-    const response = await ProductServiceApi.updateProductBrand({
-      pe_id_produto: productId,
-      pe_id_marca: brandId,
+    const { apiContext } = await getAuthContext();
+
+    await productInlineServiceApi.updateProductBrandInline({
+      pe_product_id: productId,
+      pe_brand_id: brandId,
+      ...apiContext,
     });
 
-    // Check if operation was successful
-    if (!ProductServiceApi.isOperationSuccessful(response)) {
-      const spResponse =
-        ProductServiceApi.extractStoredProcedureResponse(response);
-      const errorMessage =
-        spResponse?.sp_message || "Erro ao atualizar marca do produto";
-
-      return {
-        success: false,
-        error: errorMessage,
-      };
-    }
-
-    const spResponse =
-      ProductServiceApi.extractStoredProcedureResponse(response);
+    revalidateTag(CACHE_TAGS.productBase(String(productId)), "hours");
+    revalidateTag(CACHE_TAGS.productsBase, "seconds");
 
     return {
       success: true,
-      message: spResponse?.sp_message || "Marca atualizada com sucesso",
+      message: "Marca atualizada com sucesso",
     };
   } catch (error) {
     logger.error("Error updating product brand:", error);
