@@ -2,6 +2,42 @@
 
 This document provides conventions and guidelines for agentic coding in this repository.
 
+## Visão Geral do Projeto
+
+**PDV WinERP** é um sistema completo de Ponto de Venda (PDV) desenvolvido para administração de vendas, controle de estoque, gestão financeira e emissão de notas fiscais. O sistema oferece controle total do negócio através de uma interface moderna e intuitiva.
+
+### Principais Funcionalidades
+
+- **Catálogo de Produtos**: Gerenciamento completo de produtos com categorização, marcas, estoque e preços
+- **PDV (Ponto de Venda)**: Interface de vendas com carrinho, múltiplos métodos de pagamento e integração com clientes
+- **Gestão de Categorias**: Sistema de taxonomia com categorias e subcategorias
+- **Relatórios**: Dashboard com painéis de vendas, produtos, clientes e métricas de negócio
+- **Gestão de Usuários**: Sistema de autenticação com roles (ADMIN, MEMBER, BILLING) e controle de permissões
+- **Organizações**: Multi-tenancy com gestão de membros e convites
+
+### Arquitetura
+
+O projeto segue uma arquitetura **Server-First** com:
+
+- **Server Components**: Padrão default para renderização no servidor
+- **Server Actions**: Exclusivamente para mutações de dados
+- **Client Components Isolados**: Apenas onde necessário para interatividade
+- **Services Layer**: Separação clara entre serviços de API e serviços de banco de dados
+- **Entity → DTO Pattern**: Transformação de dados entre banco e aplicação
+
+### Stack Tecnológico
+
+- **Framework**: Next.js 16+ com React Compiler
+- **UI**: Radix UI + Tailwind CSS + Shadcn components
+- **Banco de Dados**: MySQL com mysql2 (queries raw)
+- **Autenticação**: Better Auth com OAuth (Google, GitHub)
+- **Formulários**: React Hook Form + Zod validation
+- **Data Fetching**: Axios com cached services
+- **Drag & Drop**: Dnd-kit para componentes interativos
+- **Email**: React Email + Resend
+- **QR Code**: react-qr-code para geração de códigos
+- **Gráficos**: Recharts para visualização de dados
+
 ## Build & Development Commands
 
 ```bash
@@ -11,6 +47,7 @@ pnpm start            # Start production server with dotenv
 pnpm lint             # Run Biome linter/checker
 pnpm format           # Format code with Biome (auto-fixes)
 ```
+
 
 **Principais Tecnologias:**
 - **Next.js 16+**: Utiliza as versões mais recentes com **React Compiler** (cache component) ativado.
