@@ -47,6 +47,6 @@ ecosystem.config.js
 .github/
 .agents
 /docs
-/script
+/scripts
 
 
