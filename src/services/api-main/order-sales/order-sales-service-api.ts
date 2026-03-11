@@ -226,7 +226,7 @@ export class OrderSalesServiceApi extends BaseApiService {
 
   async findDashboardId(
     params: OrderSalesDashboardRequest,
-  ): Promise<OrderFindDashboardIdResponse> {
+  ): Promise<OrderFindDashboardIdResponse | null> {
     try {
       const validatedParams = OrderSalesDashboardSchema.parse(params);
       const requestBody = this.buildBasePayload(validatedParams);
@@ -237,7 +237,10 @@ export class OrderSalesServiceApi extends BaseApiService {
       );
 
       if (response.statusCode === API_STATUS_CODES.NOT_FOUND) {
-        throw new OrderSalesNotFoundError(validatedParams);
+        logger.warn(
+          `Dashboard não encontrado para os parâmetros: orderId=${params.pe_order_id}, sellerId=${params.pe_id_seller}`,
+        );
+        return null;
       }
 
       if (isApiError(response.statusCode)) {
