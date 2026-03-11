@@ -45,7 +45,8 @@ next-env.d.ts
 ecosystem.config.js
 .well-known
 .github/
-.agents/
+.agents
 /docs
 /script
+
 
