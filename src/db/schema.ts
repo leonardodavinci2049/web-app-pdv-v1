@@ -24,6 +24,7 @@ export type User = {
   banned?: boolean | null;
   banReason?: string | null;
   banExpires?: Date | string | null;
+  personId?: number | null;
 };
 
 export type Member = {

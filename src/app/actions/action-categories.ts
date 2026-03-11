@@ -8,9 +8,8 @@
  */
 
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth/auth";
 import { createLogger } from "@/lib/logger";
+import { getAuthContext } from "@/server/auth-context";
 import { taxonomyBaseServiceApi } from "@/services/api-main/taxonomy-base";
 import type {
   UITaxonomy,
@@ -59,21 +58,7 @@ export async function findCategories(
   params: FindCategoriesParams = {},
 ): Promise<FindCategoriesResponse> {
   try {
-    // Verificar autenticação
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session) {
-      logger.error("Usuário não autenticado");
-      return {
-        success: false,
-        data: [],
-        hasMore: false,
-        total: 0,
-        error: "Usuário não autenticado",
-      };
-    }
+    const { apiContext } = await getAuthContext();
 
     // Extrair parâmetros com valores padrão
     const {
@@ -115,12 +100,7 @@ export async function findCategories(
       pe_page_id: page,
       pe_column_id: sortColumn,
       pe_order_id: sortOrder,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_user_name: session.user.name ?? "",
-      pe_user_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
 
     // Extrair e transformar lista de taxonomias
@@ -162,25 +142,12 @@ export async function findCategories(
  */
 export async function findCategoryById(id: number): Promise<UITaxonomy | null> {
   try {
-    // Verificar autenticação
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session) {
-      logger.error("Usuário não autenticado");
-      return null;
-    }
+    const { apiContext } = await getAuthContext();
 
     // Chamar novo serviço da API
     const response = await taxonomyBaseServiceApi.findTaxonomyById({
       pe_taxonomy_id: id,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_user_name: session.user.name ?? "",
-      pe_user_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
 
     // Extrair e transformar dados da taxonomia
@@ -250,19 +217,7 @@ export async function updateCategory(
   params: UpdateCategoryParams,
 ): Promise<UpdateCategoryResponse> {
   try {
-    // Verificar autenticação
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session) {
-      logger.error("Usuário não autenticado");
-      return {
-        success: false,
-        message: "Usuário não autenticado",
-        error: "Usuário não autenticado",
-      };
-    }
+    const { apiContext } = await getAuthContext();
 
     const {
       id,
@@ -289,12 +244,7 @@ export async function updateCategory(
       pe_sort_order: order,
       pe_image_path: imagePath,
       pe_inactive: status,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_user_name: session.user.name ?? "",
-      pe_user_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
 
     // Buscar dados atualizados
@@ -350,30 +300,13 @@ export interface CreateCategoryResponse {
  */
 export async function loadCategoriesMenuAction() {
   try {
-    // Verificar autenticação
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session) {
-      logger.error("Usuário não autenticado para carregar menu de categorias");
-      return {
-        success: false,
-        data: [],
-        message: "Usuário não autenticado",
-      };
-    }
+    const { apiContext } = await getAuthContext();
 
     // Use pe_id_tipo = 2 for product categories (based on API documentation)
     const response = await taxonomyBaseServiceApi.findTaxonomyMenu({
       pe_type_id: 2,
       pe_parent_id: 0,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_user_name: session.user.name ?? "",
-      pe_user_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
 
     if (taxonomyBaseServiceApi.isValidTaxonomyMenu(response)) {
@@ -411,26 +344,13 @@ export async function loadCategoriesMenuAction() {
  */
 export async function getCategoryOptions(): Promise<UITaxonomyMenuItem[]> {
   try {
-    // Verificar autenticação
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session) {
-      logger.error("Usuário não autenticado");
-      return [];
-    }
+    const { apiContext } = await getAuthContext();
 
     // Buscar hierarquia de categorias usando endpoint de menu
     const response = await taxonomyBaseServiceApi.findTaxonomyMenu({
       pe_type_id: 1,
       pe_parent_id: 0,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_user_name: session.user.name ?? "",
-      pe_user_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
 
     // Verificar se resposta é válida
@@ -495,14 +415,7 @@ export async function createCategoryAction(formData: FormData) {
     }
 
     // 3. Verificar autenticação
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session) {
-      logger.error("Usuário não autenticado");
-      throw new Error("Usuário não autenticado");
-    }
+    const { apiContext } = await getAuthContext();
 
     // 4. Chamar novo serviço da API para criar
     const response = await taxonomyBaseServiceApi.createTaxonomy({
@@ -511,12 +424,7 @@ export async function createCategoryAction(formData: FormData) {
       pe_parent_id: validated.parentId,
       pe_level: 1,
       pe_type_id: 1,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_user_name: session.user.name ?? "",
-      pe_user_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
 
     // 5. Extrair resultado - novo serviço lança exceção em caso de erro
@@ -549,19 +457,7 @@ export async function createCategory(
   params: CreateCategoryParams,
 ): Promise<CreateCategoryResponse> {
   try {
-    // Verificar autenticação
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session) {
-      logger.error("Usuário não autenticado");
-      return {
-        success: false,
-        message: "Usuário não autenticado",
-        error: "Usuário não autenticado",
-      };
-    }
+    const { apiContext } = await getAuthContext();
 
     // Extrair apenas os campos aceitos pelo endpoint de criação
     const {
@@ -579,12 +475,7 @@ export async function createCategory(
       pe_parent_id: parentId,
       pe_level: level,
       pe_type_id: type,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_user_name: session.user.name ?? "",
-      pe_user_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
 
     // Extrair resultado - novo serviço lança exceção em caso de erro
@@ -639,30 +530,12 @@ export async function deleteCategory(
   categoryId: number,
 ): Promise<DeleteCategoryResponse> {
   try {
-    // Verificar autenticação
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user) {
-      return {
-        success: false,
-        message: "Não autorizado",
-        error: "Usuário não autenticado",
-      };
-    }
-
-    // logger.info(`Deletando categoria: ID ${categoryId}`);
+    const { apiContext } = await getAuthContext();
 
     // Chamar novo serviço de API para deletar
     const response = await taxonomyBaseServiceApi.deleteTaxonomy({
       pe_taxonomy_id: categoryId,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_user_name: session.user.name ?? "",
-      pe_user_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
 
     // Extrair mensagem de sucesso da stored procedure
