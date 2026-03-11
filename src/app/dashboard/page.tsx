@@ -1,10 +1,16 @@
+import { createLogger } from "@/core/logger";
 import { getAuthContext } from "@/server/auth-context";
-import { getOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
+import {
+  getOrderDashboard,
+  type UIOrderDashboard,
+} from "@/services/api-main/order-sales/order-sales-cached-service";
 import { SiteHeaderWithBreadcrumb } from "./_components/header/site-header-with-breadcrumb";
 import { CustomerSection } from "./_components/pdv/customer-section";
 import { HeaderPDV } from "./_components/pdv/HeaderPDV";
 import { OrderItemsSection } from "./_components/pdv/order-items-section";
 import { OrderSummary } from "./_components/pdv/order-summary";
+
+const logger = createLogger("dashboard-page");
 
 interface DashboardPageProps {
   searchParams: Promise<{ orderId?: string }>;
@@ -14,12 +20,19 @@ export default async function DashboardPage({
   searchParams,
 }: DashboardPageProps) {
   const params = await searchParams;
-  const orderId = params.orderId ? Number(params.orderId) : null;
+  const orderId = params.orderId ? Number(params.orderId) : 0;
 
-  let dashboardData = null;
-  if (orderId && !Number.isNaN(orderId)) {
+  let dashboardData: UIOrderDashboard | null = null;
+  try {
     const { apiContext } = await getAuthContext();
-    dashboardData = (await getOrderDashboard(orderId, apiContext)) ?? null;
+    dashboardData =
+      (await getOrderDashboard(orderId, {
+        ...apiContext,
+        sellerId: 2,
+        typeBusiness: 1,
+      })) ?? null;
+  } catch (error) {
+    logger.error("Erro ao carregar dados do pedido:", error);
   }
 
   return (
