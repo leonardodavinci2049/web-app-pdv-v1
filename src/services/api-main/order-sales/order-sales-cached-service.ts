@@ -367,6 +367,10 @@ export async function getOrderDashboard(
       pe_person_id: params.pe_person_id,
     });
 
+    if (!response) {
+      return undefined;
+    }
+
     const summary = orderSalesServiceApi.extractDashboardSummary(response);
     const details = orderSalesServiceApi.extractDashboardDetails(response);
     const items = orderSalesServiceApi.extractDashboardItems(response);
