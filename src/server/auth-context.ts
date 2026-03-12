@@ -2,11 +2,21 @@ import "server-only";
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { createLogger } from "@/core/logger";
 import { auth } from "@/lib/auth/auth";
+
+const logger = createLogger("AuthContext");
 
 export async function getAuthContext() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/sign-in");
+
+  const personId = session.user.personId;
+  if (!personId) {
+    logger.warn(
+      `Usuário ${session.user.id} sem personId preenchido. Usando fallback 0.`,
+    );
+  }
 
   return {
     session,
@@ -16,8 +26,7 @@ export async function getAuthContext() {
       pe_user_id: session.user.id ?? "0",
       pe_user_name: session.user.name ?? "",
       pe_user_role: session.user.role ?? "admin",
-      // TODO: substituir por session.user.personId quando o campo existir no schema
-      pe_person_id: 1,
+      pe_person_id: personId ?? 0,
     },
   };
 }
