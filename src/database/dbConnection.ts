@@ -1,3 +1,5 @@
+import "server-only";
+
 import {
   createPool,
   type Pool,
@@ -6,9 +8,22 @@ import {
   type ResultSetHeader,
   type RowDataPacket,
 } from "mysql2/promise";
+import { z } from "zod";
 import { envs } from "@/core/config/envs";
+import { createLogger } from "@/core/logger";
 
-// Tipos compatíveis com mysql2 v3.18+
+const logger = createLogger("database-service");
+
+// Pool configuration with safe defaults - can be overridden via environment variables:
+// DB_POOL_CONNECTION_LIMIT, DB_POOL_MAX_IDLE, DB_POOL_IDLE_TIMEOUT, DB_POOL_QUEUE_LIMIT
+const poolConfigSchema = z.object({
+  connectionLimit: z.coerce.number().positive().default(5),
+  maxIdle: z.coerce.number().nonnegative().default(2),
+  idleTimeout: z.coerce.number().positive().default(10000),
+  queueLimit: z.coerce.number().nonnegative().default(50),
+});
+
+// Only positional parameters are supported (namedPlaceholders not enabled in pool config)
 type SqlParam =
   | string
   | number
@@ -18,9 +33,9 @@ type SqlParam =
   | null
   | Buffer
   | Uint8Array;
-type QueryParams = SqlParam[] | { [key: string]: SqlParam };
+export type QueryParams = SqlParam[];
 
-// Classe de erro customizada para conexão com banco de dados
+// Error for connection-level failures
 export class ErroConexaoBancoDados extends Error {
   constructor(
     mensagem: string,
@@ -31,11 +46,19 @@ export class ErroConexaoBancoDados extends Error {
   }
 }
 
-// Classe de erro customizada para execução de consultas
+// Operation classification for query errors
+export type OperacaoConsulta =
+  | "select"
+  | "modify"
+  | "transaction"
+  | "connection";
+
+// Error for query execution failures - stores sanitized metadata instead of raw SQL
 export class ErroExecucaoConsulta extends Error {
   constructor(
     mensagem: string,
-    public readonly consulta: string,
+    public readonly operacao: OperacaoConsulta,
+    public readonly durationMs: number,
     public readonly erroOriginal: Error,
   ) {
     super(mensagem);
@@ -43,12 +66,21 @@ export class ErroExecucaoConsulta extends Error {
   }
 }
 
+// Transactional context interface - decouples callers from PoolConnection internals
+export interface TransactionContext {
+  execute<T extends RowDataPacket>(
+    queryString: string,
+    params?: QueryParams,
+  ): Promise<T[]>;
+  modify(queryString: string, params?: QueryParams): Promise<ResultSetHeader>;
+}
+
 class DatabaseService {
   private poolConnection: Pool | null = null;
 
   private constructor() {}
 
-  // Singleton pattern via globalThis - sobrevive re-avaliações de módulo no dev mode
+  // Singleton via globalThis - survives module re-evaluation in dev mode
   public static getInstance(): DatabaseService {
     const globalKey = "__db_service_instance__" as const;
     const g = globalThis as typeof globalThis & {
@@ -60,14 +92,21 @@ class DatabaseService {
     return g[globalKey];
   }
 
-  // Conecta ao banco de dados MySQL
+  // Creates the connection pool (idempotent)
   public connect(): void {
     if (this.poolConnection) {
-      console.log("Conexão com banco de dados já estabelecida");
+      logger.debug("Pool de conexões já está ativo");
       return;
     }
 
     try {
+      const poolConfig = poolConfigSchema.parse({
+        connectionLimit: process.env.DB_POOL_CONNECTION_LIMIT,
+        maxIdle: process.env.DB_POOL_MAX_IDLE,
+        idleTimeout: process.env.DB_POOL_IDLE_TIMEOUT,
+        queueLimit: process.env.DB_POOL_QUEUE_LIMIT,
+      });
+
       const config: PoolOptions = {
         host: envs.DATABASE_HOST,
         port: envs.DATABASE_PORT,
@@ -75,21 +114,18 @@ class DatabaseService {
         user: envs.DATABASE_USER,
         password: envs.DATABASE_PASSWORD,
         waitForConnections: true,
-        connectionLimit: 5,
-        maxIdle: 2,
-        idleTimeout: 10000,
+        connectionLimit: poolConfig.connectionLimit,
+        maxIdle: poolConfig.maxIdle,
+        idleTimeout: poolConfig.idleTimeout,
         enableKeepAlive: true,
         keepAliveInitialDelay: 5000,
-        queueLimit: 50,
+        queueLimit: poolConfig.queueLimit,
       };
 
       this.poolConnection = createPool(config);
-      console.log("Conectado ao banco de dados MySQL");
+      logger.info("Pool de conexões MySQL criado");
     } catch (error) {
-      console.error(
-        "Erro ao conectar ao banco de dados MySQL com mysql2",
-        error,
-      );
+      logger.error("Falha ao criar pool de conexões MySQL", error);
       throw new ErroConexaoBancoDados(
         "Falha ao estabelecer conexão com o banco de dados",
         error as Error,
@@ -97,7 +133,7 @@ class DatabaseService {
     }
   }
 
-  // Garante que a conexão está estabelecida
+  // Lazy initialization - pool is created on first use
   private ensureConnection(): Pool {
     if (!this.poolConnection) {
       this.connect();
@@ -111,112 +147,166 @@ class DatabaseService {
     return this.poolConnection;
   }
 
-  // Método para SELECT (sem transação)
+  // SELECT using query (flexible)
   async selectQuery<T extends RowDataPacket>(
     queryString: string,
     params?: QueryParams,
   ): Promise<T[]> {
+    const start = Date.now();
     try {
       const pool = this.ensureConnection();
       const [results] = await pool.query<T[]>(queryString, params);
+      logger.debug("selectQuery concluído", { durationMs: Date.now() - start });
       return results;
     } catch (error) {
-      console.error("Erro ao executar selectQuery:", error);
+      const durationMs = Date.now() - start;
+      logger.error("Falha em selectQuery", { durationMs });
       throw new ErroExecucaoConsulta(
         "Falha ao executar consulta SELECT",
-        queryString,
+        "select",
+        durationMs,
         error as Error,
       );
     }
   }
 
-  // Método para SELECT com segurança reforçada
+  // SELECT using prepared statement (recommended - prevents SQL injection)
   async selectExecute<T extends RowDataPacket>(
     queryString: string,
     params?: QueryParams,
   ): Promise<T[]> {
+    const start = Date.now();
     try {
       const pool = this.ensureConnection();
       const [results] = await pool.execute<T[]>(queryString, params);
+      logger.debug("selectExecute concluído", {
+        durationMs: Date.now() - start,
+      });
       return results;
     } catch (error) {
-      console.error("Erro ao executar selectExecute:", error);
+      const durationMs = Date.now() - start;
+      logger.error("Falha em selectExecute", { durationMs });
       throw new ErroExecucaoConsulta(
         "Falha ao executar consulta SELECT com execute",
-        queryString,
+        "select",
+        durationMs,
         error as Error,
       );
     }
   }
 
-  // Insert/Update/Delete usando execute
+  // INSERT/UPDATE/DELETE using prepared statement (recommended)
+  async modifyExecute(
+    queryString: string,
+    params?: QueryParams,
+  ): Promise<ResultSetHeader> {
+    const start = Date.now();
+    try {
+      const pool = this.ensureConnection();
+      const [results] = await pool.execute(queryString, params);
+      logger.debug("modifyExecute concluído", {
+        durationMs: Date.now() - start,
+      });
+      return results as ResultSetHeader;
+    } catch (error) {
+      const durationMs = Date.now() - start;
+      logger.error("Falha em modifyExecute", { durationMs });
+      throw new ErroExecucaoConsulta(
+        "Falha ao executar operação de modificação com execute",
+        "modify",
+        durationMs,
+        error as Error,
+      );
+    }
+  }
+
+  /** @deprecated Use modifyExecute instead */
   async ModifyExecute(
     queryString: string,
     params?: QueryParams,
   ): Promise<ResultSetHeader> {
+    return this.modifyExecute(queryString, params);
+  }
+
+  // INSERT/UPDATE/DELETE using query
+  async modifyQuery(
+    queryString: string,
+    params?: QueryParams,
+  ): Promise<ResultSetHeader> {
+    const start = Date.now();
     try {
       const pool = this.ensureConnection();
-      const [results] = await pool.execute(queryString, params);
+      const [results] = await pool.query(queryString, params);
+      logger.debug("modifyQuery concluído", { durationMs: Date.now() - start });
       return results as ResultSetHeader;
     } catch (error) {
-      console.error("Erro ao executar ModifyExecute:", error);
+      const durationMs = Date.now() - start;
+      logger.error("Falha em modifyQuery", { durationMs });
       throw new ErroExecucaoConsulta(
-        "Falha ao executar operação de modificação com execute",
-        queryString,
+        "Falha ao executar operação de modificação com query",
+        "modify",
+        durationMs,
         error as Error,
       );
     }
   }
 
-  // Insert/Update/Delete usando query
+  /** @deprecated Use modifyQuery instead */
   async ModifyQuery(
     queryString: string,
     params?: QueryParams,
   ): Promise<ResultSetHeader> {
-    try {
-      const pool = this.ensureConnection();
-      const [results] = await pool.query(queryString, params);
-      return results as ResultSetHeader;
-    } catch (error) {
-      console.error("Erro ao executar ModifyQuery:", error);
-      throw new ErroExecucaoConsulta(
-        "Falha ao executar operação de modificação com query",
-        queryString,
-        error as Error,
-      );
-    }
+    return this.modifyQuery(queryString, params);
   }
 
-  // Operações com transação
+  // Runs a callback within a database transaction
   async runInTransaction<T>(
-    callback: (connection: PoolConnection) => Promise<T>,
+    callback: (ctx: TransactionContext) => Promise<T>,
   ): Promise<T> {
     const connection = await this.getConnection();
+    const start = Date.now();
+
+    const ctx: TransactionContext = {
+      async execute<R extends RowDataPacket>(
+        queryString: string,
+        params?: QueryParams,
+      ): Promise<R[]> {
+        const [results] = await connection.execute<R[]>(queryString, params);
+        return results;
+      },
+      async modify(
+        queryString: string,
+        params?: QueryParams,
+      ): Promise<ResultSetHeader> {
+        const [results] = await connection.execute(queryString, params);
+        return results as ResultSetHeader;
+      },
+    };
 
     try {
       await connection.beginTransaction();
-      const result = await callback(connection);
+      const result = await callback(ctx);
       await connection.commit();
+      logger.debug("Transação concluída com sucesso", {
+        durationMs: Date.now() - start,
+      });
       return result;
     } catch (error) {
       await connection.rollback();
-      console.error("Transação falhou Revertida. Revertida.", error);
+      logger.error("Transação revertida", { durationMs: Date.now() - start });
       throw error;
     } finally {
       connection.release();
     }
   }
 
-  // Obtém uma conexão do pool
+  // Low-level pool connection (prefer runInTransaction for transactional operations)
   async getConnection(): Promise<PoolConnection> {
     try {
       const pool = this.ensureConnection();
       return await pool.getConnection();
     } catch (error) {
-      console.error(
-        `Falha ao obter conexão do banco de dados: ${error}`,
-        error,
-      );
+      logger.error("Falha ao obter conexão do pool", error);
       throw new ErroConexaoBancoDados(
         "Falha ao obter conexão do pool",
         error as Error,
@@ -224,33 +314,29 @@ class DatabaseService {
     }
   }
 
-  // Fechamento do pool
+  // Explicit connectivity health check
+  async ping(): Promise<void> {
+    const connection = await this.getConnection();
+    try {
+      await connection.ping();
+      logger.debug("Ping ao banco de dados bem-sucedido");
+    } finally {
+      connection.release();
+    }
+  }
+
+  // Graceful pool shutdown
   async closeConnection(): Promise<void> {
     if (this.poolConnection) {
       await this.poolConnection.end();
       this.poolConnection = null;
-      console.log("Pool de conexões MySQL fechado");
+      logger.info("Pool de conexões MySQL encerrado");
     }
   }
 }
 
-// Instância singleton do serviço de banco de dados
+// Singleton instance - pool is created lazily on first use, no side effects on import
 const dbService = DatabaseService.getInstance();
-
-// Conecta automaticamente apenas em produção/runtime, não durante build
-if (typeof window === "undefined" && process.env.NODE_ENV !== "test") {
-  // Conecta apenas se não estivermos em build time
-  if (!process.env.BUILDING) {
-    try {
-      dbService.connect();
-    } catch (error) {
-      console.warn(
-        "Aviso: Não foi possível conectar ao banco durante inicialização:",
-        error,
-      );
-    }
-  }
-}
 
 export default dbService;
 export { DatabaseService };
