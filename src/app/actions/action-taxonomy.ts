@@ -1,9 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth/auth";
 import { createLogger } from "@/lib/logger";
+import { getAuthContext } from "@/server/auth-context";
 import { taxonomyRelServiceApi } from "@/services/api-main/taxonomy-rel";
 import {
   transformTaxonomyRelProductList,
@@ -23,23 +22,13 @@ export async function createTaxonomyRelationship(
   productId: number,
 ) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    if (!session) {
-      return { success: false, message: "Usuário não autenticado" };
-    }
+    const { apiContext } = await getAuthContext();
 
     // Novo serviço lança exceção em caso de erro
     await taxonomyRelServiceApi.createTaxonomyRelation({
       pe_taxonomy_id: taxonomyId,
       pe_record_id: productId,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_user_name: session.user.name ?? "",
-      pe_user_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
 
     // Revalidate product page to reflect changes
@@ -74,23 +63,13 @@ export async function deleteTaxonomyRelationship(
   productId: number,
 ) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    if (!session) {
-      return { success: false, message: "Usuário não autenticado" };
-    }
+    const { apiContext } = await getAuthContext();
 
     // Novo serviço lança exceção em caso de erro
     await taxonomyRelServiceApi.deleteTaxonomyRelation({
       pe_taxonomy_id: taxonomyId,
       pe_record_id: productId,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_user_name: session.user.name ?? "",
-      pe_user_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
 
     // Revalidate product page to reflect changes
@@ -122,22 +101,12 @@ export async function deleteTaxonomyRelationship(
  */
 export async function fetchProductCategories(productId: number) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    if (!session) {
-      return { success: false, data: [], message: "Usuário não autenticado" };
-    }
+    const { apiContext } = await getAuthContext();
 
     // Chamar novo serviço
     const response = await taxonomyRelServiceApi.findAllProductsByTaxonomy({
       pe_record_id: productId,
-      pe_system_client_id: session.session?.systemId ?? 0,
-      pe_organization_id: session.session?.activeOrganizationId ?? "0",
-      pe_user_id: session.user.id ?? "0",
-      pe_user_name: session.user.name ?? "",
-      pe_user_role: session.user.role ?? "admin",
-      pe_person_id: 1,
+      ...apiContext,
     });
 
     // Extrair e transformar categorias
