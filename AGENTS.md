@@ -1,170 +1,371 @@
 # Agent Guidelines for web-app-pdv-v1
 
-This document provides conventions and guidelines for agentic coding in this repository.
+This document provides essential conventions for code agents in this repository.
 
-## Visão Geral do Projeto
+## Critical Rules
 
-**PDV WinERP** é um sistema completo de Ponto de Venda (PDV) desenvolvido para administração de vendas, controle de estoque, gestão financeira e emissão de notas fiscais. O sistema oferece controle total do negócio através de uma interface moderna e intuitiva.
+**These rules are mandatory and must always be followed:**
 
-### Principais Funcionalidades
+1. **Server First**: Always prioritize server-side components. When you need interactivity (hooks, event listeners), create a subcomponent and isolate the functionality.
 
-- **Catálogo de Produtos**: Gerenciamento completo de produtos com categorização, marcas, estoque e preços
-- **PDV (Ponto de Venda)**: Interface de vendas com carrinho, múltiplos métodos de pagamento e integração com clientes
-- **Gestão de Categorias**: Sistema de taxonomia com categorias e subcategorias
-- **Relatórios**: Dashboard com painéis de vendas, produtos, clientes e métricas de negócio
-- **Gestão de Usuários**: Sistema de autenticação com roles (ADMIN, MEMBER, BILLING) e controle de permissões
-- **Organizações**: Multi-tenancy com gestão de membros e convites
+2. **Route Pages**: MUST be Server Components (page.tsx, layout.tsx).
 
-### Arquitetura
+3. **Cache Invalidation**: All create, update, and delete operations must revalidate cache with `revalidateTag()`.
 
-O projeto segue uma arquitetura **Server-First** com:
+4. **Server Actions with Auth**: For security, server action functions must always check if a user session exists.
 
-- **Server Components**: Padrão default para renderização no servidor
-- **Server Actions**: Exclusivamente para mutações de dados
-- **Client Components Isolados**: Apenas onde necessário para interatividade
-- **Services Layer**: Separação clara entre serviços de API e serviços de banco de dados
-- **Entity → DTO Pattern**: Transformação de dados entre banco e aplicação
+5. **Next.js 16+**: Project uses Next.js version 16+ with React Compiler (component cache enabled).
 
-### Stack Tecnológico
+6. **Mobile-first**: Project is mobile-first with light and dark themes.
 
-- **Framework**: Next.js 16+ com React Compiler
-- **UI**: Radix UI + Tailwind CSS + Shadcn components
-- **Banco de Dados**: MySQL com mysql2 (queries raw)
-- **Autenticação**: Better Auth com OAuth (Google, GitHub)
-- **Formulários**: React Hook Form + Zod validation
-- **Data Fetching**: Axios com cached services
-- **Drag & Drop**: Dnd-kit para componentes interativos
+## Overview
+
+**PDV WinERP** - Point of Sale system with product catalog, inventory management, sales, reports, and multi-tenancy.
+
+## Architecture
+
+**Server-First** with Next.js 16 + React Compiler:
+- **Server Components**: Default pattern
+- **Server Actions**: Exclusively for mutations
+- **Client Components**: Isolated only where necessary
+- **Services Layer**: Separation API Service ↔ Cached Service
+- **Entity → DTO**: Data transformation between layers
+
+## Stack
+
+- **Framework**: Next.js 16+ with **React 19** and **React Compiler** (component cache enabled)
+- **UI**: Radix UI + Tailwind CSS + Shadcn
+- **Design**: Mobile-first with light and dark themes
+- **Database**: MySQL with mysql2 (raw queries)
+- **Auth**: Better Auth (OAuth: Google, GitHub)
+- **Forms**: Next Form + Server Actions
+- **Validation**: Zod
+- **HTTP**: Axios (server-only)
+- **Cache**: Next.js 16 `use cache` directive
 - **Email**: React Email + Resend
-- **QR Code**: react-qr-code para geração de códigos
-- **Gráficos**: Recharts para visualização de dados
+- **Charts**: Recharts
 
-## Build & Development Commands
+## Commands
 
 ```bash
-pnpm dev              # Start dev server with dotenv (required for DB)
-pnpm build            # Production build
-pnpm start            # Start production server with dotenv
-pnpm lint             # Run Biome linter/checker
-pnpm format           # Format code with Biome (auto-fixes)
+pnpm dev    # Start dev server (requires .env)
+pnpm build  # Production build
+pnpm lint   # Biome check
+pnpm format # Biome format
 ```
-
-
-**Principais Tecnologias:**
-- **Next.js 16+**: Utiliza as versões mais recentes com **React Compiler** (cache component) ativado.
-- **Server Components**: Preferência absoluta por componentes do lado do servidor para performance e SEO.
-- **Server Actions**: Utilizados **exclusivamente** para mutações de dados (mutations).
 
 ## Project Structure
 
 ```
 src/
-├── app/           # Next.js App Router pages and API routes
-├── components/    # React components (client and server)
-├── core/          # Core utilities (config, constants, logger)
-├── db/            # Database schema definitions
-├── hooks/         # React hooks
-├── lib/           # Shared utilities (cn helper, auth config)
-├── server/        # Server actions (apenas para mutations)
-├── services/      # Database and API services
-└── types/         # TypeScript type definitions
+├── app/                    # App Router pages (Server Components)
+├── components/
+│   ├── ui/                 # Shadcn components
+│   └── dashboard/          # Dashboard components
+├── core/                   # Config, constants, logger
+├── db/                     # DB schema types
+├── lib/                    # Utils, auth, axios, cache config
+├── server/                 # Server Actions (mutations only)
+├── services/
+│   ├── db/                 # MySQL services (mysql2)
+│   └── api-main/           # External API services
+│       └── [feature]/
+│           ├── *-service-api.ts       # API integration
+│           ├── *-cached-service.ts    # Cache + transform
+│           ├── types/                 # TypeScript types
+│           ├── validation/            # Zod schemas
+│           └── transformers/          # Entity→DTO
+└── types/                  # Shared types
 ```
 
-## Code Style Guidelines
+## Code Style
 
-### Componentes e Interatividade
-- **Server First**: Desenvolva sempre como Server Component por padrão.
-- **Componentes de Rota**: Páginas (`page.tsx`) e Layouts (`layout.tsx`) devem ser **obrigatoriamente** Server Components.
-- **Isolamento de Client Components**: Se precisar de interatividade (hooks, event listeners), isole essa lógica em um componente separado.
-- **Localização de Client Components**: Coloque o componente de cliente em uma pasta `components/` dentro do diretório do componente pai (ex: se o pai está em `src/app/page.tsx`, o componente de cliente fica em `src/app/components/client-component.tsx`).
+### Essential Rules
+- **Server First**: Always Server Component by default
+- **Route Pages/Layouts**: MUST be Server Components
+- **Client Components**: Isolate in `components/` of parent directory only when needed for interactivity
+- **Priority**: Always prioritize server-side components. When you need interactivity (hooks, event listeners), create a subcomponent and isolate the functionality
+- **Imports**: Absolute with `@/` (no relative for src)
+- **Biome**: 2 spaces, no trailing semicolons
+- **TypeScript**: Strict, `unknown` instead of `any`
 
-### Formatting & Linting
-- **Biome** for all formatting (2 space indentation).
-- Imports organized automatically on save.
-- No trailing semicolons.
+### Naming
+- **Files**: kebab-case (`submit-button.tsx`, `auth.service.ts`)
+- **Components**: PascalCase (`SubmitButton`)
+- **Functions**: camelCase (`useIsMobile`, `findById`)
+- **Constants**: UPPER_SNAKE_CASE (`API_TIMEOUTS`)
 
-### Imports
-- Path alias `@/` for internal imports (`@/components/ui/button`).
-- Order: external libraries, internal modules, styles.
-- Absolute imports only - no relative imports for src files.
-- Named exports preferred for multiple exports.
+## Service Patterns
 
-### TypeScript
-- **Strict mode enabled** - all types must be defined.
-- `type` for type aliases, `interface` for object shapes.
-- Use `unknown` instead of `any`, `Record<string, unknown>` for dynamic objects.
-- `as const` for readonly constant arrays/objects.
+### API Service Pattern (External API Integration)
 
-### Naming Conventions
-- **Files:** kebab-case (`submit-button.tsx`, `auth.service.ts`).
-- **Components:** PascalCase (`SubmitButton`, `ThemeProvider`).
-- **Functions:** camelCase (`useIsMobile`, `findUserById`).
-- **Constants:** UPPER_SNAKE_CASE (`API_TIMEOUTS`, `AUTH_TABLES`).
+**Structure in `src/services/api-main/[feature]/`:**
 
-### Server Actions
+```
+[feature]/
+├── *-service-api.ts       # Class extending BaseApiService
+├── *-cached-service.ts    # Functions with 'use cache'
+├── types/                 # Request/Response types, Error classes
+├── validation/            # Zod schemas
+├── transformers/          # Entity→DTO (API→UI)
+└── index.ts               # Public exports
+```
+
+**Service API (`*service-api.ts`):**
 ```typescript
-"use server";
-// Use APENAS para mutações (POST, PUT, DELETE)
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth/auth";
+import "server-only";
+import { BaseApiService } from "@/lib/axios/base-api-service";
+import * as schemas from "./validation/*-schemas";
 
-export async function myAction(params: { id: string }) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/sign-in");
+export class FeatureServiceApi extends BaseApiService {
+  async findFeatureById(params: FindByIdRequest): Promise<ApiResponse<FeatureResponse>> {
+    schemas.FindByIdSchema.parse(params); // Validate with Zod
+    return this.post<FeatureResponse>("/endpoint", params);
+  }
+  // Helper methods: extract*, transform*, validate*
+}
+
+export const featureServiceApi = new FeatureServiceApi();
+```
+
+**Cached Service (`*-cached-service.ts`):**
+```typescript
+import "server-only";
+import { cacheLife, cacheTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-config";
+import { featureServiceApi } from "./feature-service-api";
+import { transformFeature } from "./transformers/transformers";
+
+export async function getFeatureById(id: string): Promise<UIFeature> {
+  "use cache";
+  cacheLife("hours"); // hours, frequent, daily, seconds
+  cacheTag(CACHE_TAGS.feature(id));
+
+  const response = await featureServiceApi.findFeatureById({ id });
+  return transformFeature(response.data);
+}
+```
+
+### DB Service Pattern (Direct MySQL)
+
+**Location:** `src/services/db/`
+
+```typescript
+import "server-only";
+import dbService from "@/database/dbConnection";
+import { z } from "zod";
+
+async function findById(params: { id: string }): Promise<ServiceResponse<User>> {
   try {
-    // Lógica de mutação
-    return { success: true, data: result };
+    z.string().min(1).parse(params.id);
+    const query = "SELECT id, name FROM user WHERE id = ? LIMIT 1";
+    const results = await dbService.selectExecute<UserEntity>(query, [params.id]);
+    return { success: true, data: mapEntityToDto(results[0]) };
   } catch (error) {
-    console.error(error);
     return { success: false, error: "Error message" };
   }
 }
 ```
 
-### Database Services
-Services in `src/services/db/` use raw SQL with mysql2 and Entity → DTO pattern:
+## Cache Patterns
+
+**Next.js 16 `use cache` directive:**
 
 ```typescript
-import "server-only";
-import { z } from "zod";
-import dbService from "@/services/db/dbConnection";
+import { cacheLife, cacheTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-config";
 
-const IdSchema = z.string().min(1).max(128);
-
-async function findById(params: { id: string }): Promise<ServiceResponse<User>> {
-  try {
-    IdSchema.parse(params.id);
-    const query = "SELECT id, name FROM user WHERE id = ? LIMIT 1";
-    const results = await dbService.selectExecute<UserEntity>(query, [params.id]);
-    return { success: true, data: mapEntityToDto(results[0]), error: null };
-  } catch (error) {
-    return handleError<User>(error, "findById");
-  }
+export async function getData(params: { id: string }): Promise<Data> {
+  "use cache";
+  cacheLife("hours"); // hours=1h, frequent=5m, daily=24h, seconds
+  cacheTag(CACHE_TAGS.feature(params.id)); // Individual tag
+  cacheTag(CACHE_TAGS.features); // Global tag
+  // fetch logic
 }
-export const MyService = { findById } as const;
 ```
 
-### Error Handling
-- Always wrap async operations in try-catch.
-- Return standardized: `{ success: boolean, data?: T, error?: string }`.
-- Use custom error classes for domain errors.
-- Never expose database errors/stack traces to clients.
-- Log with `createLogger("context")` from `@/core/logger`.
+**Profiles defined in `next.config.ts`:**
+- `hours`: 1 hour (navigation, categories)
+- `frequent`: 5 minutes (products, listings)
+- `daily`: 24 hours (footer, static content)
 
-### Configuration
-- Environment vars in `.env` and `.env.local` (don't commit secrets).
-- Load with `envs` from `@/core/config/envs`.
-- React Compiler enabled in next.config.ts.
-- TypeScript strict mode, ES2017 target.
+### Cache Invalidation (Mandatory in Mutations)
 
-### Comments
-- Write in Portuguese for domain concepts (as per existing codebase).
-- Keep brief and focused on "why" not "what".
-- Don't comment obvious code.
+**All create, update, and delete operations must revalidate cache:**
 
-## Before Making Changes
-1. Run `pnpm lint` to check code quality.
-2. Follow existing patterns in similar files.
-3. Use `pnpm format` to auto-format.
-4. No relative imports for src files.
-5. Ensure all new code is properly typed (no `any`).
+```typescript
+"use server";
+import { revalidateTag, revalidatePath } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-config";
+
+export async function createFeature(params: CreateParams) {
+  // mutation logic (create)
+  
+  // Revalidate individual cache
+  revalidateTag(CACHE_TAGS.feature(newId));
+  
+  // Revalidate global list cache
+  revalidateTag(CACHE_TAGS.features);
+  
+  // Optional: revalidate full path
+  revalidatePath("/dashboard/feature");
+}
+
+export async function updateFeature(params: UpdateParams) {
+  // mutation logic (update)
+  
+  // Revalidate individual cache
+  revalidateTag(CACHE_TAGS.feature(params.id));
+  revalidateTag(CACHE_TAGS.features);
+}
+
+export async function deleteFeature(params: DeleteParams) {
+  // mutation logic (delete)
+  
+  // Revalidate individual and global cache
+  revalidateTag(CACHE_TAGS.feature(params.id));
+  revalidateTag(CACHE_TAGS.features);
+}
+```
+
+## Authentication Patterns
+
+**Better Auth with Organization Roles:**
+
+```typescript
+import { auth } from "@/lib/auth/auth";
+import { headers } from "next/headers";
+
+const session = await auth.api.getSession({ headers: await headers() });
+if (!session) redirect("/sign-in");
+
+// Organization roles: owner, manager, salesperson, operator, cashier, finance, shipping, customer
+// Platform roles: superAdmin, user
+```
+
+### Server Actions with Authentication (Mandatory)
+
+**For security, server action functions must always check if a user session exists:**
+
+```typescript
+"use server";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth/auth";
+
+export async function myAction(formData: FormData) {
+  // MANDATORY: Check user session
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect("/sign-in");
+  
+  // mutation logic
+}
+```
+
+## Form Patterns
+
+**Next Form + Server Actions:**
+
+```typescript
+"use client";
+import Form from "next/form";
+import { useActionState } from "react";
+
+export function MyForm() {
+  const [state, formAction] = useActionState(serverAction, null);
+
+  return (
+    <Form action={formAction}>
+      <Input name="field" required />
+      <Button type="submit">Submit</Button>
+    </Form>
+  );
+}
+```
+
+**Server Action for Form:**
+```typescript
+"use server";
+import { z } from "zod";
+
+const FormSchema = z.object({
+  field: z.string().min(1),
+});
+
+export async function serverAction(_prevState: unknown, formData: FormData) {
+  const data = Object.fromEntries(formData.entries());
+  const validated = FormSchema.parse(data);
+  // mutation logic
+  return { success: true, message: "Success" };
+}
+```
+
+## Client Component Patterns
+
+**Isolate interactivity:**
+
+```typescript
+"use client";
+// hooks, event listeners, useState
+import { useState } from "react";
+
+export function InteractiveComponent() {
+  const [value, setValue] = useState("");
+  // interactive logic
+}
+```
+
+**Use in Server Component:**
+```typescript
+// src/app/page.tsx (Server Component)
+import { InteractiveComponent } from "./components/interactive-component";
+
+export default function Page() {
+  return <InteractiveComponent />;
+}
+```
+
+**Important:**
+- Always prioritize server-side components
+- When you need interactivity (hooks, event listeners), create a subcomponent and isolate the functionality
+- Keep client component as lean as possible, transferring fetch logic to parent component (Server Component)
+
+## Error Handling
+
+**Response pattern:**
+```typescript
+type ServiceResponse<T> = {
+  success: boolean;
+  data?: T;
+  error?: string;
+};
+```
+
+**Log:**
+```typescript
+import { createLogger } from "@/core/logger";
+
+const logger = createLogger("context");
+logger.debug("debug message", data);
+logger.info("info message");
+logger.warn("warning message");
+logger.error("error message", error);
+```
+
+## Cache Tags
+
+Defined in `src/lib/cache-config.ts`:
+
+**Dynamic tags:**
+- `CACHE_TAGS.product(id)`, `CACHE_TAGS.category(id)`, etc.
+
+**Static tags:**
+- `CACHE_TAGS.products`, `CACHE_TAGS.categories`, etc.
+
+## Before Committing
+
+1. Run `pnpm lint`
+2. Run `pnpm format`
+3. Check absolute imports (no relative for src)
+4. Check TypeScript types (no `any`)
+5. Test build: `pnpm build`
