@@ -79,11 +79,11 @@ export function ProductInfoDisplay({
 
         {/* Rating Stars (Mock - in real app would come from reviews) */}
         <div className="flex items-center gap-1">
-          {Array.from({ length: 5 }).map((_, i) => (
+          {[1, 2, 3, 4, 5].map((star) => (
             <Star
-              key={`star-${i + 1}`}
+              key={`star-${star}`}
               className={`h-4 w-4 ${
-                i < 4
+                star <= 4
                   ? "fill-yellow-400 text-yellow-400"
                   : "text-muted-foreground"
               }`}
