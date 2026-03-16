@@ -179,11 +179,8 @@ export function ProductDetailsLayoutSkeleton() {
         <div className="space-y-4">
           <Skeleton className="aspect-square w-full" />
           <div className="grid grid-cols-5 gap-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton
-                key={`gallery-skeleton-${i + 1}`}
-                className="aspect-square w-full"
-              />
+            {["gs-1", "gs-2", "gs-3", "gs-4", "gs-5"].map((id) => (
+              <Skeleton key={id} className="aspect-square w-full" />
             ))}
           </div>
         </div>
@@ -198,11 +195,8 @@ export function ProductDetailsLayoutSkeleton() {
             <Skeleton className="h-8 w-3/4" />
             <Skeleton className="h-4 w-1/2" />
             <div className="flex items-center gap-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton
-                  key={`rating-skeleton-${i + 1}`}
-                  className="h-4 w-4"
-                />
+              {["rs-1", "rs-2", "rs-3", "rs-4", "rs-5"].map((id) => (
+                <Skeleton key={id} className="h-4 w-4" />
               ))}
             </div>
           </div>
