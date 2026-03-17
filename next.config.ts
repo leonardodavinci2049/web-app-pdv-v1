@@ -35,10 +35,23 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      // Production images domain (EXTERNAL_PATH_IMAGES_URL)
+      {
+        protocol: "https",
+        hostname: "admin01.winerp.com.br",
+        port: "",
+        pathname: "/**",
+      },
       {
         protocol: "http",
         hostname: "localhost",
         port: "5573",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "5582",
         pathname: "/**",
       },
     ],
