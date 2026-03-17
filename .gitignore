@@ -47,7 +47,7 @@ ecosystem.config.js
 .github/
 .vscode
 .vscode/
-.agents
+.agents/
 /docs
 /scripts
 
