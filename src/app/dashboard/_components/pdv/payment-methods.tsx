@@ -1,34 +1,71 @@
+"use client";
+
+import { useState } from "react";
 import { PaymentButton } from "./payment-button";
 
 const paymentMethods = [
-  { id: "cash", icon: "banknote", label: "Dinheiro", color: "text-green-500" },
+  {
+    id: "cash",
+    icon: "banknote",
+    label: "Dinheiro",
+    color: "text-primary",
+  },
   {
     id: "credit",
     icon: "credit-card",
     label: "Cartão de Crédito",
-    color: "text-blue-500",
+    color: "text-primary",
   },
   {
     id: "debit",
     icon: "credit-card",
     label: "Cartão de Débito",
-    color: "text-blue-400",
+    color: "text-primary",
   },
-  { id: "pix", icon: "qr-code", label: "Pix", color: "text-purple-500" },
-  { id: "check", icon: "landmark", label: "Cheque", color: "text-yellow-500" },
+  {
+    id: "pix",
+    icon: "qr-code",
+    label: "Pix",
+    color: "text-primary",
+    recommended: true,
+  },
+  {
+    id: "check",
+    icon: "landmark",
+    label: "Cheque",
+    color: "text-primary",
+  },
 ];
 
 export function PaymentMethods() {
+  const [selectedMethod, setSelectedMethod] = useState("pix");
+
+  const currentMethod =
+    paymentMethods.find((method) => method.id === selectedMethod) ??
+    paymentMethods[0];
+
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {paymentMethods.map((method) => (
-        <PaymentButton
-          key={method.id}
-          icon={method.icon}
-          label={method.label}
-          color={method.color}
-        />
-      ))}
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        {paymentMethods.map((method) => (
+          <PaymentButton
+            key={method.id}
+            icon={method.icon}
+            label={method.label}
+            color={method.color}
+            isActive={selectedMethod === method.id}
+            isRecommended={Boolean(method.recommended)}
+            onClick={() => setSelectedMethod(method.id)}
+          />
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between rounded-2xl border border-primary/15 bg-primary/10 px-3 py-2 text-sm">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+          Metodo selecionado
+        </p>
+        <p className="font-semibold text-foreground">{currentMethod.label}</p>
+      </div>
     </div>
   );
 }

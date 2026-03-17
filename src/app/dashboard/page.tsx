@@ -36,29 +36,35 @@ export default async function DashboardPage({
   }
 
   return (
-    <div className="flex h-screen flex-col bg-background">
-      {/* Header fixo no topo */}
+    <div className="relative flex min-h-screen flex-col bg-background">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(circle_at_top_left,var(--tw-gradient-stops))] from-primary/10 via-background to-transparent" />
+
       <SiteHeaderWithBreadcrumb
-        title="Dashboard"
+        title="Vendas"
         breadcrumbItems={[
-          { label: "Dashboard", href: "#" },
-          { label: "Analytics", isActive: true },
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Pedidos", isActive: true },
         ]}
       />
 
-      {/* Conteúdo com scroll */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <HeaderPDV details={dashboardData?.details ?? null} />
+      <div className="relative flex flex-1 flex-col overflow-hidden">
+        <div className="flex-1 overflow-auto">
+          <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-4 pb-6 pt-4 md:px-6 md:pb-8">
+            <HeaderPDV details={dashboardData?.details ?? null} />
 
-        <div className="flex flex-1 flex-col md:flex-row gap-4 p-4 overflow-auto">
-          <main className="flex-1 flex flex-col gap-4">
-            <CustomerSection customer={dashboardData?.customer ?? null} />
-            <OrderItemsSection items={dashboardData?.items ?? []} />
-          </main>
+            <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(360px,420px)]">
+              <main className="flex min-w-0 flex-col gap-4">
+                <CustomerSection customer={dashboardData?.customer ?? null} />
+                <OrderItemsSection items={dashboardData?.items ?? []} />
+              </main>
 
-          <aside className="w-full md:w-96 shrink-0">
-            <OrderSummary summary={dashboardData?.summary ?? null} />
-          </aside>
+              <aside className="min-w-0">
+                <div className="xl:sticky xl:top-4">
+                  <OrderSummary summary={dashboardData?.summary ?? null} />
+                </div>
+              </aside>
+            </div>
+          </div>
         </div>
       </div>
     </div>
