@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { useOrganizationMeta } from "@/components/common/organization-meta-provider";
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -12,6 +13,14 @@ import {
 
 export function SidebarLogo() {
   const { setOpenMobile } = useSidebar();
+  const { meta, imageBaseUrl } = useOrganizationMeta();
+
+  const logoPath = meta.IMAGE1;
+  const logoSrc = logoPath
+    ? `${imageBaseUrl}${logoPath}`
+    : "/images/logo/logo-sidebar.png";
+
+  const isExternalUrl = logoSrc.startsWith("http");
 
   return (
     <SidebarMenu>
@@ -20,14 +29,15 @@ export function SidebarLogo() {
           <Link
             href="/dashboard"
             onClick={() => setOpenMobile(false)}
-            className="!flex-col !items-start !gap-1"
+            className="!flex-col !items-start !gap-2"
           >
             <Image
-              src="/images/logo/logo-sidebar.png"
+              src={logoSrc}
               alt="Logo da Empresa"
-              width={140}
-              height={40}
-              className="h-10 w-auto object-contain"
+              width={280}
+              height={80}
+              unoptimized={isExternalUrl}
+              className="max-h-10 w-full max-w-full object-contain object-left"
             />
             <span className="text-sidebar-foreground/70 truncate text-xs">
               PDV - Sistema de Vendas
