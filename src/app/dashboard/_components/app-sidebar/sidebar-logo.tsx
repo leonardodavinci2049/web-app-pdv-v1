@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { useOrganizationMeta } from "@/components/common/organization-meta-provider";
 import {
@@ -42,26 +43,36 @@ export function SidebarLogo() {
   const { setOpenMobile } = useSidebar();
   const { meta, imageBaseUrl } = useOrganizationMeta();
 
-  const logoSrc = resolveLogoSrc(imageBaseUrl, meta.IMAGE1);
+  const resolvedLogoSrc = resolveLogoSrc(imageBaseUrl, meta.IMAGE1);
+  const [logoSrc, setLogoSrc] = useState(resolvedLogoSrc);
+
+  useEffect(() => {
+    setLogoSrc(resolvedLogoSrc);
+  }, [resolvedLogoSrc]);
 
   const isExternalUrl = logoSrc.startsWith("http");
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton size="lg" className="h-auto! py-3!" asChild>
+        <SidebarMenuButton size="lg" className="h-auto! px-1! py-3!" asChild>
           <Link
             href="/dashboard"
             onClick={() => setOpenMobile(false)}
-            className="flex-col! items-start! gap-2!"
+            className="flex-col! items-start! gap-2! w-full!"
           >
             <Image
               src={logoSrc}
               alt="Logo da Empresa"
-              width={280}
+              width={300}
               height={80}
               unoptimized={isExternalUrl}
-              className="max-h-10 w-full max-w-full object-contain object-left"
+              onError={() => {
+                if (logoSrc !== FALLBACK_LOGO_SRC) {
+                  setLogoSrc(FALLBACK_LOGO_SRC);
+                }
+              }}
+              className="h-auto w-[88%] max-w-[88%] object-contain object-left"
             />
             <span className="text-sidebar-foreground/70 truncate text-xs">
               PDV - Sistema de Vendas
