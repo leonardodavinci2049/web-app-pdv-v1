@@ -42,6 +42,6 @@ export async function getOrganizationConfig(): Promise<{
   return {
     organizationId,
     meta: toOrganizationMetaMap(metaList),
-    imageBaseUrl: envs.EXTERNAL_PATH_IMAGES_URL,
+    imageBaseUrl: envs.NEXT_PUBLIC_EXTERNAL_PATH_IMAGES_URL,
   };
 }
