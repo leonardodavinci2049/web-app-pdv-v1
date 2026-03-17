@@ -45,10 +45,7 @@ export function OrderItemsSection({ items }: OrderItemsSectionProps) {
                 {totalUnits} unidades
               </Badge>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Estrutura visual pensada para leitura rapida, ajuste de quantidade
-              e valorizacao do mix vendido.
-            </p>
+     
           </div>
 
           <Button size="sm" className="rounded-full px-4">
