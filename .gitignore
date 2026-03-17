@@ -45,6 +45,8 @@ next-env.d.ts
 ecosystem.config.js
 .well-known
 .github/
+.vscode
+.vscode/
 .agents
 /docs
 /scripts
