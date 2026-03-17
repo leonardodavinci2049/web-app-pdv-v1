@@ -1,5 +1,6 @@
-import { Tag } from "lucide-react";
+import { ShieldCheck, Tag, WalletCards } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { UIOrderSalesSummary } from "@/services/api-main/order-sales/transformers/transformers";
@@ -12,52 +13,120 @@ interface OrderSummaryProps {
 
 export function OrderSummary({ summary }: OrderSummaryProps) {
   const subtotal = summary ? Number(summary.subtotalValue) : 0;
+  const freight = summary ? Number(summary.freightValue) : 0;
+  const additions = summary ? Number(summary.additionValue) : 0;
+  const insurance = summary ? Number(summary.insuranceValue) : 0;
   const discount = summary ? Number(summary.discountValue) : 0;
   const total = summary ? Number(summary.totalOrderValue) : 0;
 
-  return (
-    <Card className="h-auto md:h-full p-6 bg-card border-border flex flex-col shrink-0">
-      <h2 className="text-xl font-semibold mb-6 text-foreground">
-        Resumo do Pedido
-      </h2>
+  const breakdown = [
+    { label: "Subtotal", value: subtotal },
+    { label: "Frete", value: freight },
+    { label: "Adicionais", value: additions },
+    { label: "Seguro", value: insurance },
+  ];
 
-      <div className="space-y-3 mb-6">
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Subtotal:</span>
-          <span className="font-medium">{formatCurrency(subtotal)}</span>
+  return (
+    <Card className="overflow-hidden rounded-[28px] border-border/70 bg-linear-to-b from-card via-card to-muted/40 p-0 shadow-xl shadow-black/10 dark:shadow-black/30">
+      <div className="border-b border-border/60 px-5 py-5 md:px-6">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+              <WalletCards className="h-3.5 w-3.5" />
+              Resumo do pedido
+            </div>
+          </div>
+
+          <Badge className="rounded-full bg-primary/10 px-3 text-primary hover:bg-primary/10">
+            Pronto para concluir
+          </Badge>
         </div>
 
-        <div className="flex justify-between text-sm items-center">
-          <span className="text-muted-foreground">Desconto:</span>
-          <div className="flex items-center gap-1">
-            <span className="font-medium">- {formatCurrency(discount)}</span>
-            <Tag className="h-4 w-4 text-muted-foreground" />
+        <div className="mt-5 rounded-[24px] border border-primary/15 bg-primary/10 p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">
+            Total da operacao
+          </p>
+          <p className="mt-3 text-4xl font-semibold tracking-tight text-foreground md:text-[2.8rem]">
+            {formatCurrency(total)}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-2 rounded-full bg-background/80 px-3 py-1.5 dark:bg-white/6">
+              {summary?.itemCount ?? 0} itens registrados
+            </span>
+            {discount > 0 ? (
+              <span className="inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-secondary-foreground">
+                Economia de {formatCurrency(discount)}
+              </span>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-5 px-5 py-5 md:px-6 md:py-6">
+        <div className="rounded-[24px] border border-border/70 bg-background/75 p-4 dark:bg-white/4">
+          <div className="space-y-3">
+            {breakdown.map((row) => (
+              <div
+                key={row.label}
+                className="flex items-center justify-between gap-4 text-sm"
+              >
+                <span className="text-muted-foreground">{row.label}</span>
+                <span className="font-medium text-foreground">
+                  {formatCurrency(row.value)}
+                </span>
+              </div>
+            ))}
+
+            <div className="flex items-center justify-between gap-4 rounded-2xl border border-dashed border-primary/20 bg-primary/10 px-3 py-3 text-sm">
+              <span className="flex items-center gap-2 text-muted-foreground">
+                <Tag className="h-4 w-4 text-primary" />
+                Desconto aplicado
+              </span>
+              <span className="font-semibold text-foreground">
+                - {formatCurrency(discount)}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between gap-4 border-t border-border/70 pt-3">
+              <span className="text-base font-semibold text-foreground">
+                Total final
+              </span>
+              <span className="text-xl font-semibold tracking-tight text-foreground">
+                {formatCurrency(total)}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-border pt-3 flex justify-between">
-          <span className="text-lg font-semibold">Total:</span>
-          <span className="text-lg font-semibold">{formatCurrency(total)}</span>
+        <div className="rounded-[24px] border border-border/70 bg-background/75 p-4 dark:bg-white/4">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
+                Formas de pagamento
+              </h3>
+            </div>
+
+            <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" />
+          </div>
+
+          <PaymentMethods />
         </div>
-      </div>
 
-      <div className="mb-6">
-        <h3 className="text-sm font-medium mb-3 text-foreground">
-          Formas de Pagamento
-        </h3>
-        <PaymentMethods />
-      </div>
-
-      <div className="md:mt-auto space-y-3">
-        <Button variant="secondary" className="w-full" size="lg">
-          Salvar Orçamento
-        </Button>
-        <Button
-          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-          size="lg"
-        >
-          Finalizar Venda
-        </Button>
+        <div className="space-y-3">
+          <Button
+            variant="outline"
+            className="h-12 w-full rounded-2xl border-border/70 bg-background/80 text-sm font-semibold shadow-none hover:bg-secondary/70 dark:bg-white/4"
+            size="lg"
+          >
+            Salvar orcamento
+          </Button>
+          <Button
+            className="h-12 w-full rounded-2xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-black/10 hover:bg-primary/90"
+            size="lg"
+          >
+            Finalizar venda
+          </Button>
+        </div>
       </div>
     </Card>
   );
