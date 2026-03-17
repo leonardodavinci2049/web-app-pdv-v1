@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { useOrganizationMeta } from "@/components/common/organization-meta-provider";
 import {
