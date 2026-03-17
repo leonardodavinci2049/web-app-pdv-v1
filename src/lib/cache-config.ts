@@ -51,6 +51,8 @@ export const CACHE_TAGS = {
   navigation: "navigation",
   banners: "banners",
   footer: "footer",
+  logLogins: "log-logins",
+  logOperations: "log-operations",
 } as const;
 
 // Cache life profiles (matching next.config.ts cacheLife)
