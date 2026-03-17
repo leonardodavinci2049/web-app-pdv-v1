@@ -29,6 +29,7 @@ const serverEnvsSchema = z.object({
   PORT: z.coerce.number().positive(),
   EXTERNAL_API_MAIN_URL: z.string().url(),
   EXTERNAL_API_ASSETS_URL: z.string().url(),
+  EXTERNAL_PATH_IMAGES_URL: z.string().url(),
   APP_ID: z.coerce.number().positive(),
   STORE_ID: z.coerce.number().positive(),
   DATABASE_URL: z.string().min(1),
