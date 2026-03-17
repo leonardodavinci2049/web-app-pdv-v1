@@ -2,6 +2,7 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { createLogger } from "@/core/logger";
+import { ApiConnectionError } from "@/lib/axios";
 import { CACHE_TAGS } from "@/lib/cache-config";
 
 import { orderSalesServiceApi } from "./order-sales-service-api";
@@ -383,6 +384,13 @@ export async function getOrderDashboard(
       customer: customer ? transformCustomerEntity(customer) : null,
     };
   } catch (error) {
+    if (error instanceof ApiConnectionError) {
+      logger.warn(
+        `Dashboard do pedido ${orderId} indisponivel por falha de conexao com a API`,
+      );
+      return undefined;
+    }
+
     logger.error(`Erro ao buscar dashboard do pedido ${orderId}:`, error);
     return undefined;
   }
