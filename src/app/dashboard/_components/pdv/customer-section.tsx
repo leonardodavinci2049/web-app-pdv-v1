@@ -57,10 +57,7 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
             <h3 className="text-lg font-semibold tracking-tight text-foreground">
               Identidade do comprador
             </h3>
-            <p className="text-sm text-muted-foreground">
-              Dados centrais para personalizar a abordagem e reduzir atrito no
-              fechamento.
-            </p>
+  
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -121,10 +118,7 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
                   )}
                 </div>
 
-                <p className="max-w-2xl text-sm text-muted-foreground">
-                  Cadastro pronto para suportar venda consultiva, contato rapido
-                  e fechamento com menos etapas.
-                </p>
+   
               </div>
             </div>
 
@@ -147,9 +141,7 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
               <p className="mt-3 text-sm font-medium text-foreground">
                 {customer.phone || customer.whatsapp || "Nao informado"}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Canal rapido para confirmacoes e continuidade da venda.
-              </p>
+      
             </div>
 
             <div className="rounded-2xl border border-border/70 bg-background/75 p-4 dark:bg-white/4">
@@ -190,9 +182,7 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
               <p className="mt-3 text-sm font-medium text-foreground">
                 Cadastro desde {formatLastPurchase(customer.createdAt)}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Contexto pronto para personalizar condicoes e fidelizacao.
-              </p>
+   
             </div>
           </div>
         </div>
