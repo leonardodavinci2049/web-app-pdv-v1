@@ -7,6 +7,7 @@ import { z } from "zod";
 // Variáveis que podem ser expostas ao cliente (precisam do prefixo NEXT_PUBLIC_)
 const publicEnvsSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url(),
+  NEXT_PUBLIC_EXTERNAL_PATH_IMAGES_URL: z.string().url(),
   NEXT_PUBLIC_DEVELOPER_NAME: z.string().min(1),
   NEXT_PUBLIC_DEVELOPER_URL: z.string().url(),
   NEXT_PUBLIC_COMPANY_NAME: z.string().min(1),
@@ -29,7 +30,6 @@ const serverEnvsSchema = z.object({
   PORT: z.coerce.number().positive(),
   EXTERNAL_API_MAIN_URL: z.string().url(),
   EXTERNAL_API_ASSETS_URL: z.string().url(),
-  EXTERNAL_PATH_IMAGES_URL: z.string().url(),
   APP_ID: z.coerce.number().positive(),
   STORE_ID: z.coerce.number().positive(),
   DATABASE_URL: z.string().min(1),
@@ -79,6 +79,8 @@ const serverEnvsSchema = z.object({
 // Validação das variáveis públicas (sempre disponível)
 const publicValidation = publicEnvsSchema.safeParse({
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+  NEXT_PUBLIC_EXTERNAL_PATH_IMAGES_URL:
+    process.env.NEXT_PUBLIC_EXTERNAL_PATH_IMAGES_URL,
   NEXT_PUBLIC_DEVELOPER_NAME: process.env.NEXT_PUBLIC_DEVELOPER_NAME,
   NEXT_PUBLIC_DEVELOPER_URL: process.env.NEXT_PUBLIC_DEVELOPER_URL,
   NEXT_PUBLIC_COMPANY_NAME: process.env.NEXT_PUBLIC_COMPANY_NAME,

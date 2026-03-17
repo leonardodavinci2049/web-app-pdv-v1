@@ -43,6 +43,8 @@ class ServerAxiosClient {
     const instance = axios.create({
       baseURL: this.baseURL,
       timeout: API_TIMEOUTS.SERVER_DEFAULT,
+      maxRedirects: 0,
+      proxy: false,
       headers: {
         ...DEFAULT_HEADERS,
         Accept: "application/json",
