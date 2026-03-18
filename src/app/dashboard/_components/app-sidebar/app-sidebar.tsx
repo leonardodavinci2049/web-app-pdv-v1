@@ -58,7 +58,7 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Painel de vendas",
+          title: "Painel de Vendas",
           url: "/dashboard/sales-dashboard",
         },
         {
@@ -67,7 +67,7 @@ const data = {
         },
         {
           title: "Carrinho WEB",
-          url: "/dashboard/cart/web-cart",
+          url: "/dashboard/cart/web-cart/",
         },
       ],
     },
@@ -98,7 +98,7 @@ const data = {
 
         {
           title: "Novo Cadastro",
-          url: "/dashboard/customer/new-customer",
+          url: "/dashboard/customer/add-customer",
         },
 
         {
@@ -112,7 +112,7 @@ const data = {
         },
         {
           title: "Cadastro Pendente",
-          url: "/dashboard/customer/pending-registration",
+          url: "/dashboard/customer/pending-registrations",
         },      
       ],
     },
@@ -123,38 +123,26 @@ const data = {
       icon: Settings2,
       items: [
         {
-          title: "Resumo dos Pedidos",
+          title: "Painel geral",
           url: "/dashboard/report/panel",
-        },
-        {
-          title: "Vendas",
-          url: "/dashboard/report/sales",
-        },
-        {
-          title: "Clientes",
-          url: "/dashboard/report/customers",
-        },
-        {
-          title: "Produtos",
-          url: "/dashboard/report/products",
-        },
+        }
       ],
     },
   ],
   projects: [
     {
-      name: "Pendências",
-      url: "#",
+      name: "Agenda",
+      url: "/dashboard/agenda/agenda-panel",
       icon: Frame,
     },
     {
       name: "CRM",
-      url: "#",
+      url: "/dashboard/crm/crm-panel",
       icon: PieChart,
     },
     {
-      name: "Travel",
-      url: "#",
+      name: "Configurações",
+      url: "/dashboard/settings/",
       icon: MapIcon,
     },
   ],
