@@ -53,21 +53,21 @@ const data = {
   navMain: [
     {
       title: "Consultor ",
-      url: "/dashboard",
+      url: "/dashboard/pdv",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
           title: "Vendas",
-          url: "/dashboard",
+          url: "/dashboard/pdv",
         },
         {
           title: "Orçamentos",
-          url: "#",
+          url: "/dashboard/pdv/quotes",
         },
         {
           title: "Carrinho",
-          url: "#",
+          url: "/dashboard/pdv/cart",
         },
       ],
     },
