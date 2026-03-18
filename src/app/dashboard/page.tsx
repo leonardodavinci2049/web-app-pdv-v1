@@ -6,9 +6,9 @@ import {
 } from "@/services/api-main/order-sales/order-sales-cached-service";
 import { SiteHeaderWithBreadcrumb } from "./_components/header/site-header-with-breadcrumb";
 import { CustomerSection } from "./_components/pdv/customer-section";
-import { HeaderPDV } from "./_components/pdv/HeaderPDV";
+import { HeaderOrderSection } from "./_components/pdv/header-order-section";
 import { OrderItemsSection } from "./_components/pdv/order-items-section";
-import { OrderSummary } from "./_components/pdv/order-summary";
+import { OrderSummarySection } from "./_components/pdv/order-summary-section";
 
 const logger = createLogger("dashboard-page");
 
@@ -50,7 +50,7 @@ export default async function DashboardPage({
       <div className="relative flex flex-1 flex-col overflow-hidden">
         <div className="flex-1 overflow-auto">
           <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-4 pb-6 pt-4 md:px-6 md:pb-8">
-            <HeaderPDV details={dashboardData?.details ?? null} />
+            <HeaderOrderSection details={dashboardData?.details ?? null} />
 
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(360px,420px)]">
               <main className="flex min-w-0 flex-col gap-4">
@@ -60,7 +60,9 @@ export default async function DashboardPage({
 
               <aside className="min-w-0">
                 <div className="xl:sticky xl:top-4">
-                  <OrderSummary summary={dashboardData?.summary ?? null} />
+                  <OrderSummarySection
+                    summary={dashboardData?.summary ?? null}
+                  />
                 </div>
               </aside>
             </div>
