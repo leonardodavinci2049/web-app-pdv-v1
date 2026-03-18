@@ -79,7 +79,7 @@ const data = {
         {
           title: "Catálogo",
           url: "/dashboard/product/catalog",
-        },        
+        },
         {
           title: "Mais Vendidos",
           url: "src/app/dashboard/report/products-best-selling",
@@ -113,7 +113,7 @@ const data = {
         {
           title: "Cadastro Pendente",
           url: "/dashboard/customer/pending-registrations",
-        },      
+        },
       ],
     },
 
@@ -125,7 +125,7 @@ const data = {
         {
           title: "Painel geral",
           url: "/dashboard/report/panel",
-        }
+        },
       ],
     },
   ],

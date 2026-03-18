@@ -74,7 +74,6 @@ export function SidebarLogo() {
               }}
               className="h-auto w-[88%] max-w-[88%] object-contain object-left"
             />
-
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
