@@ -49,15 +49,14 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
       <div className="relative flex flex-1 flex-col overflow-hidden">
         <div className="flex-1 overflow-auto">
           <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-4 pb-6 pt-4 md:px-6 md:pb-8">
-            <HeaderOrderSection details={dashboardData?.details ?? null} />
-
-            <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(360px,420px)]">
-              <main className="flex min-w-0 flex-col gap-4">
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(360px,420px)] xl:grid-cols-[minmax(0,2fr)_minmax(380px,450px)]">
+              <main className="flex min-w-0 flex-col gap-4 order-1">
+                <HeaderOrderSection details={dashboardData?.details ?? null} />
                 <CustomerSection customer={dashboardData?.customer ?? null} />
                 <OrderItemsSection items={dashboardData?.items ?? []} />
               </main>
 
-              <aside className="min-w-0">
+              <aside className="min-w-0 order-2">
                 <div className="xl:sticky xl:top-4">
                   <OrderSummarySection
                     summary={dashboardData?.summary ?? null}
