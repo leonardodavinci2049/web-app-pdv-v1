@@ -1,8 +1,8 @@
-import { ChartAreaInteractive } from "@/app/dashboard/_components/panel/chart-area-interactive";
-import data from "@/app/dashboard/_components/panel/data.json";
-import { DataTable } from "@/app/dashboard/_components/panel/data-table";
-import { SectionCards } from "@/app/dashboard/_components/panel/section-cards";
 import { SiteHeaderWithBreadcrumb } from "../../_components/header/site-header-with-breadcrumb";
+import { ChartAreaInteractive } from "./_components/chart-area-interactive";
+import data from "./_components/data.json";
+import { DataTable } from "./_components/data-table";
+import { SectionCards } from "./_components/section-cards";
 
 const Page = () => {
   return (

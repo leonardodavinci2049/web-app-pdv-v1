@@ -13,13 +13,13 @@ const paymentMethods = [
   {
     id: "credit",
     icon: "credit-card",
-    label: "Cartão de Crédito",
+    label: "Cartao de Credito",
     color: "text-primary",
   },
   {
     id: "debit",
     icon: "credit-card",
-    label: "Cartão de Débito",
+    label: "Cartao de Debito",
     color: "text-primary",
   },
   {

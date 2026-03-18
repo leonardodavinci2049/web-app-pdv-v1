@@ -23,7 +23,7 @@ function getInitials(name: string): string {
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
-    .map((w) => w[0])
+    .map((word) => word[0])
     .join("")
     .toUpperCase();
 }
@@ -46,7 +46,7 @@ function formatLastPurchase(date: string | null): string {
 
 export function CustomerSection({ customer }: CustomerSectionProps) {
   return (
-    <Card className="overflow-hidden rounded-[28px] border-border/70 bg-gradient-to-b from-card via-card to-muted/40 p-0 shadow-xl shadow-black/10 dark:shadow-black/30">
+    <Card className="overflow-hidden rounded-[28px] border-border/70 bg-linear-to-b from-card via-card to-muted/40 p-0 shadow-xl shadow-black/10 dark:shadow-black/30">
       <div className="border-b border-border/60 px-5 py-4 md:px-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
@@ -76,14 +76,14 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
         <div className="space-y-5 px-5 py-5 md:px-6 md:py-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex min-w-0 items-start gap-4">
-              <Avatar className="h-16 w-16 rounded-[24px] ring-4 ring-primary/10 md:h-20 md:w-20">
+              <Avatar className="h-16 w-16 rounded-3xl ring-4 ring-primary/10 md:h-20 md:w-20">
                 {customer.imagePath ? (
                   <AvatarImage
                     src={customer.imagePath}
                     alt={customer.customerName}
                   />
                 ) : null}
-                <AvatarFallback className="rounded-[24px] bg-primary/10 text-lg font-semibold text-primary">
+                <AvatarFallback className="rounded-3xl bg-primary/10 text-lg font-semibold text-primary">
                   {getInitials(customer.customerName)}
                 </AvatarFallback>
               </Avatar>
@@ -183,7 +183,7 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
         </div>
       ) : (
         <div className="px-5 py-6 md:px-6 md:py-8">
-          <div className="rounded-[24px] border border-dashed border-border bg-background/70 p-8 text-center dark:bg-white/4">
+          <div className="rounded-3xl border border-dashed border-border bg-background/70 p-8 text-center dark:bg-white/4">
             <p className="text-lg font-semibold text-foreground">
               Nenhum cliente selecionado
             </p>
