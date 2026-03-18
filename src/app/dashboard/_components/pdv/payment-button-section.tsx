@@ -20,7 +20,7 @@ const iconMap = {
   "qr-code": QrCode,
 };
 
-export function PaymentButton({
+export function PaymentButtonSection({
   icon,
   label,
   color,

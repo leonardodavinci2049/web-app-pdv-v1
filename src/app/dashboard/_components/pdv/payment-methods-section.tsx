@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PaymentButton } from "./payment-button";
+import { PaymentButtonSection } from "./payment-button-section";
 
 const paymentMethods = [
   {
@@ -37,7 +37,7 @@ const paymentMethods = [
   },
 ];
 
-export function PaymentMethods() {
+export function PaymentMethodsSection() {
   const [selectedMethod, setSelectedMethod] = useState("pix");
 
   const currentMethod =
@@ -48,7 +48,7 @@ export function PaymentMethods() {
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-2">
         {paymentMethods.map((method) => (
-          <PaymentButton
+          <PaymentButtonSection
             key={method.id}
             icon={method.icon}
             label={method.label}

@@ -1,11 +1,9 @@
 import {
   CalendarDays,
-  CircleDot,
   FileText,
   HelpCircle,
   Package2,
   Settings2,
-  Sparkles,
   UserRound,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +42,7 @@ function getOrderStatusClassName(orderStatusId: number): string {
   }
 }
 
-export function HeaderPDV({ details }: HeaderPDVProps) {
+export function HeaderOrderSection({ details }: HeaderPDVProps) {
   return (
     <header className="relative overflow-hidden rounded-[28px] border border-border/70 bg-gradient-to-br from-card via-card to-muted/70 p-4 text-foreground shadow-xl shadow-black/10 dark:shadow-black/30 md:p-6">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
@@ -53,12 +51,9 @@ export function HeaderPDV({ details }: HeaderPDVProps) {
       <div className="relative flex flex-col gap-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0 space-y-4">
-
-
             {details ? (
               <div className="space-y-3">
                 <div className="space-y-2">
-        
                   <div className="flex flex-wrap items-center gap-3">
                     <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
                       Pedido #{details.orderId}
@@ -142,7 +137,6 @@ export function HeaderPDV({ details }: HeaderPDVProps) {
               <p className="mt-2 text-lg font-semibold text-foreground">
                 {details.orderStatus || "Aguardando definicao"}
               </p>
-      
             </div>
 
             <div className="rounded-2xl border border-border/70 bg-background/70 p-4 backdrop-blur">
@@ -152,7 +146,6 @@ export function HeaderPDV({ details }: HeaderPDVProps) {
               <p className="mt-2 text-lg font-semibold text-foreground">
                 {details.financialStatus || "Nao informado"}
               </p>
-    
             </div>
 
             <div className="rounded-2xl border border-border/70 bg-background/70 p-4 backdrop-blur">
@@ -162,7 +155,6 @@ export function HeaderPDV({ details }: HeaderPDVProps) {
               <p className="mt-2 text-lg font-semibold text-foreground">
                 {details.deliveryStatus || "Pendente"}
               </p>
-   
             </div>
           </div>
         )}

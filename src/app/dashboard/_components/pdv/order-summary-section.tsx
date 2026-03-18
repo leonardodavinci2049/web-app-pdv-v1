@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { UIOrderSalesSummary } from "@/services/api-main/order-sales/transformers/transformers";
 import { formatCurrency } from "@/utils/common-utils";
-import { PaymentMethods } from "./payment-methods";
+import { PaymentMethodsSection } from "./payment-methods-section";
 
 interface OrderSummaryProps {
   summary: UIOrderSalesSummary | null;
 }
 
-export function OrderSummary({ summary }: OrderSummaryProps) {
+export function OrderSummarySection({ summary }: OrderSummaryProps) {
   const subtotal = summary ? Number(summary.subtotalValue) : 0;
   const freight = summary ? Number(summary.freightValue) : 0;
   const additions = summary ? Number(summary.additionValue) : 0;
@@ -109,7 +109,7 @@ export function OrderSummary({ summary }: OrderSummaryProps) {
             <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" />
           </div>
 
-          <PaymentMethods />
+          <PaymentMethodsSection />
         </div>
 
         <div className="space-y-3">

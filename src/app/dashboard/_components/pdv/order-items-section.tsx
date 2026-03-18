@@ -45,7 +45,6 @@ export function OrderItemsSection({ items }: OrderItemsSectionProps) {
                 {totalUnits} unidades
               </Badge>
             </div>
-     
           </div>
 
           <Button size="sm" className="rounded-full px-4">

@@ -57,7 +57,6 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
             <h3 className="text-lg font-semibold tracking-tight text-foreground">
               Identidade do comprador
             </h3>
-  
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -117,8 +116,6 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
                     </span>
                   )}
                 </div>
-
-   
               </div>
             </div>
 
@@ -141,7 +138,6 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
               <p className="mt-3 text-sm font-medium text-foreground">
                 {customer.phone || customer.whatsapp || "Nao informado"}
               </p>
-      
             </div>
 
             <div className="rounded-2xl border border-border/70 bg-background/75 p-4 dark:bg-white/4">
@@ -182,7 +178,6 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
               <p className="mt-3 text-sm font-medium text-foreground">
                 Cadastro desde {formatLastPurchase(customer.createdAt)}
               </p>
-   
             </div>
           </div>
         </div>
