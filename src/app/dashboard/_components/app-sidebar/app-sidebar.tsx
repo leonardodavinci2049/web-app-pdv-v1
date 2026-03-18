@@ -53,21 +53,21 @@ const data = {
   navMain: [
     {
       title: "Consultor ",
-      url: "/dashboard/pdv",
+      url: "#",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "Vendas",
-          url: "/dashboard/pdv",
+          title: "Painel de vendas",
+          url: "/dashboard/sales-dashboard",
         },
         {
-          title: "Orçamentos",
-          url: "/dashboard/pdv/quotes",
+          title: "Lista de Pedidos",
+          url: "/dashboard/order/order-list",
         },
         {
-          title: "Carrinho",
-          url: "/dashboard/pdv/cart",
+          title: "Carrinho WEB",
+          url: "/dashboard/cart/web-cart",
         },
       ],
     },
@@ -79,14 +79,10 @@ const data = {
         {
           title: "Catálogo",
           url: "/dashboard/product/catalog",
-        },
+        },        
         {
-          title: "Novos Produtos",
-          url: "#",
-        },
-        {
-          title: "Mais vendidos",
-          url: "#",
+          title: "Mais Vendidos",
+          url: "src/app/dashboard/report/products-best-selling",
         },
       ],
     },
@@ -96,14 +92,28 @@ const data = {
       icon: Bot,
       items: [
         {
-          title: "Cadastros",
-          url: "#",
+          title: "Lista de Clientes",
+          url: "/dashboard/customer/customer-list",
         },
 
         {
           title: "Novo Cadastro",
-          url: "#",
+          url: "/dashboard/customer/new-customer",
         },
+
+        {
+          title: "Clientes Premium",
+          url: "/dashboard/customer/premium-customers",
+        },
+
+        {
+          title: "Clientes Inativos",
+          url: "/dashboard/customer/inactive-customers",
+        },
+        {
+          title: "Cadastro Pendente",
+          url: "/dashboard/customer/pending-registration",
+        },      
       ],
     },
 

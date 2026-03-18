@@ -1,14 +1,14 @@
 import DevelopmentPage from "@/components/common/DevelopmentPage";
 import { SiteHeaderWithBreadcrumb } from "../../_components/header/site-header-with-breadcrumb";
 
-const Page = () => {
+const InactiveCustomersPage = () => {
   return (
     <>
       <SiteHeaderWithBreadcrumb
-        title="Dashboard"
+        title="Relatório de Clientes Inativos"
         breadcrumbItems={[
           { label: "Dashboard", href: "#" },
-          { label: "Relatório de Clientes", isActive: true },
+          { label: "Relatório de Clientes Inativos", isActive: true },
         ]}
       />
       <DevelopmentPage />
@@ -16,4 +16,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default InactiveCustomersPage;
