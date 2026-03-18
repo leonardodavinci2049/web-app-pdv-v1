@@ -1,10 +1,10 @@
+import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
 import { createLogger } from "@/core/logger";
 import { getAuthContext } from "@/server/auth-context";
 import {
   getOrderDashboard,
   type UIOrderDashboard,
 } from "@/services/api-main/order-sales/order-sales-cached-service";
-import { SiteHeaderWithBreadcrumb } from "../_components/header/site-header-with-breadcrumb";
 import { CustomerSection } from "./_components/customer-section";
 import { HeaderOrderSection } from "./_components/header-order-section";
 import { OrderItemsSection } from "./_components/order-items-section";
@@ -16,7 +16,7 @@ interface PdvPageProps {
   searchParams: Promise<{ orderId?: string }>;
 }
 
-export default async function PdvPage({ searchParams }: PdvPageProps) {
+export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
   const params = await searchParams;
   const orderId = params.orderId ? Number(params.orderId) : 0;
 
