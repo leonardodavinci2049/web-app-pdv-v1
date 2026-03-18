@@ -55,11 +55,11 @@ export function SidebarLogo() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton size="lg" className="h-auto! px-1! py-3!" asChild>
+        <SidebarMenuButton size="lg" className="h-auto! px-1! py-1!" asChild>
           <Link
             href="/dashboard"
             onClick={() => setOpenMobile(false)}
-            className="flex-col! items-start! gap-2! w-full!"
+            className="flex-col! items-start! w-full!"
           >
             <Image
               src={logoSrc}
@@ -74,9 +74,7 @@ export function SidebarLogo() {
               }}
               className="h-auto w-[88%] max-w-[88%] object-contain object-left"
             />
-            <span className="text-sidebar-foreground/70 truncate text-xs">
-              PDV - Sistema de Vendas
-            </span>
+
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
