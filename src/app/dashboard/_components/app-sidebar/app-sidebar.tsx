@@ -60,11 +60,17 @@ const data = {
         {
           title: "Painel de Vendas",
           url: "/dashboard/sales-dashboard",
-        },
-        {
-          title: "Lista de Pedidos",
-          url: "/dashboard/order/order-list",
-        },
+       },
+
+          {
+            title: "Novo Orçamento",
+            url: "/dashboard/order/new-budget",
+          },
+
+          {
+            title: "Lista de Pedidos",
+            url: "/dashboard/order/order-list",
+          },
         {
           title: "Carrinho WEB",
           url: "/dashboard/cart/web-cart/",
