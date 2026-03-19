@@ -61,9 +61,9 @@ export function SummaryPostActions({
             asChild
             className="h-auto flex-col gap-1 py-4"
           >
-            <Link href="/dashboard/order/order-list">
+            <Link href={`/dashboard/sales-dashboard?orderId=${orderId}`}>
               <List className="h-5 w-5" />
-              <span className="text-xs">Ver Pedidos</span>
+              <span className="text-xs">Ver Orçamento</span>
             </Link>
           </Button>
 

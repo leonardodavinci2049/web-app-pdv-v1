@@ -39,6 +39,11 @@ export const CACHE_TAGS = {
   orderReport: (id: string) => `order-report-${id}`,
   orderSale: (id: string) => `order-sale-${id}`,
   productPdv: (id: string) => `product-pdv-${id}`,
+  agendaEntry: (id: string) => `agenda-entry-${id}`,
+  agendaEntriesByUser: (userId: string) => `agenda-entries-${userId}`,
+  agendaNotification: (id: string) => `agenda-notification-${id}`,
+  agendaNotificationsByUser: (userId: string) =>
+    `agenda-notifications-${userId}`,
 
   // Static tags
   products: "products",
@@ -65,6 +70,8 @@ export const CACHE_TAGS = {
   userMetaCollection: "user-meta-collection",
   logLogins: "log-logins",
   logOperations: "log-operations",
+  agendaEntries: "agenda-entries",
+  agendaNotifications: "agenda-notifications",
 } as const;
 
 // Cache life profiles (matching next.config.ts cacheLife)
