@@ -5,6 +5,7 @@ import { createLogger } from "@/core/logger";
 import { CACHE_TAGS } from "@/lib/cache-config";
 import { getAuthContext } from "@/server/auth-context";
 import { customerGeneralServiceApi } from "@/services/api-main/customer-general";
+import { orderOperationsServiceApi } from "@/services/api-main/order-operations";
 import type { ActionState } from "@/types/action-types";
 
 const logger = createLogger("createCustomerAction");
@@ -19,11 +20,28 @@ export async function createCustomerAction(
     const peName = (formData.get("pe_name") as string) || "";
     const peEmail = (formData.get("pe_email") as string) || "";
     const pePersonTypeId = Number(formData.get("pe_person_type_id")) || 1;
+    const peCpf = (formData.get("pe_cpf") as string) || "";
+    const peCnpj = (formData.get("pe_cnpj") as string) || "";
+    const pePhone = (formData.get("pe_phone") as string) || "";
+    const peWhatsapp = (formData.get("pe_whatsapp") as string) || "";
+    const peNotes = (formData.get("pe_notes") as string) || "";
+
+    const fieldValues = {
+      pe_name: peName,
+      pe_email: peEmail,
+      pe_person_type_id: String(pePersonTypeId),
+      pe_cpf: peCpf,
+      pe_cnpj: peCnpj,
+      pe_phone: pePhone,
+      pe_whatsapp: peWhatsapp,
+      pe_notes: peNotes,
+    };
 
     if (!peName.trim() || !peEmail.trim()) {
       return {
         success: false,
         message: "Nome e e-mail são obrigatórios.",
+        fieldValues,
       };
     }
 
@@ -31,11 +49,20 @@ export async function createCustomerAction(
       pe_name: peName.trim(),
       pe_email: peEmail.trim(),
       pe_person_type_id: pePersonTypeId,
-      pe_cpf: (formData.get("pe_cpf") as string) || "",
-      pe_cnpj: (formData.get("pe_cnpj") as string) || "",
-      pe_phone: (formData.get("pe_phone") as string) || "",
-      pe_whatsapp: (formData.get("pe_whatsapp") as string) || "",
-      pe_notes: (formData.get("pe_notes") as string) || "",
+      pe_cpf: peCpf,
+      pe_cnpj: peCnpj,
+      pe_phone: pePhone,
+      pe_whatsapp: peWhatsapp,
+      pe_notes: peNotes,
+      pe_company_name: "",
+      pe_image: "",
+      pe_zip_code: "",
+      pe_address: "",
+      pe_address_number: "",
+      pe_complement: "",
+      pe_neighborhood: "",
+      pe_city: "",
+      pe_state: "",
       ...apiContext,
     };
 
@@ -46,20 +73,60 @@ export async function createCustomerAction(
       return {
         success: false,
         message: result?.sp_message || "Erro ao criar cliente.",
+        fieldValues,
       };
     }
 
     revalidateTag(CACHE_TAGS.customers, "seconds");
 
+    const customerId = result?.sp_return_id ?? response.recordId;
+
+    const orderResponse = await orderOperationsServiceApi.createOrder({
+      pe_customer_id: customerId,
+      pe_seller_id: apiContext.pe_person_id,
+      pe_business_type: 1,
+      pe_payment_form_id: 1,
+      pe_location_id: 1,
+      pe_notes: "PDV ONLINE",
+      ...apiContext,
+    });
+
+    const orderResult = orderResponse.data?.[0];
+    if (orderResult?.sp_error_id !== 0) {
+      return {
+        success: false,
+        message:
+          orderResult?.sp_message ||
+          "Cliente criado, mas erro ao criar pedido.",
+      };
+    }
+
+    const orderId = orderResult?.sp_return_id ?? orderResponse.recordId;
+
+    revalidateTag(CACHE_TAGS.orderSales, "seconds");
+
     return {
       success: true,
-      message: "Cliente criado com sucesso!",
+      message: "Cliente e pedido criados com sucesso!",
+      data: { customerId, orderId },
     };
   } catch (error) {
     logger.error("Erro ao criar cliente:", error);
     return {
       success: false,
       message: "Erro ao criar cliente. Tente novamente.",
+      fieldValues: Object.fromEntries(
+        [
+          "pe_name",
+          "pe_email",
+          "pe_person_type_id",
+          "pe_cpf",
+          "pe_cnpj",
+          "pe_phone",
+          "pe_whatsapp",
+          "pe_notes",
+        ].map((key) => [key, (formData.get(key) as string) || ""]),
+      ),
     };
   }
 }
