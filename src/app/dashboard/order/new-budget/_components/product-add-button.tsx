@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2, Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -12,7 +12,7 @@ import { addItemAction } from "../actions/add-item-action";
 
 interface ProductAddButtonProps {
   productId: number;
-  orderId: number;
+  orderId?: number;
   customerId: number;
 }
 
@@ -22,6 +22,7 @@ export function ProductAddButton({
   customerId,
 }: ProductAddButtonProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [quantity, setQuantity] = useState("1");
   const [state, formAction, isPending] = useActionState(addItemAction, null);
   const prevStateRef = useRef(state);
@@ -33,11 +34,21 @@ export function ProductAddButton({
     if (state?.success) {
       toast.success(state.message);
       setQuantity("1");
-      router.refresh();
+
+      const nextOrderId = Number(state.data?.orderId);
+      if (nextOrderId) {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("step", "3");
+        params.set("customerId", String(customerId));
+        params.set("orderId", String(nextOrderId));
+        router.replace(`/dashboard/order/new-budget?${params.toString()}`);
+      } else {
+        router.refresh();
+      }
     } else if (state?.success === false) {
       toast.error(state.message);
     }
-  }, [state, router]);
+  }, [state, searchParams, customerId, router]);
 
   return (
     <div className="flex shrink-0 items-center gap-1">
@@ -50,7 +61,7 @@ export function ProductAddButton({
         disabled={isPending}
       />
       <form action={formAction}>
-        <input type="hidden" name="orderId" value={orderId} />
+        <input type="hidden" name="orderId" value={orderId ?? ""} />
         <input type="hidden" name="customerId" value={customerId} />
         <input type="hidden" name="productId" value={productId} />
         <input type="hidden" name="quantity" value={quantity} />

@@ -5,7 +5,6 @@ import { createLogger } from "@/core/logger";
 import { CACHE_TAGS } from "@/lib/cache-config";
 import { getAuthContext } from "@/server/auth-context";
 import { customerGeneralServiceApi } from "@/services/api-main/customer-general";
-import { orderOperationsServiceApi } from "@/services/api-main/order-operations";
 import type { ActionState } from "@/types/action-types";
 
 const logger = createLogger("createCustomerAction");
@@ -81,34 +80,10 @@ export async function createCustomerAction(
 
     const customerId = result?.sp_return_id ?? response.recordId;
 
-    const orderResponse = await orderOperationsServiceApi.createOrder({
-      pe_customer_id: customerId,
-      pe_seller_id: apiContext.pe_person_id,
-      pe_business_type: 1,
-      pe_payment_form_id: 1,
-      pe_location_id: 1,
-      pe_notes: "PDV ONLINE",
-      ...apiContext,
-    });
-
-    const orderResult = orderResponse.data?.[0];
-    if (orderResult?.sp_error_id !== 0) {
-      return {
-        success: false,
-        message:
-          orderResult?.sp_message ||
-          "Cliente criado, mas erro ao criar pedido.",
-      };
-    }
-
-    const orderId = orderResult?.sp_return_id ?? orderResponse.recordId;
-
-    revalidateTag(CACHE_TAGS.orderSales, "seconds");
-
     return {
       success: true,
-      message: "Cliente e pedido criados com sucesso!",
-      data: { customerId, orderId },
+      message: "Cliente criado com sucesso!",
+      data: { customerId },
     };
   } catch (error) {
     logger.error("Erro ao criar cliente:", error);

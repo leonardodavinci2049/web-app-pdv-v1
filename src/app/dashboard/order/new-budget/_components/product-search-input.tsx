@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 
 interface ProductSearchInputProps {
   defaultValue: string;
-  orderId: number;
+  orderId?: number;
   customerId: number;
 }
 
@@ -29,8 +29,13 @@ export function ProductSearchInput({
       debounceRef.current = setTimeout(() => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("step", "3");
-        params.set("orderId", String(orderId));
         params.set("customerId", String(customerId));
+
+        if (orderId) {
+          params.set("orderId", String(orderId));
+        } else {
+          params.delete("orderId");
+        }
 
         if (value.trim()) {
           params.set("search", value.trim());

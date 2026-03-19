@@ -8,7 +8,7 @@ import { ProductAddButton } from "./product-add-button";
 
 interface ProductCardProps {
   product: UIProductPdv;
-  orderId: number;
+  orderId?: number;
   customerId: number;
 }
 

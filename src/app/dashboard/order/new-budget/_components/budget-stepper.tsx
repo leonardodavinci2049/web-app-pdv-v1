@@ -25,7 +25,7 @@ const STEPS = [
   {
     id: 2,
     label: "Pedido",
-    description: "Criar pedido",
+    description: "Criado no 1o item",
     icon: ClipboardList,
   },
   {
@@ -84,10 +84,16 @@ export function BudgetStepper({
   const canNavigateToStep = (step: number) => {
     if (step === 1) return true;
     if (step === 2) return false;
-    if (step === 3) return !!customerId && !!orderId;
+    if (step === 3) return !!customerId;
     if (step === 4) return !!orderId;
     if (step === 5) return !!orderId;
     return false;
+  };
+
+  const isStepCompleted = (stepId: number) => {
+    if (stepId === 1) return currentStep > 1 || !!customerId;
+    if (stepId === 2) return !!orderId;
+    return currentStep > stepId;
   };
 
   return (
@@ -97,7 +103,7 @@ export function BudgetStepper({
           <nav aria-label="Progresso do orçamento">
             <ol className="flex items-center justify-between">
               {STEPS.map((step, index) => {
-                const isCompleted = currentStep > step.id;
+                const isCompleted = isStepCompleted(step.id);
                 const isCurrent = currentStep === step.id;
                 const isClickable = canNavigateToStep(step.id);
                 const Icon = step.icon;
@@ -185,7 +191,7 @@ export function BudgetStepper({
 
       <div
         className={cn(
-          "min-h-[400px]",
+          "min-h-100",
           isPending && "opacity-60 transition-opacity",
         )}
       >

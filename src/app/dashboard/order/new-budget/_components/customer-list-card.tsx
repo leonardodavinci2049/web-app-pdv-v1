@@ -2,20 +2,11 @@
 
 import { Phone, User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  useActionState,
-  useCallback,
-  useEffect,
-  useRef,
-  useTransition,
-} from "react";
-import { toast } from "sonner";
+import { useCallback, useTransition } from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { UICustomerListItem } from "@/services/api-main/customer-general/transformers/transformers";
-
-import { createOrderAction } from "../actions/create-order-action";
 
 interface CustomerListCardProps {
   customer: UICustomerListItem;
@@ -25,36 +16,18 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState(createOrderAction, null);
-  const processedRef = useRef(false);
-
-  useEffect(() => {
-    if (processedRef.current) return;
-    if (state?.success && state.data?.orderId) {
-      processedRef.current = true;
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("step", "3");
-      params.set("customerId", String(customer.id));
-      params.set("orderId", String(state.data.orderId));
-      params.delete("search");
-
-      startTransition(() => {
-        router.push(`/dashboard/order/new-budget?${params.toString()}`);
-      });
-    } else if (state?.success === false) {
-      processedRef.current = true;
-      toast.error(state.message);
-    }
-  }, [state, customer.id, searchParams, router]);
 
   const handleSelect = useCallback(() => {
-    processedRef.current = false;
-    const formData = new FormData();
-    formData.set("customerId", String(customer.id));
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("step", "3");
+    params.set("customerId", String(customer.id));
+    params.delete("orderId");
+    params.delete("search");
+
     startTransition(() => {
-      formAction(formData);
+      router.push(`/dashboard/order/new-budget?${params.toString()}`);
     });
-  }, [customer.id, formAction]);
+  }, [customer.id, searchParams, router]);
 
   return (
     <Card

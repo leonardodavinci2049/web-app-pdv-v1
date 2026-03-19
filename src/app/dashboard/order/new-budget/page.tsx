@@ -46,19 +46,18 @@ export default async function NewBudgetPage({
     });
   }
 
-  if (step === 3 && customerId && orderId) {
-    const [productsResult, dashboardResult] = await Promise.all([
-      searchProductsPdv({
-        search: search || undefined,
-        customerId,
-        flagStock: 1,
-        limit: search ? 50 : 20,
-        ...apiContext,
-      }),
-      getOrderDashboard(orderId, dashboardParams),
-    ]);
-    products = productsResult;
-    orderDashboard = dashboardResult;
+  if (step === 3 && customerId) {
+    products = await searchProductsPdv({
+      search: search || undefined,
+      customerId,
+      flagStock: 1,
+      limit: search ? 50 : 20,
+      ...apiContext,
+    });
+
+    if (orderId) {
+      orderDashboard = await getOrderDashboard(orderId, dashboardParams);
+    }
   }
 
   if (step === 4 && orderId) {
@@ -83,7 +82,7 @@ export default async function NewBudgetPage({
             <StepCustomerSelect customers={customers} search={search} />
           )}
 
-          {step === 3 && orderId && customerId && (
+          {step === 3 && customerId && (
             <StepProducts
               products={products}
               orderDashboard={orderDashboard}

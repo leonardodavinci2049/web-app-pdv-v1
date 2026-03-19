@@ -39,7 +39,7 @@ export function CustomerCreateDialog() {
 
   useEffect(() => {
     if (processedRef.current) return;
-    if (state?.success && state.data?.customerId && state.data?.orderId) {
+    if (state?.success && state.data?.customerId) {
       processedRef.current = true;
       toast.success(state.message);
       dialogCloseRef.current?.click();
@@ -47,7 +47,7 @@ export function CustomerCreateDialog() {
       const params = new URLSearchParams(searchParams.toString());
       params.set("step", "3");
       params.set("customerId", String(state.data.customerId));
-      params.set("orderId", String(state.data.orderId));
+      params.delete("orderId");
       params.delete("search");
       router.push(`/dashboard/order/new-budget?${params.toString()}`);
     } else if (state?.success === false) {

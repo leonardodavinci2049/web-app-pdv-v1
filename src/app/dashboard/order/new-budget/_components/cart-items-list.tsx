@@ -12,9 +12,14 @@ import { CartItemRow } from "./cart-item-row";
 interface CartItemsListProps {
   items: UIOrderDashboardItem[];
   summary: UIOrderSalesSummary | null | undefined;
+  emptyMessage?: string;
 }
 
-export function CartItemsList({ items, summary }: CartItemsListProps) {
+export function CartItemsList({
+  items,
+  summary,
+  emptyMessage = "Nenhum item adicionado.",
+}: CartItemsListProps) {
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -31,11 +36,11 @@ export function CartItemsList({ items, summary }: CartItemsListProps) {
       <CardContent className="space-y-2">
         {items.length === 0 ? (
           <p className="py-4 text-center text-sm text-muted-foreground">
-            Nenhum item adicionado.
+            {emptyMessage}
           </p>
         ) : (
           <>
-            <div className="max-h-[300px] space-y-2 overflow-y-auto">
+            <div className="max-h-75 space-y-2 overflow-y-auto">
               {items.map((item) => (
                 <CartItemRow key={item.movementId} item={item} />
               ))}
