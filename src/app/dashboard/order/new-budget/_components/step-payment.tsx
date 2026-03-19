@@ -1,8 +1,8 @@
 import { Separator } from "@/components/ui/separator";
 import type { UIOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
 
+import { CloseOrderButton } from "./close-order-button";
 import { PaymentMethodSelect } from "./payment-method-select";
-import { StepNavigation } from "./step-navigation";
 
 interface StepPaymentProps {
   orderDashboard: UIOrderDashboard | undefined;
@@ -59,11 +59,7 @@ export function StepPayment({ orderDashboard, orderId }: StepPaymentProps) {
         </div>
       </div>
 
-      <StepNavigation
-        nextStep={5}
-        orderId={orderId}
-        nextLabel="Fechar Pedido"
-      />
+      <CloseOrderButton orderId={orderId} />
     </div>
   );
 }

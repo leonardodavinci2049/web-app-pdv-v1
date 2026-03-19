@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { UIOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
 
-import { CloseOrderButton } from "./close-order-button";
 import { SummaryPostActions } from "./summary-post-actions";
 
 interface StepSummaryProps {
@@ -176,9 +175,7 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
       )}
 
       {/* Actions */}
-      {!isClosed ? (
-        <CloseOrderButton orderId={orderId} />
-      ) : (
+      {isClosed && (
         <SummaryPostActions orderId={orderId} orderDashboard={orderDashboard} />
       )}
     </div>
