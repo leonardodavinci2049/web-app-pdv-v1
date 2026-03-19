@@ -1,8 +1,8 @@
 "use client";
 
 import {
+  ArrowRight,
   Check,
-  ClipboardList,
   CreditCard,
   Package,
   ShoppingCart,
@@ -17,36 +17,30 @@ import { cn } from "@/lib/utils";
 
 const STEPS = [
   {
-    id: 1,
+    routeStep: 1,
     label: "Cliente",
     description: "Selecionar cliente",
     icon: UserSearch,
   },
   {
-    id: 2,
-    label: "Pedido",
-    description: "Criado no 1o item",
-    icon: ClipboardList,
-  },
-  {
-    id: 3,
-    label: "Produtos",
+    routeStep: 3,
+    label: "Produto",
     description: "Adicionar itens",
     icon: Package,
   },
   {
-    id: 4,
+    routeStep: 4,
     label: "Pagamento",
     description: "Forma de pagamento",
     icon: CreditCard,
   },
   {
-    id: 5,
+    routeStep: 5,
     label: "Resumo",
-    description: "Fechar orçamento",
+    description: "Conferir orçamento",
     icon: ShoppingCart,
   },
-];
+] as const;
 
 interface BudgetStepperProps {
   currentStep: number;
@@ -64,6 +58,10 @@ export function BudgetStepper({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const currentStepIndex = Math.max(
+    STEPS.findIndex((step) => step.routeStep === currentStep),
+    0,
+  );
 
   const navigateToStep = useCallback(
     (step: number) => {
@@ -81,41 +79,40 @@ export function BudgetStepper({
     [searchParams, customerId, orderId, router],
   );
 
-  const canNavigateToStep = (step: number) => {
-    if (step === 1) return true;
-    if (step === 2) return false;
+  const canNavigateToStep = (step: (typeof STEPS)[number]["routeStep"]) => {
+    if (step === 1) return !orderId;
     if (step === 3) return !!customerId;
     if (step === 4) return !!orderId;
     if (step === 5) return !!orderId;
     return false;
   };
 
-  const isStepCompleted = (stepId: number) => {
-    if (stepId === 1) return currentStep > 1 || !!customerId;
-    if (stepId === 2) return !!orderId;
-    return currentStep > stepId;
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <Card>
-        <CardContent className="px-2 py-4 sm:px-6">
+        <CardContent className="px-3 py-3 sm:px-5 sm:py-4">
           <nav aria-label="Progresso do orçamento">
-            <ol className="flex items-center justify-between">
+            <ol className="flex items-start justify-between gap-2">
               {STEPS.map((step, index) => {
-                const isCompleted = isStepCompleted(step.id);
-                const isCurrent = currentStep === step.id;
-                const isClickable = canNavigateToStep(step.id);
+                const isCompleted = index < currentStepIndex;
+                const isCurrent = index === currentStepIndex;
+                const isClickable = canNavigateToStep(step.routeStep);
+                const isLocked = step.routeStep === 1 && !!orderId;
                 const Icon = step.icon;
 
                 return (
-                  <li key={step.id} className="flex flex-1 items-center">
+                  <li
+                    key={step.routeStep}
+                    className="flex min-w-0 flex-1 items-start"
+                  >
                     <button
                       type="button"
-                      onClick={() => isClickable && navigateToStep(step.id)}
+                      onClick={() =>
+                        isClickable && navigateToStep(step.routeStep)
+                      }
                       disabled={!isClickable || isPending}
                       className={cn(
-                        "group flex w-full flex-col items-center gap-1.5 transition-all",
+                        "group flex w-full min-w-0 flex-col items-center gap-1 text-center transition-all",
                         isClickable && !isCurrent
                           ? "cursor-pointer"
                           : "cursor-default",
@@ -123,30 +120,31 @@ export function BudgetStepper({
                     >
                       <div
                         className={cn(
-                          "relative flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all sm:h-12 sm:w-12",
+                          "relative flex h-9 w-9 items-center justify-center rounded-full border-2 transition-all sm:h-10 sm:w-10",
                           isCompleted &&
                             "border-primary bg-primary text-primary-foreground shadow-sm",
                           isCurrent &&
-                            "border-primary bg-primary/10 text-primary ring-4 ring-primary/20",
+                            "border-primary bg-primary/10 text-primary ring-2 ring-primary/20",
                           !isCompleted &&
                             !isCurrent &&
                             "border-muted-foreground/25 text-muted-foreground/40",
                           isClickable &&
                             !isCurrent &&
                             "group-hover:border-primary/50 group-hover:text-primary/60",
+                          isLocked && "opacity-60",
                         )}
                       >
                         {isCompleted ? (
-                          <Check className="h-5 w-5 sm:h-6 sm:w-6" />
+                          <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                         ) : (
-                          <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                         )}
                       </div>
 
-                      <div className="flex flex-col items-center">
+                      <div className="flex min-w-0 flex-col items-center">
                         <span
                           className={cn(
-                            "text-xs font-semibold sm:text-sm",
+                            "text-[11px] font-semibold sm:text-xs",
                             isCompleted && "text-primary",
                             isCurrent && "text-primary",
                             !isCompleted &&
@@ -158,7 +156,7 @@ export function BudgetStepper({
                         </span>
                         <span
                           className={cn(
-                            "hidden text-[10px] sm:block",
+                            "hidden text-[9px] leading-tight sm:block",
                             isCurrent
                               ? "text-muted-foreground"
                               : "text-muted-foreground/50",
@@ -170,13 +168,19 @@ export function BudgetStepper({
                     </button>
 
                     {index < STEPS.length - 1 && (
-                      <div className="mx-1 mb-6 flex flex-1 items-center sm:mx-2">
+                      <div className="flex items-center gap-1 px-1 pt-3 sm:gap-1.5 sm:px-2">
                         <div
                           className={cn(
-                            "h-0.5 w-full rounded-full transition-colors",
+                            "h-0.5 w-4 rounded-full transition-colors sm:w-6",
+                            isCompleted ? "bg-primary" : "bg-muted-foreground/20",
+                          )}
+                        />
+                        <ArrowRight
+                          className={cn(
+                            "h-5 w-5 shrink-0 stroke-[2.5] transition-colors sm:h-6 sm:w-6",
                             isCompleted
-                              ? "bg-primary"
-                              : "bg-muted-foreground/15",
+                              ? "text-primary"
+                              : "text-muted-foreground/35",
                           )}
                         />
                       </div>
@@ -189,12 +193,7 @@ export function BudgetStepper({
         </CardContent>
       </Card>
 
-      <div
-        className={cn(
-          "min-h-100",
-          isPending && "opacity-60 transition-opacity",
-        )}
-      >
+        <div className={cn("min-h-80", isPending && "opacity-60 transition-opacity")}>
         {children}
       </div>
     </div>
