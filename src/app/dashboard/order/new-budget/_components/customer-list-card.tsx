@@ -51,7 +51,9 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
     processedRef.current = false;
     const formData = new FormData();
     formData.set("customerId", String(customer.id));
-    formAction(formData);
+    startTransition(() => {
+      formAction(formData);
+    });
   }, [customer.id, formAction]);
 
   return (
