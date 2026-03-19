@@ -42,7 +42,20 @@ export interface AgendaEntryEntity extends RowDataPacket {
   updatedAt: Date;
 }
 
-export interface AgendaEntry extends AgendaEntryEntity {}
+export interface AgendaEntry {
+  id: string;
+  organizationId: string | null;
+  userId: string;
+  entryType: AgendaEntryType;
+  title: string;
+  notes: string | null;
+  status: AgendaEntryStatus;
+  priority: AgendaEntryPriority;
+  scheduledAt: Date;
+  completedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export interface AgendaNotificationEntity extends RowDataPacket {
   id: string;
@@ -58,7 +71,19 @@ export interface AgendaNotificationEntity extends RowDataPacket {
   updatedAt: Date;
 }
 
-export interface AgendaNotification extends AgendaNotificationEntity {}
+export interface AgendaNotification {
+  id: string;
+  agendaEntryId: string;
+  organizationId: string | null;
+  userId: string;
+  title: string;
+  message: string | null;
+  notifyAt: Date;
+  readAt: Date | null;
+  deliveredAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export interface ServiceResponse<T> {
   success: boolean;

@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { auth } from "@/lib/auth/auth";
 import { NavUser } from "../app-sidebar/nav-user";
+import { AgendaNotifications } from "./agenda-notifications";
 import { LogoutButton } from "./logout-button";
 
 interface SiteHeaderWithBreadcrumbProps {
@@ -86,6 +87,12 @@ export async function SiteHeaderWithBreadcrumb({
         {/* Title for smaller screens */}
         <h1 className="text-base font-medium md:hidden">{title}</h1>
         <div className="ml-auto flex items-center gap-2">
+          <Suspense>
+            <AgendaNotifications
+              userId={session.user.id}
+              organizationId={session.session?.activeOrganizationId ?? null}
+            />
+          </Suspense>
           <Suspense>
             <ModeToggle />
           </Suspense>

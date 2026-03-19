@@ -461,6 +461,7 @@ async function findAgendaEntriesByUser(params: {
 }
 
 async function createAgendaEntry(params: {
+  entryId?: string;
   userId: string;
   organizationId?: string | null;
   entryType: AgendaEntryType;
@@ -471,7 +472,9 @@ async function createAgendaEntry(params: {
   scheduledAt: Date | string;
 }): Promise<ModifyResponse> {
   try {
-    const id = randomUUID();
+    const id = params.entryId
+      ? validateId(params.entryId, "entryId")
+      : randomUUID();
     const userId = validateId(params.userId, "userId");
     const organizationId = validateOrganizationId(params.organizationId);
     const entryType = validateEntryType(params.entryType);
@@ -711,6 +714,46 @@ async function findAgendaNotificationsByUser(params: {
   }
 }
 
+async function findAgendaNotificationByEntryId(params: {
+  agendaEntryId: string;
+  userId: string;
+}): Promise<ServiceResponse<AgendaNotification>> {
+  try {
+    const agendaEntryId = validateId(params.agendaEntryId, "agendaEntryId");
+    const userId = validateId(params.userId, "userId");
+
+    const query = `
+      SELECT
+        id, agendaEntryId, organizationId, userId,
+        title, message, notifyAt, readAt,
+        deliveredAt, createdAt, updatedAt
+      FROM ${AGENDA_TABLES.NOTIFICATION}
+      WHERE agendaEntryId = ? AND userId = ?
+      LIMIT 1
+    `;
+
+    const results = await dbService.selectExecute<AgendaNotificationEntity>(
+      query,
+      [agendaEntryId, userId],
+    );
+
+    if (results.length === 0) {
+      return { success: true, data: null, error: null };
+    }
+
+    return {
+      success: true,
+      data: mapAgendaNotificationEntityToDto(results[0]),
+      error: null,
+    };
+  } catch (error) {
+    return handleError<AgendaNotification>(
+      error,
+      "findAgendaNotificationByEntryId",
+    );
+  }
+}
+
 async function createAgendaNotification(params: {
   agendaEntryId: string;
   userId: string;
@@ -754,6 +797,86 @@ async function createAgendaNotification(params: {
     };
   } catch (error) {
     return handleModifyError(error, "createAgendaNotification");
+  }
+}
+
+async function updateAgendaNotification(params: {
+  notificationId: string;
+  userId: string;
+  title?: string;
+  message?: string | null;
+  notifyAt?: Date | string;
+  readAt?: Date | string | null;
+  deliveredAt?: Date | string | null;
+}): Promise<ModifyResponse> {
+  try {
+    const notificationId = validateId(params.notificationId, "notificationId");
+    const userId = validateId(params.userId, "userId");
+
+    const setClauses: string[] = [];
+    const queryParams: Array<string | Date | null> = [];
+
+    if (params.title !== undefined) {
+      setClauses.push("title = ?");
+      queryParams.push(validateTitle(params.title));
+    }
+
+    if (params.message !== undefined) {
+      setClauses.push("message = ?");
+      queryParams.push(validateMessage(params.message));
+    }
+
+    if (params.notifyAt !== undefined) {
+      setClauses.push("notifyAt = ?");
+      queryParams.push(
+        validateDateInput(params.notifyAt, "notifyAt", { allowPast: true }),
+      );
+    }
+
+    if (params.readAt !== undefined) {
+      setClauses.push("readAt = ?");
+      queryParams.push(
+        validateOptionalDateInput(params.readAt, "readAt", { allowPast: true }),
+      );
+    }
+
+    if (params.deliveredAt !== undefined) {
+      setClauses.push("deliveredAt = ?");
+      queryParams.push(
+        validateOptionalDateInput(params.deliveredAt, "deliveredAt", {
+          allowPast: true,
+        }),
+      );
+    }
+
+    if (setClauses.length === 0) {
+      throw new AgendaValidationError(
+        "Nenhum campo informado para atualização da notificação",
+        "updateAgendaNotification",
+      );
+    }
+
+    setClauses.push("updatedAt = NOW()");
+    queryParams.push(notificationId, userId);
+
+    const query = `
+      UPDATE ${AGENDA_TABLES.NOTIFICATION}
+      SET ${setClauses.join(", ")}
+      WHERE id = ? AND userId = ?
+    `;
+
+    const result = await dbService.modifyExecute(query, queryParams);
+
+    return {
+      success: result.affectedRows > 0,
+      affectedRows: result.affectedRows,
+      error:
+        result.affectedRows === 0
+          ? "Notificação não encontrada para atualização"
+          : null,
+    };
+  } catch (error) {
+    return handleModifyError(error, "updateAgendaNotification");
   }
 }
 
@@ -833,7 +956,9 @@ export const AgendaService = {
   updateAgendaEntry,
   deleteAgendaEntry,
   findAgendaNotificationsByUser,
+  findAgendaNotificationByEntryId,
   createAgendaNotification,
+  updateAgendaNotification,
   markAgendaNotificationAsRead,
   deleteAgendaNotification,
 } as const;
