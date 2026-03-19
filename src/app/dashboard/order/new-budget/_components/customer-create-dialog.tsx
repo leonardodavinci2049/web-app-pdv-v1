@@ -2,6 +2,7 @@
 
 import { Loader2, Plus } from "lucide-react";
 import Form from "next/form";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
@@ -27,20 +28,32 @@ import { Textarea } from "@/components/ui/textarea";
 import { createCustomerAction } from "../actions/create-customer-action";
 
 export function CustomerCreateDialog() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [state, formAction, isPending] = useActionState(
     createCustomerAction,
     null,
   );
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
+  const processedRef = useRef(false);
 
   useEffect(() => {
-    if (state?.success) {
+    if (processedRef.current) return;
+    if (state?.success && state.data?.customerId && state.data?.orderId) {
+      processedRef.current = true;
       toast.success(state.message);
       dialogCloseRef.current?.click();
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("step", "3");
+      params.set("customerId", String(state.data.customerId));
+      params.set("orderId", String(state.data.orderId));
+      params.delete("search");
+      router.push(`/dashboard/order/new-budget?${params.toString()}`);
     } else if (state?.success === false) {
       toast.error(state.message);
     }
-  }, [state]);
+  }, [state, searchParams, router]);
 
   return (
     <Dialog>
@@ -64,6 +77,7 @@ export function CustomerCreateDialog() {
               placeholder="Nome completo"
               required
               disabled={isPending}
+              defaultValue={state?.fieldValues?.pe_name}
             />
           </div>
 
@@ -76,12 +90,16 @@ export function CustomerCreateDialog() {
               placeholder="email@exemplo.com"
               required
               disabled={isPending}
+              defaultValue={state?.fieldValues?.pe_email}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="pe_person_type_id">Tipo de Pessoa *</Label>
-            <Select name="pe_person_type_id" defaultValue="1">
+            <Select
+              name="pe_person_type_id"
+              defaultValue={state?.fieldValues?.pe_person_type_id || "1"}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
@@ -100,6 +118,7 @@ export function CustomerCreateDialog() {
                 name="pe_cpf"
                 placeholder="000.000.000-00"
                 disabled={isPending}
+                defaultValue={state?.fieldValues?.pe_cpf}
               />
             </div>
             <div className="space-y-2">
@@ -109,6 +128,7 @@ export function CustomerCreateDialog() {
                 name="pe_cnpj"
                 placeholder="00.000.000/0000-00"
                 disabled={isPending}
+                defaultValue={state?.fieldValues?.pe_cnpj}
               />
             </div>
           </div>
@@ -121,6 +141,7 @@ export function CustomerCreateDialog() {
                 name="pe_phone"
                 placeholder="(00) 0000-0000"
                 disabled={isPending}
+                defaultValue={state?.fieldValues?.pe_phone}
               />
             </div>
             <div className="space-y-2">
@@ -130,6 +151,7 @@ export function CustomerCreateDialog() {
                 name="pe_whatsapp"
                 placeholder="(00) 00000-0000"
                 disabled={isPending}
+                defaultValue={state?.fieldValues?.pe_whatsapp}
               />
             </div>
           </div>
@@ -141,6 +163,7 @@ export function CustomerCreateDialog() {
               name="pe_notes"
               placeholder="Anotações sobre o cliente..."
               disabled={isPending}
+              defaultValue={state?.fieldValues?.pe_notes}
             />
           </div>
 
