@@ -172,7 +172,9 @@ export function BudgetStepper({
                         <div
                           className={cn(
                             "h-0.5 w-4 rounded-full transition-colors sm:w-6",
-                            isCompleted ? "bg-primary" : "bg-muted-foreground/20",
+                            isCompleted
+                              ? "bg-primary"
+                              : "bg-muted-foreground/20",
                           )}
                         />
                         <ArrowRight
@@ -193,7 +195,9 @@ export function BudgetStepper({
         </CardContent>
       </Card>
 
-        <div className={cn("min-h-80", isPending && "opacity-60 transition-opacity")}>
+      <div
+        className={cn("min-h-80", isPending && "opacity-60 transition-opacity")}
+      >
         {children}
       </div>
     </div>
