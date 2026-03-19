@@ -38,7 +38,6 @@ export function StepProducts({
             products={products}
             orderId={orderId}
             customerId={customerId}
-            search={search}
           />
         </div>
 
