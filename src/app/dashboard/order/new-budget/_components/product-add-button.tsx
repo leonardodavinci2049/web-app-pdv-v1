@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -20,6 +21,7 @@ export function ProductAddButton({
   orderId,
   customerId,
 }: ProductAddButtonProps) {
+  const router = useRouter();
   const [quantity, setQuantity] = useState("1");
   const [state, formAction, isPending] = useActionState(addItemAction, null);
   const prevStateRef = useRef(state);
@@ -31,10 +33,11 @@ export function ProductAddButton({
     if (state?.success) {
       toast.success(state.message);
       setQuantity("1");
+      router.refresh();
     } else if (state?.success === false) {
       toast.error(state.message);
     }
-  }, [state]);
+  }, [state, router]);
 
   return (
     <div className="flex shrink-0 items-center gap-1">

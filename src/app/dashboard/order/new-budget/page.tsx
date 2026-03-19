@@ -22,6 +22,11 @@ export default async function NewBudgetPage({
   searchParams,
 }: NewBudgetPageProps) {
   const { apiContext } = await getAuthContext();
+  const dashboardParams = {
+    ...apiContext,
+    sellerId: apiContext.pe_person_id,
+    typeBusiness: 1,
+  };
 
   const params = await searchParams;
   const step = Number(params.step) || 1;
@@ -43,27 +48,25 @@ export default async function NewBudgetPage({
 
   if (step === 3 && customerId && orderId) {
     const [productsResult, dashboardResult] = await Promise.all([
-      search
-        ? searchProductsPdv({
-            search,
-            customerId,
-            flagStock: 1,
-            limit: 50,
-            ...apiContext,
-          })
-        : Promise.resolve([]),
-      getOrderDashboard(orderId, apiContext),
+      searchProductsPdv({
+        search: search || undefined,
+        customerId,
+        flagStock: 1,
+        limit: search ? 50 : 20,
+        ...apiContext,
+      }),
+      getOrderDashboard(orderId, dashboardParams),
     ]);
     products = productsResult;
     orderDashboard = dashboardResult;
   }
 
   if (step === 4 && orderId) {
-    orderDashboard = await getOrderDashboard(orderId, apiContext);
+    orderDashboard = await getOrderDashboard(orderId, dashboardParams);
   }
 
   if (step === 5 && orderId) {
-    orderDashboard = await getOrderDashboard(orderId, apiContext);
+    orderDashboard = await getOrderDashboard(orderId, dashboardParams);
   }
 
   return (
