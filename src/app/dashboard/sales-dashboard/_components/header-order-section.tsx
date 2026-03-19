@@ -1,11 +1,12 @@
 import {
   CalendarDays,
-  FileText,
   HelpCircle,
   Package2,
+  Plus,
   Settings2,
   UserRound,
 } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { UIOrderDashboardDetails } from "@/services/api-main/order-sales/transformers/transformers";
@@ -102,12 +103,14 @@ export function HeaderOrderSection({ details }: HeaderPDVProps) {
 
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
             <Button
-              variant="secondary"
               size="sm"
-              className="rounded-full border border-border bg-background/80 px-4 text-foreground shadow-none hover:bg-accent"
+              className="rounded-full bg-primary px-5 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 active:scale-[0.97] dark:shadow-primary/15 dark:hover:shadow-primary/25"
+              asChild
             >
-              <FileText className="h-4 w-4" />
-              Orcamento
+              <Link href="/dashboard/order/new-budget">
+                <Plus className="h-4 w-4" />
+                Novo Orçamento
+              </Link>
             </Button>
 
             <Button
