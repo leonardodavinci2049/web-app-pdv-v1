@@ -4,7 +4,7 @@ import { ProductCard } from "./product-card";
 
 interface ProductListProps {
   products: UIProductPdv[];
-  orderId: number;
+  orderId?: number;
   customerId: number;
 }
 

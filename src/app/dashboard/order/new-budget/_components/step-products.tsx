@@ -9,7 +9,7 @@ interface StepProductsProps {
   products: UIProductPdv[];
   orderDashboard: UIOrderDashboard | undefined;
   search: string;
-  orderId: number;
+  orderId?: number;
   customerId: number;
 }
 
@@ -22,10 +22,19 @@ export function StepProducts({
 }: StepProductsProps) {
   const cartItems = orderDashboard?.items ?? [];
   const summary = orderDashboard?.summary;
+  const hasOrder = Boolean(orderId);
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold">Adicionar Produtos</h2>
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold">Adicionar Produtos</h2>
+        {!hasOrder && (
+          <p className="text-sm text-muted-foreground">
+            O orçamento será criado automaticamente quando você adicionar o
+            primeiro produto ao carrinho.
+          </p>
+        )}
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="space-y-4 lg:col-span-3">
@@ -42,17 +51,27 @@ export function StepProducts({
         </div>
 
         <div className="space-y-4 lg:col-span-2">
-          <CartItemsList items={cartItems} summary={summary} />
+          <CartItemsList
+            items={cartItems}
+            summary={summary}
+            emptyMessage={
+              hasOrder
+                ? "Nenhum item adicionado."
+                : "Selecione o primeiro produto para criar o orçamento e iniciar o carrinho."
+            }
+          />
         </div>
       </div>
 
-      <StepNavigation
-        nextStep={4}
-        orderId={orderId}
-        customerId={customerId}
-        disabled={cartItems.length === 0}
-        nextLabel="Ir para Pagamento"
-      />
+      {orderId && (
+        <StepNavigation
+          nextStep={4}
+          orderId={orderId}
+          customerId={customerId}
+          disabled={cartItems.length === 0}
+          nextLabel="Ir para Pagamento"
+        />
+      )}
     </div>
   );
 }
