@@ -228,8 +228,8 @@ export function OrderListFilters({
   };
 
   return (
-    <div className="space-y-4 rounded-[28px] border border-border/70 bg-card/80 p-4 shadow-sm backdrop-blur sm:p-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-3 rounded-xl border border-border/70 bg-card/80 p-3 shadow-sm backdrop-blur sm:p-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-lg font-semibold tracking-tight">Filtros</h2>
           <p className="text-muted-foreground text-sm">

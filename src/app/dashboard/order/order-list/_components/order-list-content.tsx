@@ -182,31 +182,25 @@ export function OrderListContent({
   };
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-4xl border border-border/70 bg-linear-to-br from-card via-card to-muted/50 p-5 shadow-sm sm:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="space-y-2">
-            <p className="text-muted-foreground text-sm font-medium uppercase tracking-[0.22em]">
-              Pedidos de venda
-            </p>
-            <h1 className="text-3xl font-semibold tracking-tight">
-              Listagem de pedidos
-            </h1>
-            <p className="text-muted-foreground max-w-2xl text-sm sm:text-base">
-              Consulte vendas recentes com filtros por vendedor, status,
-              localização e período.
-            </p>
-          </div>
+    <div className="space-y-4">
+      <section className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between py-1">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Listagem de pedidos
+          </h1>
+          <p className="text-muted-foreground text-sm max-w-2xl">
+            Consulte vendas recentes com filtros por vendedor, status,
+            localização e período.
+          </p>
+        </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="rounded-full border border-border/70 bg-background/80 px-4 py-2 text-sm font-medium shadow-sm">
-              {orders.length} resultado{orders.length === 1 ? "" : "s"}
-            </div>
-            <div className="rounded-full border border-border/70 bg-background/80 px-4 py-2 text-sm font-medium shadow-sm">
-              {activeFiltersCount} filtro{activeFiltersCount === 1 ? "" : "s"}{" "}
-              ativo
-              {activeFiltersCount === 1 ? "" : "s"}
-            </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="rounded-lg border border-border/70 bg-card px-3 py-1.5 text-xs font-medium shadow-sm">
+            {orders.length} resultado{orders.length === 1 ? "" : "s"}
+          </div>
+          <div className="rounded-lg border border-border/70 bg-card px-3 py-1.5 text-xs font-medium shadow-sm">
+            {activeFiltersCount} filtro{activeFiltersCount === 1 ? "" : "s"}{" "}
+            ativo{activeFiltersCount === 1 ? "" : "s"}
           </div>
         </div>
       </section>
