@@ -3,9 +3,12 @@ import {
   CreditCard,
   MapPin,
   Package2,
+  Percent,
   Tag,
+  Truck,
   UserRound,
 } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -109,128 +112,129 @@ function getFinancialStatusClassName(status: string, statusId: number): string {
   return "border-border bg-muted text-foreground";
 }
 
-function InfoRow({
+function DataPoint({
   icon: Icon,
   label,
   value,
+  colSpan = 1,
 }: {
   icon: typeof UserRound;
   label: string;
   value: string | number | null | undefined;
+  colSpan?: 1 | 2;
 }) {
   const content =
     value === null || value === undefined || value === "" ? "-" : value;
 
   return (
-    <div className="flex items-start gap-3 rounded-2xl bg-muted/30 px-3 py-2.5">
-      <div className="mt-0.5 rounded-full bg-background p-1.5 shadow-sm">
-        <Icon className="size-3.5 text-primary" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.18em]">
+    <div className={cn("flex flex-col gap-1", colSpan === 2 && "col-span-2")}>
+      <div className="flex items-center gap-1.5 text-muted-foreground">
+        <Icon className="size-3.5" />
+        <span className="text-[10px] font-semibold uppercase tracking-wider">
           {label}
-        </p>
-        <p className="mt-1 truncate text-sm font-medium">{content}</p>
+        </span>
       </div>
+      <span
+        className="truncate text-sm font-medium text-foreground"
+        title={String(content)}
+      >
+        {content}
+      </span>
     </div>
   );
 }
 
 export function OrderCard({ order }: OrderCardProps) {
   return (
-    <Card className="gap-0 overflow-hidden rounded-[28px] border-border/70 bg-card/95 shadow-sm transition-shadow hover:shadow-md">
-      <CardHeader className="gap-4 border-b border-border/70 bg-gradient-to-br from-card via-card to-muted/35 pb-5">
-        <div className="flex items-start justify-between gap-4">
+    <Card className="gap-0 flex flex-col h-full overflow-hidden rounded-xl border-border/70 bg-card/95 shadow-xs transition-shadow hover:shadow-sm">
+      <CardHeader className="gap-3 border-b border-border/70 bg-gradient-to-br from-card via-card to-muted/35 p-4 pb-3">
+        <div className="flex items-start justify-between gap-2">
           <div className="space-y-1">
-            <CardTitle className="text-xl font-semibold tracking-tight">
+            <CardTitle className="text-lg font-semibold tracking-tight">
               Pedido #{order.orderId}
             </CardTitle>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs">
               {toDate(order.saleDate, order.orderDate || order.budgetDate)}
             </p>
           </div>
 
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex flex-col items-end gap-1.5 max-w-[50%]">
             <Badge
               variant="outline"
               className={cn(
-                "rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide",
+                "rounded-md px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider w-full justify-center truncate",
                 getOrderStatusClassName(order.orderStatus, order.orderStatusId),
               )}
             >
-              {order.orderStatus || "Venda"}
+              <span className="truncate">{order.orderStatus || "Venda"}</span>
             </Badge>
             <Badge
               variant="outline"
               className={cn(
-                "rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide",
+                "rounded-md px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider w-full justify-center truncate",
                 getFinancialStatusClassName(
                   order.financialStatus,
                   order.financialStatusId,
                 ),
               )}
             >
-              {order.financialStatus || "Pendente"}
+              <span className="truncate">
+                {order.financialStatus || "Pendente"}
+              </span>
             </Badge>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3 py-5">
-        <InfoRow icon={UserRound} label="Cliente" value={order.customerName} />
-        <InfoRow icon={Tag} label="Vendedor" value={order.sellerName} />
-        <InfoRow icon={MapPin} label="Local" value={order.location} />
-        <InfoRow
+      <CardContent className="grid grid-cols-2 gap-y-4 gap-x-4 p-4 flex-1">
+        <DataPoint
+          icon={UserRound}
+          label="Cliente"
+          value={order.customerName}
+          colSpan={2}
+        />
+        <DataPoint icon={Tag} label="Vendedor" value={order.sellerName} />
+        <DataPoint icon={MapPin} label="Local" value={order.location} />
+        <DataPoint
           icon={CreditCard}
           label="Pagamento"
           value={order.paymentForm}
         />
-        <InfoRow icon={Package2} label="Itens" value={order.itemCount} />
+        <DataPoint icon={Package2} label="Itens" value={order.itemCount} />
 
-        {(order.deliveryStatus || order.rateType) && (
-          <div className="grid gap-2 pt-1 sm:grid-cols-2">
-            {order.deliveryStatus && (
-              <div className="rounded-2xl border border-border/70 px-3 py-2.5">
-                <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.18em]">
-                  Entrega
-                </p>
-                <p className="mt-1 text-sm font-medium">
-                  {order.deliveryStatus}
-                </p>
-              </div>
-            )}
+        {order.deliveryStatus && (
+          <DataPoint
+            icon={Truck}
+            label="Entrega"
+            value={order.deliveryStatus}
+          />
+        )}
 
-            {order.rateType && (
-              <div className="rounded-2xl border border-border/70 px-3 py-2.5">
-                <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.18em]">
-                  Tipo de taxa
-                </p>
-                <p className="mt-1 text-sm font-medium">{order.rateType}</p>
-              </div>
-            )}
-          </div>
+        {order.rateType && (
+          <DataPoint icon={Percent} label="Taxa" value={order.rateType} />
         )}
       </CardContent>
 
-      <CardFooter className="justify-between gap-4 border-t border-border/70 pt-5">
+      <CardFooter className="justify-between gap-3 border-t border-border/70 p-4 pt-3 bg-muted/10 mt-auto">
         <div>
-          <p className="text-muted-foreground text-xs font-medium uppercase tracking-[0.2em]">
+          <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider">
             Total
           </p>
-          <p className="mt-1 text-xl font-semibold tracking-tight">
+          <p className="font-semibold tracking-tight text-base">
             {toCurrency(order.totalOrderValue)}
           </p>
         </div>
 
         <Button
-          type="button"
+          asChild
           variant="outline"
           size="sm"
-          disabled
-          aria-label={`Detalhes do pedido ${order.orderId} ainda indisponíveis`}
+          className="h-8 text-xs font-medium"
         >
-          Detalhes em breve
-          <ArrowRight className="size-4" />
+          <Link href={`/dashboard/sales-dashboard?orderId=${order.orderId}`}>
+            Detalhes
+            <ArrowRight className="size-3.5 ml-1.5" />
+          </Link>
         </Button>
       </CardFooter>
     </Card>
