@@ -56,6 +56,10 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
                 <OrderItemsSection
                   items={dashboardData?.items ?? []}
                   orderStatusId={dashboardData?.details?.orderStatusId ?? 0}
+                  orderId={dashboardData?.details?.orderId ?? 0}
+                  customerId={dashboardData?.details?.customerId ?? 0}
+                  sellerId={dashboardData?.details?.sellerId ?? 0}
+                  paymentFormId={dashboardData?.details?.paymentFormId ?? 0}
                 />
               </main>
 
