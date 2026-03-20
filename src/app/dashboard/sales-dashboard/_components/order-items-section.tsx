@@ -1,20 +1,18 @@
-import {
-  Boxes,
-  Minus,
-  Plus,
-  ShieldCheck,
-  Sparkles,
-  Trash2,
-} from "lucide-react";
+import { Boxes, Plus, ShieldCheck, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { UIOrderDashboardItem } from "@/services/api-main/order-sales/transformers/transformers";
 import { formatCurrency } from "@/utils/common-utils";
+import { DeleteItemButton } from "./delete-item-button";
+import { QuantityControls } from "./quantity-controls";
+
+const EDITABLE_ORDER_STATUS_ID = 22;
 
 interface OrderItemsSectionProps {
   items: UIOrderDashboardItem[];
+  orderStatusId: number;
 }
 
 function formatWarranty(warrantyDays: number): string | null {
@@ -22,7 +20,10 @@ function formatWarranty(warrantyDays: number): string | null {
   return `${warrantyDays} dias de garantia`;
 }
 
-export function OrderItemsSection({ items }: OrderItemsSectionProps) {
+export function OrderItemsSection({
+  items,
+  orderStatusId,
+}: OrderItemsSectionProps) {
   const totalUnits = items.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
@@ -61,13 +62,11 @@ export function OrderItemsSection({ items }: OrderItemsSectionProps) {
               key={item.movementId}
               className="group relative gap-0 overflow-hidden rounded-[24px] border border-border/70 bg-background/85 p-0 shadow-lg shadow-black/5 transition-all hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-xl hover:shadow-black/10 dark:bg-white/3"
             >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-3 right-3 z-10 h-9 w-9 rounded-full border border-border/60 bg-background/90 text-muted-foreground opacity-100 backdrop-blur transition-opacity hover:bg-destructive/10 hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <DeleteItemButton
+                movementId={item.movementId}
+                productName={item.product}
+                disabled={orderStatusId !== EDITABLE_ORDER_STATUS_ID}
+              />
 
               <div className="grid gap-4 p-4 md:grid-cols-[minmax(0,1fr)_230px] md:p-5">
                 <div className="flex min-w-0 items-start gap-4">
@@ -164,32 +163,12 @@ export function OrderItemsSection({ items }: OrderItemsSectionProps) {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/90 p-2 md:min-w-55 dark:bg-white/4">
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="rounded-full hover:bg-secondary/80"
-                    >
-                      <Minus className="h-3.5 w-3.5" />
-                    </Button>
-
-                    <div className="text-center">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                        Quantidade
-                      </p>
-                      <p className="text-lg font-semibold text-foreground">
-                        {item.quantity}
-                      </p>
-                    </div>
-
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="rounded-full hover:bg-secondary/80"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+                  <QuantityControls
+                    movementId={item.movementId}
+                    quantity={item.quantity}
+                    storeStock={item.storeStock}
+                    disabled={orderStatusId !== EDITABLE_ORDER_STATUS_ID}
+                  />
                 </div>
               </div>
             </Card>
