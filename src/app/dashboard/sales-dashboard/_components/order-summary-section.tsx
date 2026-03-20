@@ -1,7 +1,6 @@
 import { ShieldCheck, Tag, WalletCards } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type {
   UIOrderCustomer,
@@ -13,6 +12,7 @@ import { formatCurrency } from "@/utils/common-utils";
 import { FinalizeSaleButton } from "./finalize-sale-button";
 import { PaymentMethodsSection } from "./payment-methods-section";
 import { PrintOrderButton } from "./print-order-button";
+import { SendWhatsAppButton } from "./send-whatsapp-button";
 
 interface OrderSummaryProps {
   summary: UIOrderSalesSummary | null;
@@ -137,14 +137,12 @@ export function OrderSummarySection({
               items={items}
               customer={customer}
             />
-            <Button
-              type="button"
-              variant="outline"
-              className="h-12 rounded-2xl border-border/70 bg-background/80 text-sm font-semibold shadow-none hover:bg-secondary/70 dark:bg-white/4"
-              size="lg"
-            >
-              Enviar WhatsApp
-            </Button>
+            <SendWhatsAppButton
+              summary={summary}
+              details={details}
+              items={items}
+              customer={customer}
+            />
           </div>
           <FinalizeSaleButton
             orderId={summary?.orderId ?? 0}
