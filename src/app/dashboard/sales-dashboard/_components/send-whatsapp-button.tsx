@@ -3,7 +3,7 @@
 import { MessageCircle } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-
+import { useOrganizationMeta } from "@/components/common/organization-meta-provider";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,11 +18,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useOrganizationMeta } from "@/components/common/organization-meta-provider";
-import type { UIOrderCustomer } from "@/services/api-main/order-sales/transformers/transformers";
-import type { UIOrderDashboardDetails } from "@/services/api-main/order-sales/transformers/transformers";
-import type { UIOrderDashboardItem } from "@/services/api-main/order-sales/transformers/transformers";
-import type { UIOrderSalesSummary } from "@/services/api-main/order-sales/transformers/transformers";
+import type {
+  UIOrderCustomer,
+  UIOrderDashboardDetails,
+  UIOrderDashboardItem,
+  UIOrderSalesSummary,
+} from "@/services/api-main/order-sales/transformers/transformers";
 import { formatCurrency } from "@/utils/common-utils";
 
 interface SendWhatsAppButtonProps {
@@ -61,8 +62,8 @@ function isValidPhone(phone: string): boolean {
 
 function getCustomerPhone(customer: UIOrderCustomer | null): string {
   if (!customer) return "";
-  if (customer.whatsapp && customer.whatsapp.trim()) return customer.whatsapp.trim();
-  if (customer.phone && customer.phone.trim()) return customer.phone.trim();
+  if (customer.whatsapp?.trim()) return customer.whatsapp.trim();
+  if (customer.phone?.trim()) return customer.phone.trim();
   return "";
 }
 
@@ -182,14 +183,7 @@ export function SendWhatsAppButton({
     const url = `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank", "noopener,noreferrer");
     setOpen(false);
-  }, [
-    summary,
-    details,
-    items,
-    customer,
-    companyName,
-    phoneInput,
-  ]);
+  }, [summary, details, items, customer, companyName, phoneInput]);
 
   return (
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
@@ -210,8 +204,8 @@ export function SendWhatsAppButton({
           <AlertDialogTitle>Enviar pedido via WhatsApp</AlertDialogTitle>
           <AlertDialogDescription>
             Os dados do pedido #{summary?.orderId ?? 0} serão enviados para o
-            WhatsApp do cliente{" "}
-            <strong>{customer?.customerName ?? "—"}</strong>.
+            WhatsApp do cliente <strong>{customer?.customerName ?? "—"}</strong>
+            .
           </AlertDialogDescription>
         </AlertDialogHeader>
 
