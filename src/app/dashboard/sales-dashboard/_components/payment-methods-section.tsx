@@ -11,6 +11,13 @@ const paymentMethods = [
     color: "text-primary",
   },
   {
+    id: "pix",
+    icon: "qr-code",
+    label: "Pix",
+    color: "text-primary",
+    recommended: true,
+  },
+  {
     id: "credit",
     icon: "credit-card",
     label: "Cartao de Credito",
@@ -22,17 +29,11 @@ const paymentMethods = [
     label: "Cartao de Debito",
     color: "text-primary",
   },
+
   {
-    id: "pix",
-    icon: "qr-code",
-    label: "Pix",
-    color: "text-primary",
-    recommended: true,
-  },
-  {
-    id: "check",
+    id: "boleto",
     icon: "landmark",
-    label: "Cheque",
+    label: "Boleto",
     color: "text-primary",
   },
 ];

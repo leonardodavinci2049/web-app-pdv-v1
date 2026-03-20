@@ -60,6 +60,10 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
                 <div className="xl:sticky xl:top-4">
                   <OrderSummarySection
                     summary={dashboardData?.summary ?? null}
+                    details={dashboardData?.details ?? null}
+                    items={dashboardData?.items ?? []}
+                    customer={dashboardData?.customer ?? null}
+                    orderStatusId={dashboardData?.details?.orderStatusId ?? 0}
                   />
                 </div>
               </aside>

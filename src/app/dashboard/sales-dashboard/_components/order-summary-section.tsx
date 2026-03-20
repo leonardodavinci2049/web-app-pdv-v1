@@ -3,15 +3,32 @@ import { ShieldCheck, Tag, WalletCards } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { UIOrderSalesSummary } from "@/services/api-main/order-sales/transformers/transformers";
+import type {
+  UIOrderCustomer,
+  UIOrderDashboardDetails,
+  UIOrderDashboardItem,
+  UIOrderSalesSummary,
+} from "@/services/api-main/order-sales/transformers/transformers";
 import { formatCurrency } from "@/utils/common-utils";
+import { FinalizeSaleButton } from "./finalize-sale-button";
 import { PaymentMethodsSection } from "./payment-methods-section";
+import { PrintOrderButton } from "./print-order-button";
 
 interface OrderSummaryProps {
   summary: UIOrderSalesSummary | null;
+  details: UIOrderDashboardDetails | null;
+  items: UIOrderDashboardItem[];
+  customer: UIOrderCustomer | null;
+  orderStatusId: number;
 }
 
-export function OrderSummarySection({ summary }: OrderSummaryProps) {
+export function OrderSummarySection({
+  summary,
+  details,
+  items,
+  customer,
+  orderStatusId,
+}: OrderSummaryProps) {
   const subtotal = summary ? Number(summary.subtotalValue) : 0;
   const freight = summary ? Number(summary.freightValue) : 0;
   const additions = summary ? Number(summary.additionValue) : 0;
@@ -113,19 +130,26 @@ export function OrderSummarySection({ summary }: OrderSummaryProps) {
         </div>
 
         <div className="space-y-3">
-          <Button
-            variant="outline"
-            className="h-12 w-full rounded-2xl border-border/70 bg-background/80 text-sm font-semibold shadow-none hover:bg-secondary/70 dark:bg-white/4"
-            size="lg"
-          >
-            Salvar orcamento
-          </Button>
-          <Button
-            className="h-12 w-full rounded-2xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-black/10 hover:bg-primary/90"
-            size="lg"
-          >
-            Finalizar venda
-          </Button>
+          <div className="grid grid-cols-2 gap-3">
+            <PrintOrderButton
+              summary={summary}
+              details={details}
+              items={items}
+              customer={customer}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 rounded-2xl border-border/70 bg-background/80 text-sm font-semibold shadow-none hover:bg-secondary/70 dark:bg-white/4"
+              size="lg"
+            >
+              Enviar WhatsApp
+            </Button>
+          </div>
+          <FinalizeSaleButton
+            orderId={summary?.orderId ?? 0}
+            orderStatusId={orderStatusId}
+          />
         </div>
       </div>
     </Card>
