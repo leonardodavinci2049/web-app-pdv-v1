@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { UIOrderDashboardItem } from "@/services/api-main/order-sales/transformers/transformers";
 import { formatCurrency } from "@/utils/common-utils";
+import { AddProductDialog } from "./add-product-dialog";
 import { DeleteItemButton } from "./delete-item-button";
 import { QuantityControls } from "./quantity-controls";
 
@@ -13,6 +14,10 @@ const EDITABLE_ORDER_STATUS_ID = 22;
 interface OrderItemsSectionProps {
   items: UIOrderDashboardItem[];
   orderStatusId: number;
+  orderId: number;
+  customerId: number;
+  sellerId: number;
+  paymentFormId: number;
 }
 
 function formatWarranty(warrantyDays: number): string | null {
@@ -23,6 +28,10 @@ function formatWarranty(warrantyDays: number): string | null {
 export function OrderItemsSection({
   items,
   orderStatusId,
+  orderId,
+  customerId,
+  sellerId,
+  paymentFormId,
 }: OrderItemsSectionProps) {
   const totalUnits = items.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -48,10 +57,18 @@ export function OrderItemsSection({
             </div>
           </div>
 
-          <Button size="sm" className="rounded-full px-4">
-            <Plus className="h-4 w-4" />
-            Adicionar produto
-          </Button>
+          <AddProductDialog
+            orderId={orderId}
+            customerId={customerId}
+            sellerId={sellerId}
+            paymentFormId={paymentFormId}
+            orderStatusId={orderStatusId}
+          >
+            <Button size="sm" className="rounded-full px-4">
+              <Plus className="h-4 w-4" />
+              Adicionar produto
+            </Button>
+          </AddProductDialog>
         </div>
       </div>
 
@@ -62,11 +79,12 @@ export function OrderItemsSection({
               key={item.movementId}
               className="group relative gap-0 overflow-hidden rounded-[24px] border border-border/70 bg-background/85 p-0 shadow-lg shadow-black/5 transition-all hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-xl hover:shadow-black/10 dark:bg-white/3"
             >
-              <DeleteItemButton
-                movementId={item.movementId}
-                productName={item.product}
-                disabled={orderStatusId !== EDITABLE_ORDER_STATUS_ID}
-              />
+              {orderStatusId === EDITABLE_ORDER_STATUS_ID && (
+                <DeleteItemButton
+                  movementId={item.movementId}
+                  productName={item.product}
+                />
+              )}
 
               <div className="grid gap-4 p-4 md:grid-cols-[minmax(0,1fr)_230px] md:p-5">
                 <div className="flex min-w-0 items-start gap-4">
@@ -184,10 +202,18 @@ export function OrderItemsSection({
               Monte a venda com produtos de maior apelo visual, mantendo
               quantidade, preco e beneficios em evidenca para o vendedor.
             </p>
-            <Button className="mt-5 rounded-full px-4">
-              <Plus className="h-4 w-4" />
-              Adicionar primeiro produto
-            </Button>
+            <AddProductDialog
+              orderId={orderId}
+              customerId={customerId}
+              sellerId={sellerId}
+              paymentFormId={paymentFormId}
+              orderStatusId={orderStatusId}
+            >
+              <Button className="mt-5 rounded-full px-4">
+                <Plus className="h-4 w-4" />
+                Adicionar primeiro produto
+              </Button>
+            </AddProductDialog>
           </div>
         </div>
       )}
