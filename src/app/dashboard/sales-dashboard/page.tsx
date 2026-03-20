@@ -53,7 +53,10 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
               <main className="flex min-w-0 flex-col gap-4 order-1">
                 <HeaderOrderSection details={dashboardData?.details ?? null} />
                 <CustomerSection customer={dashboardData?.customer ?? null} />
-                <OrderItemsSection items={dashboardData?.items ?? []} />
+                <OrderItemsSection
+                  items={dashboardData?.items ?? []}
+                  orderStatusId={dashboardData?.details?.orderStatusId ?? 0}
+                />
               </main>
 
               <aside className="min-w-0 order-2">

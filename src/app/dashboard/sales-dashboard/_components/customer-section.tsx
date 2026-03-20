@@ -6,6 +6,7 @@ import {
   Phone,
   Search,
   Sparkles,
+  User,
   UserPlus,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -60,13 +61,9 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" className="rounded-full px-4">
-              <Search className="h-4 w-4" />
-              Buscar cliente
-            </Button>
             <Button size="sm" className="rounded-full px-4">
-              <UserPlus className="h-4 w-4" />
-              Novo cadastro
+              <User className="h-4 w-4" />
+              Ver Cadastro
             </Button>
           </div>
         </div>
