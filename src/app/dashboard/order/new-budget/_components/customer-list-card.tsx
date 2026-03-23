@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { ArrowRight, Mail, Phone } from "lucide-react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useTransition } from "react";
 

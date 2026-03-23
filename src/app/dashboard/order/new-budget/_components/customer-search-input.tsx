@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useRef, useTransition } from "react";
 
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 import { BUDGET_FLOW_STEPS } from "../budget-flow";
 
@@ -45,7 +44,6 @@ export function CustomerSearchInput({
 
   return (
     <div className="space-y-3">
-
       <div className="relative">
         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input

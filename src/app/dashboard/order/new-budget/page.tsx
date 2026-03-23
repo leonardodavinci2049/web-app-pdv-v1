@@ -1,5 +1,5 @@
-import { getAuthContext } from "@/server/auth-context";
 import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
+import { getAuthContext } from "@/server/auth-context";
 import { getCustomers } from "@/services/api-main/customer-general/customer-general-cached-service";
 import { getOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
 import { searchProductsPdv } from "@/services/api-main/product-pdv/product-pdv-cached-service";
@@ -75,7 +75,6 @@ export default async function NewBudgetPage({
 
   return (
     <div className="flex flex-1 flex-col">
-
       <SiteHeaderWithBreadcrumb
         title="Novo Orçamento"
         breadcrumbItems={[
@@ -84,8 +83,6 @@ export default async function NewBudgetPage({
           { label: "Novo Orçamento", isActive: true },
         ]}
       />
-
-
 
       <main className="flex flex-1 flex-col gap-6 p-4 pt-0 lg:p-6 lg:pt-0">
         <div className="mx-auto flex w-full max-w-350 flex-col gap-6">
