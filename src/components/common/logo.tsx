@@ -8,6 +8,7 @@ export default function Logo() {
         alt={`${process.env.NEXT_PUBLIC_COMPANY_NAME || "Logo"} Logo`}
         width={200}
         height={64}
+        loading="eager"
         className="h-16 w-auto sm:h-20"
       />
     </div>
