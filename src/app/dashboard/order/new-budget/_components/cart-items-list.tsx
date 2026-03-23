@@ -37,9 +37,6 @@ export function CartItemsList({
               <ShoppingCart className="h-4 w-4" />
               Carrinho operacional
             </CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Ajuste quantidades e remova itens diretamente daqui.
-            </p>
           </div>
 
           {orderId && (
@@ -88,9 +85,6 @@ export function CartItemsList({
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-foreground">
                       Resumo parcial
-                    </span>
-                    <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                      Atualizado em tempo real
                     </span>
                   </div>
                   <div className="flex justify-between">

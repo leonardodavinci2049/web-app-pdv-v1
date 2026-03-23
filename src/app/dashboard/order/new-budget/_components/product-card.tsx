@@ -1,7 +1,7 @@
 import { Package } from "lucide-react";
 import Image from "next/image";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import type { UIProductPdv } from "@/services/api-main/product-pdv/transformers/transformers";
 import { formatCurrency } from "@/utils/common-utils";
 
@@ -24,59 +24,82 @@ export function ProductCard({
       : product.wholesalePrice;
 
   return (
-    <Card className="overflow-hidden border-border/60 bg-card/95 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
-      <CardContent className="space-y-4 p-4">
-        <div className="flex items-start gap-4">
-          <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-muted/60">
-            {product.imagePath ? (
-              <Image
-                src={product.imagePath}
-                alt={product.name}
-                fill
-                sizes="64px"
-                className="rounded-2xl object-cover"
-              />
-            ) : (
-              <Package className="h-7 w-7 text-muted-foreground" />
+    <Card className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-border/40 bg-card p-0 gap-0 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg dark:border-border/50 dark:bg-zinc-900/80 dark:shadow-md dark:backdrop-blur-sm dark:hover:border-primary/40">
+      {/* Imagem (Topo) */}
+      <div className="relative flex aspect-[4/3] w-full shrink-0 items-center justify-center overflow-hidden bg-muted/20 dark:bg-zinc-800/60">
+        {product.imagePath ? (
+          <Image
+            src={product.imagePath}
+            alt={product.name}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center text-muted-foreground/40">
+            <Package className="mb-2 h-10 w-10" />
+            <span className="text-[10px] font-medium uppercase tracking-widest">
+              Sem foto
+            </span>
+          </div>
+        )}
+
+        {/* Badges Flutuantes sobre a Imagem */}
+        <div className="absolute left-3 top-3 flex flex-col gap-2">
+          {product.storeStock > 0 ? (
+            <span className="inline-flex w-fit items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-emerald-600 ring-1 ring-inset ring-emerald-500/20 backdrop-blur-md dark:bg-emerald-500/20 dark:text-emerald-400">
+              Estoque: {product.storeStock}
+            </span>
+          ) : (
+            <span className="inline-flex w-fit items-center rounded-full bg-red-500/10 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-red-600 ring-1 ring-inset ring-red-500/20 backdrop-blur-md dark:bg-red-500/20 dark:text-red-400">
+              Sem Estoque
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Conteúdo */}
+      <div className="flex flex-1 flex-col p-4">
+        <div className="flex-1 space-y-3">
+          <div className="space-y-1">
+            <h3 className="line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-foreground sm:text-base">
+              {product.name}
+            </h3>
+            {product.model && (
+              <p className="line-clamp-1 text-xs text-muted-foreground">
+                Modelo: {product.model}
+              </p>
             )}
           </div>
 
-          <div className="min-w-0 flex-1 space-y-3">
-            <div className="space-y-1">
-              <p className="line-clamp-2 text-base font-semibold text-foreground">
-                {product.name}
-              </p>
-              <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                {product.ref && <span>Ref {product.ref}</span>}
-                {product.sku && <span>SKU {product.sku}</span>}
-                {product.label && <span>Etiqueta {product.label}</span>}
-              </div>
-            </div>
-
-            <div className="grid gap-3 rounded-[24px] border border-border/60 bg-muted/20 p-3 sm:grid-cols-[1fr_auto] sm:items-center">
-              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                <span className="rounded-full bg-background px-3 py-1 font-medium text-foreground shadow-xs">
-                  Estoque loja: {product.storeStock}
-                </span>
-                {product.model && (
-                  <span className="rounded-full bg-background px-3 py-1 shadow-xs">
-                    Modelo: {product.model}
-                  </span>
-                )}
-              </div>
-
-              <div className="text-left sm:text-right">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Preço de venda
-                </p>
-                <p className="text-xl font-semibold text-foreground">
-                  {formatCurrency(Number(price))}
-                </p>
-              </div>
-            </div>
+          <div className="flex flex-wrap gap-2">
+            {product.ref && (
+              <span className="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
+                Ref: {product.ref}
+              </span>
+            )}
+            {product.sku && (
+              <span className="inline-flex items-center rounded-md bg-secondary/60 px-2 py-0.5 text-[10px] font-medium text-secondary-foreground/80">
+                SKU: {product.sku}
+              </span>
+            )}
           </div>
         </div>
 
+        <div className="mt-4 flex items-end justify-between">
+          <div className="space-y-0.5">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              Preço Unitário
+            </p>
+            <p className="text-xl font-bold tracking-tight text-foreground">
+              {formatCurrency(Number(price))}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Footer */}
+      <div className="mt-auto border-t border-border/40 bg-zinc-50/50 p-4 dark:bg-zinc-900/50">
         <ProductAddButton
           productId={product.id}
           productName={product.name}
@@ -84,7 +107,7 @@ export function ProductCard({
           orderId={orderId}
           customerId={customerId}
         />
-      </CardContent>
+      </div>
     </Card>
   );
 }
