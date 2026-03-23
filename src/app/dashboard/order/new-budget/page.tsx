@@ -1,5 +1,5 @@
-import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
 import { getAuthContext } from "@/server/auth-context";
+import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
 import { getCustomers } from "@/services/api-main/customer-general/customer-general-cached-service";
 import { getOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
 import { searchProductsPdv } from "@/services/api-main/product-pdv/product-pdv-cached-service";
@@ -92,11 +92,7 @@ export default async function NewBudgetPage({
                   <h1 className="text-3xl font-semibold tracking-tight text-foreground">
                     Novo orçamento com carrinho operacional
                   </h1>
-                  <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
-                    Selecione o cliente, monte o carrinho com ajustes em tempo
-                    real, defina o pagamento e finalize com uma visão clara do
-                    resumo.
-                  </p>
+    
                 </div>
               </div>
 
