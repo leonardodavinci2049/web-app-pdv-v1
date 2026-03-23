@@ -25,6 +25,7 @@ This document provides essential conventions for code agents in this repository.
 ## Architecture
 
 **Server-First** with Next.js 16 + React Compiler:
+
 - **Server Components**: Default pattern
 - **Server Actions**: Exclusively for mutations
 - **Client Components**: Isolated only where necessary
@@ -81,6 +82,7 @@ src/
 ## Code Style
 
 ### Essential Rules
+
 - **Server First**: Always Server Component by default
 - **Route Pages/Layouts**: MUST be Server Components
 - **Client Components**: Isolate in `components/` of parent directory only when needed for interactivity
@@ -90,10 +92,29 @@ src/
 - **TypeScript**: Strict, `unknown` instead of `any`
 
 ### Naming
+
 - **Files**: kebab-case (`submit-button.tsx`, `auth.service.ts`)
 - **Components**: PascalCase (`SubmitButton`)
 - **Functions**: camelCase (`useIsMobile`, `findById`)
 - **Constants**: UPPER_SNAKE_CASE (`API_TIMEOUTS`)
+
+## UI/UX Layout Patterns
+
+### Dashboard Content Width
+
+For internal dashboard pages, the dashboard shell must remain full width. Only the content area inside the page may change width.
+
+Use only these two content-width patterns for internal dashboard pages:
+
+- **Default content width**: `1400px` maximum width
+- **Full content width**: full available width of the content area
+
+Important rules:
+
+- Do not create additional content-width variants for internal dashboard pages
+- When a page is not explicitly designed as full-width, use the `1400px` max-width pattern
+- Full-width pages should be used only when the screen needs maximum horizontal space (for example: dense data tables, operational panels, complex side-by-side layouts)
+- When developing a new internal dashboard page, always ask whether the page should use `1400px` max-width content or full-width content
 
 ## Service Patterns
 
@@ -112,13 +133,16 @@ src/
 ```
 
 **Service API (`*service-api.ts`):**
+
 ```typescript
 import "server-only";
 import { BaseApiService } from "@/lib/axios/base-api-service";
 import * as schemas from "./validation/*-schemas";
 
 export class FeatureServiceApi extends BaseApiService {
-  async findFeatureById(params: FindByIdRequest): Promise<ApiResponse<FeatureResponse>> {
+  async findFeatureById(
+    params: FindByIdRequest,
+  ): Promise<ApiResponse<FeatureResponse>> {
     schemas.FindByIdSchema.parse(params); // Validate with Zod
     return this.post<FeatureResponse>("/endpoint", params);
   }
@@ -129,6 +153,7 @@ export const featureServiceApi = new FeatureServiceApi();
 ```
 
 **Cached Service (`*-cached-service.ts`):**
+
 ```typescript
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
@@ -155,11 +180,15 @@ import "server-only";
 import dbService from "@/database/dbConnection";
 import { z } from "zod";
 
-async function findById(params: { id: string }): Promise<ServiceResponse<User>> {
+async function findById(params: {
+  id: string;
+}): Promise<ServiceResponse<User>> {
   try {
     z.string().min(1).parse(params.id);
     const query = "SELECT id, name FROM user WHERE id = ? LIMIT 1";
-    const results = await dbService.selectExecute<UserEntity>(query, [params.id]);
+    const results = await dbService.selectExecute<UserEntity>(query, [
+      params.id,
+    ]);
     return { success: true, data: mapEntityToDto(results[0]) };
   } catch (error) {
     return { success: false, error: "Error message" };
@@ -185,6 +214,7 @@ export async function getData(params: { id: string }): Promise<Data> {
 ```
 
 **Profiles defined in `next.config.ts`:**
+
 - `hours`: 1 hour (navigation, categories)
 - `frequent`: 5 minutes (products, listings)
 - `daily`: 24 hours (footer, static content)
@@ -200,20 +230,20 @@ import { CACHE_TAGS } from "@/lib/cache-config";
 
 export async function createFeature(params: CreateParams) {
   // mutation logic (create)
-  
+
   // Revalidate individual cache
   revalidateTag(CACHE_TAGS.feature(newId));
-  
+
   // Revalidate global list cache
   revalidateTag(CACHE_TAGS.features);
-  
+
   // Optional: revalidate full path
   revalidatePath("/dashboard/feature");
 }
 
 export async function updateFeature(params: UpdateParams) {
   // mutation logic (update)
-  
+
   // Revalidate individual cache
   revalidateTag(CACHE_TAGS.feature(params.id));
   revalidateTag(CACHE_TAGS.features);
@@ -221,7 +251,7 @@ export async function updateFeature(params: UpdateParams) {
 
 export async function deleteFeature(params: DeleteParams) {
   // mutation logic (delete)
-  
+
   // Revalidate individual and global cache
   revalidateTag(CACHE_TAGS.feature(params.id));
   revalidateTag(CACHE_TAGS.features);
@@ -257,7 +287,7 @@ export async function myAction(formData: FormData) {
   // MANDATORY: Check user session
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/sign-in");
-  
+
   // mutation logic
 }
 ```
@@ -284,6 +314,7 @@ export function MyForm() {
 ```
 
 **Server Action for Form:**
+
 ```typescript
 "use server";
 import { z } from "zod";
@@ -316,6 +347,7 @@ export function InteractiveComponent() {
 ```
 
 **Use in Server Component:**
+
 ```typescript
 // src/app/page.tsx (Server Component)
 import { InteractiveComponent } from "./components/interactive-component";
@@ -326,6 +358,7 @@ export default function Page() {
 ```
 
 **Important:**
+
 - Always prioritize server-side components
 - When you need interactivity (hooks, event listeners), create a subcomponent and isolate the functionality
 - Keep client component as lean as possible, transferring fetch logic to parent component (Server Component)
@@ -333,6 +366,7 @@ export default function Page() {
 ## Error Handling
 
 **Response pattern:**
+
 ```typescript
 type ServiceResponse<T> = {
   success: boolean;
@@ -342,6 +376,7 @@ type ServiceResponse<T> = {
 ```
 
 **Log:**
+
 ```typescript
 import { createLogger } from "@/core/logger";
 
@@ -357,9 +392,11 @@ logger.error("error message", error);
 Defined in `src/lib/cache-config.ts`:
 
 **Dynamic tags:**
+
 - `CACHE_TAGS.product(id)`, `CACHE_TAGS.category(id)`, etc.
 
 **Static tags:**
+
 - `CACHE_TAGS.products`, `CACHE_TAGS.categories`, etc.
 
 ## Before Committing
