@@ -13,29 +13,47 @@ export function StepCustomerSelect({
   search,
 }: StepCustomerSelectProps) {
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-semibold">Selecionar Cliente</h2>
-        <CustomerCreateDialog />
-      </div>
+    <div className="space-y-6">
+      <section className="rounded-[28px] border border-border/60 bg-card/95 p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+              Etapa 1
+            </p>
+            <div className="space-y-1">
+              <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                Escolha o cliente do orçamento
+              </h2>
+              <p className="max-w-3xl text-sm text-muted-foreground">
+                Busque por nome, documento ou e-mail e siga para o carrinho
+                quando encontrar a pessoa certa.
+              </p>
+            </div>
+          </div>
 
-      <CustomerSearchInput defaultValue={search} />
+          <CustomerCreateDialog />
+        </div>
+      </section>
 
-      {customers.length === 0 ? (
-        <div className="flex min-h-[200px] items-center justify-center rounded-lg border border-dashed">
-          <p className="text-sm text-muted-foreground">
-            {search
-              ? "Nenhum cliente encontrado para a busca."
-              : "Digite para buscar um cliente."}
-          </p>
-        </div>
-      ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {customers.map((customer) => (
-            <CustomerListCard key={customer.id} customer={customer} />
-          ))}
-        </div>
-      )}
+      <section className="rounded-[28px] border border-border/60 bg-card/95 p-5 shadow-sm sm:p-6">
+        <CustomerSearchInput defaultValue={search} />
+
+        {customers.length === 0 ? (
+          <div className="mt-5 flex min-h-[240px] items-center justify-center rounded-[24px] border border-dashed border-border/70 bg-muted/15 px-6 text-center">
+            <p className="max-w-md text-sm text-muted-foreground">
+              {search
+                ? "Nenhum cliente encontrado para essa busca. Tente outro termo ou cadastre um novo cliente."
+                : "Digite para buscar um cliente e iniciar o fluxo do orçamento."}
+            </p>
+          </div>
+        ) : (
+          <div className="mt-5 grid gap-3 xl:grid-cols-2">
+            {customers.map((customer) => (
+              <CustomerListCard key={customer.id} customer={customer} />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

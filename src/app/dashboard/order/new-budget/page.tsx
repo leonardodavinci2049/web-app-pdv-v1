@@ -8,6 +8,7 @@ import { StepCustomerSelect } from "./_components/step-customer-select";
 import { StepPayment } from "./_components/step-payment";
 import { StepProducts } from "./_components/step-products";
 import { StepSummary } from "./_components/step-summary";
+import { BUDGET_FLOW_STEPS, normalizeBudgetStep } from "./budget-flow";
 
 interface NewBudgetPageProps {
   searchParams: Promise<{
@@ -29,7 +30,7 @@ export default async function NewBudgetPage({
   };
 
   const params = await searchParams;
-  const step = Number(params.step) || 1;
+  const step = normalizeBudgetStep(Number(params.step));
   const search = params.search ?? "";
   const customerId = params.customerId ? Number(params.customerId) : undefined;
   const orderId = params.orderId ? Number(params.orderId) : undefined;
@@ -38,7 +39,7 @@ export default async function NewBudgetPage({
   let products: Awaited<ReturnType<typeof searchProductsPdv>> = [];
   let orderDashboard: Awaited<ReturnType<typeof getOrderDashboard>>;
 
-  if (step === 1) {
+  if (step === BUDGET_FLOW_STEPS.customer) {
     customers = await getCustomers({
       search,
       qtRegistros: 50,
@@ -46,7 +47,7 @@ export default async function NewBudgetPage({
     });
   }
 
-  if (step === 3 && customerId) {
+  if (step === BUDGET_FLOW_STEPS.cart && customerId) {
     products = await searchProductsPdv({
       search: search || undefined,
       customerId,
@@ -60,43 +61,85 @@ export default async function NewBudgetPage({
     }
   }
 
-  if (step === 4 && orderId) {
+  if (step === BUDGET_FLOW_STEPS.payment && orderId) {
     orderDashboard = await getOrderDashboard(orderId, dashboardParams);
   }
 
-  if (step === 5 && orderId) {
+  if (step === BUDGET_FLOW_STEPS.summary && orderId) {
     orderDashboard = await getOrderDashboard(orderId, dashboardParams);
   }
+
+  const effectiveCustomerId =
+    customerId ?? orderDashboard?.customer?.customerId;
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-      <div className="mx-auto w-full max-w-4xl">
-        <h1 className="mb-6 text-2xl font-bold">Novo Orçamento</h1>
+    <div className="flex flex-1 flex-col gap-6 p-4 pt-0 lg:p-6 lg:pt-0">
+      <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-6">
+        <section className="overflow-hidden rounded-[28px] border border-border/60 bg-gradient-to-br from-background via-background to-muted/50 shadow-sm">
+          <div className="flex flex-col gap-4 px-5 py-6 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary/80">
+                Fluxo de Orçamento
+              </p>
+              <div className="space-y-2">
+                <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+                  Novo orçamento com carrinho operacional
+                </h1>
+                <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
+                  Selecione o cliente, monte o carrinho com ajustes em tempo
+                  real, defina o pagamento e finalize com uma visão clara do
+                  resumo.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:w-auto">
+              <div className="rounded-2xl border border-border/60 bg-background/85 px-4 py-3 shadow-xs">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  Etapas
+                </p>
+                <p className="text-2xl font-semibold text-foreground">4</p>
+              </div>
+              <div className="rounded-2xl border border-border/60 bg-background/85 px-4 py-3 shadow-xs">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  Fluxo atual
+                </p>
+                <p className="text-2xl font-semibold text-foreground">
+                  {step}/4
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <BudgetStepper
           currentStep={step}
-          customerId={customerId}
+          customerId={effectiveCustomerId}
           orderId={orderId}
         >
-          {step === 1 && (
+          {step === BUDGET_FLOW_STEPS.customer && (
             <StepCustomerSelect customers={customers} search={search} />
           )}
 
-          {step === 3 && customerId && (
+          {step === BUDGET_FLOW_STEPS.cart && effectiveCustomerId && (
             <StepProducts
               products={products}
               orderDashboard={orderDashboard}
               search={search}
               orderId={orderId}
-              customerId={customerId}
+              customerId={effectiveCustomerId}
             />
           )}
 
-          {step === 4 && orderId && (
-            <StepPayment orderDashboard={orderDashboard} orderId={orderId} />
+          {step === BUDGET_FLOW_STEPS.payment && orderId && (
+            <StepPayment
+              orderDashboard={orderDashboard}
+              orderId={orderId}
+              customerId={effectiveCustomerId}
+            />
           )}
 
-          {step === 5 && orderId && (
+          {step === BUDGET_FLOW_STEPS.summary && orderId && (
             <StepSummary orderDashboard={orderDashboard} orderId={orderId} />
           )}
         </BudgetStepper>

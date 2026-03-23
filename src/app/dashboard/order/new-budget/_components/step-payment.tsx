@@ -1,5 +1,9 @@
+import { CreditCard } from "lucide-react";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { UIOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
+import { formatCurrency } from "@/utils/common-utils";
 
 import { CloseOrderButton } from "./close-order-button";
 import { PaymentMethodSelect } from "./payment-method-select";
@@ -7,59 +11,129 @@ import { PaymentMethodSelect } from "./payment-method-select";
 interface StepPaymentProps {
   orderDashboard: UIOrderDashboard | undefined;
   orderId: number;
+  customerId?: number;
 }
 
-export function StepPayment({ orderDashboard, orderId }: StepPaymentProps) {
+export function StepPayment({
+  orderDashboard,
+  orderId,
+  customerId,
+}: StepPaymentProps) {
   const summary = orderDashboard?.summary;
   const items = orderDashboard?.items ?? [];
+  const selectedPaymentId = orderDashboard?.details?.paymentFormId;
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold">Forma de Pagamento</h2>
-
-      <div className="grid gap-6 sm:grid-cols-2">
-        <div className="space-y-4">
-          <PaymentMethodSelect orderId={orderId} />
-        </div>
-
-        <div className="space-y-3 rounded-lg border p-4">
-          <h3 className="text-sm font-semibold">Resumo do Pedido</h3>
-          <Separator />
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between text-muted-foreground">
-              <span>Itens</span>
-              <span>{items.length}</span>
+      <section className="rounded-[28px] border border-border/60 bg-card/95 p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+              Etapa 3
+            </p>
+            <div className="space-y-1">
+              <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                Confirme a forma de pagamento
+              </h2>
+              <p className="max-w-3xl text-sm text-muted-foreground">
+                O carrinho já está pronto. Agora alinhe a forma de pagamento
+                antes de revisar o orçamento final.
+              </p>
             </div>
-            {summary && (
-              <>
-                <div className="flex justify-between text-muted-foreground">
-                  <span>Subtotal</span>
-                  <span>R$ {Number(summary.subtotalValue).toFixed(2)}</span>
-                </div>
-                {Number(summary.discountValue) > 0 && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Desconto</span>
-                    <span>-R$ {Number(summary.discountValue).toFixed(2)}</span>
-                  </div>
-                )}
-                {Number(summary.freightValue) > 0 && (
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Frete</span>
-                    <span>R$ {Number(summary.freightValue).toFixed(2)}</span>
-                  </div>
-                )}
-                <Separator />
-                <div className="flex justify-between text-base font-bold">
-                  <span>Total</span>
-                  <span>R$ {Number(summary.totalOrderValue).toFixed(2)}</span>
-                </div>
-              </>
-            )}
+          </div>
+
+          <div className="rounded-2xl border border-border/60 bg-background/80 px-4 py-3 shadow-xs">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Pedido atual
+            </p>
+            <p className="text-sm font-semibold text-foreground">#{orderId}</p>
           </div>
         </div>
+      </section>
+
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <Card className="border-border/60 bg-card/95 shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <CreditCard className="h-4 w-4" />
+              Pagamento do orçamento
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PaymentMethodSelect
+              orderId={orderId}
+              defaultValue={selectedPaymentId ? String(selectedPaymentId) : "1"}
+            />
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/60 bg-card/95 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-base">Resumo financeiro</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-border/60 bg-background/75 px-4 py-3 shadow-xs">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  Itens
+                </p>
+                <p className="text-xl font-semibold text-foreground">
+                  {items.length}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border/60 bg-background/75 px-4 py-3 shadow-xs">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  Total
+                </p>
+                <p className="text-xl font-semibold text-foreground">
+                  {formatCurrency(Number(summary?.totalOrderValue ?? 0))}
+                </p>
+              </div>
+            </div>
+
+            <Separator />
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between text-muted-foreground">
+                <span>Itens</span>
+                <span>{items.length}</span>
+              </div>
+              {summary && (
+                <>
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>Subtotal</span>
+                    <span>{formatCurrency(Number(summary.subtotalValue))}</span>
+                  </div>
+                  {Number(summary.discountValue) > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Desconto</span>
+                      <span>
+                        -{formatCurrency(Number(summary.discountValue))}
+                      </span>
+                    </div>
+                  )}
+                  {Number(summary.freightValue) > 0 && (
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Frete</span>
+                      <span>
+                        {formatCurrency(Number(summary.freightValue))}
+                      </span>
+                    </div>
+                  )}
+                  <Separator />
+                  <div className="flex justify-between text-base font-bold">
+                    <span>Total</span>
+                    <span>
+                      {formatCurrency(Number(summary.totalOrderValue))}
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <CloseOrderButton orderId={orderId} />
+      <CloseOrderButton orderId={orderId} customerId={customerId} />
     </div>
   );
 }

@@ -25,9 +25,13 @@ const PAYMENT_METHODS = [
 
 interface PaymentMethodSelectProps {
   orderId: number;
+  defaultValue?: string;
 }
 
-export function PaymentMethodSelect({ orderId }: PaymentMethodSelectProps) {
+export function PaymentMethodSelect({
+  orderId,
+  defaultValue = "1",
+}: PaymentMethodSelectProps) {
   const [state, formAction, isPending] = useActionState(
     updatePaymentAction,
     null,
@@ -51,7 +55,7 @@ export function PaymentMethodSelect({ orderId }: PaymentMethodSelectProps) {
 
       <div className="space-y-2">
         <Label htmlFor="paymentMethod">Selecione a forma de pagamento</Label>
-        <Select name="pgMethodId" defaultValue="1">
+        <Select name="pgMethodId" defaultValue={defaultValue}>
           <SelectTrigger id="paymentMethod">
             <SelectValue placeholder="Selecione..." />
           </SelectTrigger>
