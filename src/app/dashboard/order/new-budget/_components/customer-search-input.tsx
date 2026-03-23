@@ -44,8 +44,7 @@ export function CustomerSearchInput({
   );
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor="customer-search">Buscar clientes</Label>
+    <div className="space-y-3">
 
       <div className="relative">
         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

@@ -1,9 +1,11 @@
 "use client";
 
-import { Phone, User } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Mail, Phone } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useTransition } from "react";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { UICustomerListItem } from "@/services/api-main/customer-general/transformers/transformers";
@@ -34,26 +36,23 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
   return (
     <Card
       className={cn(
-        "overflow-hidden border-border/60 bg-card/95 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-accent/30 hover:shadow-md",
+        "overflow-hidden border-border/60 bg-neutral-100 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-neutral-200/80 hover:shadow-md dark:bg-neutral-700/60 dark:hover:bg-neutral-600/60",
         isPending && "pointer-events-none opacity-60",
       )}
     >
-      <CardContent className="p-0">
-        <button
-          type="button"
-          onClick={handleSelect}
-          className="flex w-full items-start gap-4 p-4 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/30"
-        >
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-            <User className="h-5 w-5" />
-          </div>
-          <div className="min-w-0 flex-1 space-y-3">
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex items-start gap-3">
+          <Image
+            src="/avatars/customer.png"
+            alt={customer.name}
+            width={48}
+            height={48}
+            className="h-12 w-12 shrink-0 rounded-xl object-cover"
+          />
+          <div className="min-w-0 flex-1 space-y-2">
             <div className="space-y-1">
               <p className="truncate text-base font-semibold text-foreground">
                 {customer.name}
-              </p>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Selecionar para iniciar o carrinho
               </p>
             </div>
 
@@ -76,13 +75,49 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
               )}
             </div>
 
+            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+              {customer.customerType && (
+                <span className="rounded-full bg-background px-3 py-1 shadow-xs">
+                  Cliente: {customer.customerType}
+                </span>
+              )}
+              {customer.personType && (
+                <span className="rounded-full bg-background px-3 py-1 shadow-xs">
+                  {customer.personType}
+                </span>
+              )}
+              {customer.companyName && (
+                <span className="rounded-full bg-background px-3 py-1 shadow-xs">
+                  Empresa: {customer.companyName}
+                </span>
+              )}
+            </div>
+
             {customer.email && (
-              <p className="truncate text-sm text-muted-foreground">
+              <a
+                href={`mailto:${customer.email}`}
+                className="flex items-center gap-1.5 truncate text-sm text-muted-foreground hover:text-foreground"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Mail className="h-3.5 w-3.5 shrink-0" />
                 {customer.email}
-              </p>
+              </a>
             )}
           </div>
-        </button>
+        </div>
+
+        <div className="mt-2.5 flex justify-end">
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleSelect}
+            disabled={isPending}
+            className="gap-1.5"
+          >
+            Selecionar
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

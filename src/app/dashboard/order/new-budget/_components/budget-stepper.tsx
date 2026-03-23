@@ -21,25 +21,21 @@ const STEPS = [
   {
     routeStep: BUDGET_FLOW_STEPS.customer,
     label: "Cliente",
-    description: "Escolha quem vai receber o orçamento",
     icon: UserSearch,
   },
   {
     routeStep: BUDGET_FLOW_STEPS.cart,
     label: "Carrinho",
-    description: "Monte e ajuste os itens do pedido",
     icon: Package,
   },
   {
     routeStep: BUDGET_FLOW_STEPS.payment,
     label: "Pagamento",
-    description: "Defina a forma de pagamento",
     icon: CreditCard,
   },
   {
     routeStep: BUDGET_FLOW_STEPS.summary,
     label: "Resumo",
-    description: "Valide o orçamento final",
     icon: ShoppingCart,
   },
 ] as const;
@@ -92,23 +88,18 @@ export function BudgetStepper({
   return (
     <div className="space-y-6">
       <Card className="border-border/60 bg-card/95 shadow-sm backdrop-blur">
-        <CardContent className="space-y-4 px-4 py-4 sm:px-6 sm:py-5">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
-                Progresso do fluxo
-              </p>
-              <h2 className="text-lg font-semibold text-foreground">
-                {STEPS[currentStepIndex]?.label ?? "Cliente"}
-              </h2>
-            </div>
+        <CardContent className="space-y-3 px-4 py-3 sm:px-6 sm:py-">
+          <div className="flex justify-end">
             <p className="text-sm text-muted-foreground">
-              Etapa {currentStepIndex + 1} de {STEPS.length}
+              Etapa {currentStepIndex + 1} de {STEPS.length} —{"  "}
+              <span className="font-medium text-foreground">
+                {STEPS[currentStepIndex]?.label ?? "> Cliente"}
+              </span>
             </p>
           </div>
 
           <nav aria-label="Progresso do orçamento">
-            <ol className="flex items-start justify-between gap-2 overflow-x-auto pb-1">
+            <ol className="flex items-start justify-between gap-2 overflow-x-auto">
               {STEPS.map((step, index) => {
                 const isCompleted = index < currentStepIndex;
                 const isCurrent = index === currentStepIndex;
@@ -129,7 +120,7 @@ export function BudgetStepper({
                       }
                       disabled={!isClickable || isPending}
                       className={cn(
-                        "group flex w-full min-w-[88px] flex-col items-center gap-2 text-center transition-all",
+                        "group flex w-full min-w-[88px] flex-col items-center gap-1.5 text-center transition-all",
                         isClickable && !isCurrent
                           ? "cursor-pointer"
                           : "cursor-default",
@@ -170,16 +161,6 @@ export function BudgetStepper({
                           )}
                         >
                           {step.label}
-                        </span>
-                        <span
-                          className={cn(
-                            "hidden max-w-24 text-[10px] leading-tight sm:block",
-                            isCurrent
-                              ? "text-muted-foreground"
-                              : "text-muted-foreground/50",
-                          )}
-                        >
-                          {step.description}
                         </span>
                       </div>
                     </button>

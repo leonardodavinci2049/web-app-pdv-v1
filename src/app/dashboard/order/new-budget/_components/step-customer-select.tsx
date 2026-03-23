@@ -15,31 +15,23 @@ export function StepCustomerSelect({
   return (
     <div className="space-y-6">
       <section className="rounded-[28px] border border-border/60 bg-card/95 p-5 shadow-sm sm:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
-              Etapa 1
-            </p>
-            <div className="space-y-1">
-              <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-                Escolha o cliente do orçamento
-              </h2>
-              <p className="max-w-3xl text-sm text-muted-foreground">
-                Busque por nome, documento ou e-mail e siga para o carrinho
-                quando encontrar a pessoa certa.
-              </p>
-            </div>
-          </div>
-
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+            Buscar Cliente
+          </p>
           <CustomerCreateDialog />
+        </div>
+
+        <div className="mt-4">
+          <div className="w-full max-w-[400px]">
+            <CustomerSearchInput defaultValue={search} />
+          </div>
         </div>
       </section>
 
-      <section className="rounded-[28px] border border-border/60 bg-card/95 p-5 shadow-sm sm:p-6">
-        <CustomerSearchInput defaultValue={search} />
-
+      <section className="rounded-[28px] border border-border/60 bg-card/95 p-3 shadow-sm sm:p-5">
         {customers.length === 0 ? (
-          <div className="mt-5 flex min-h-[240px] items-center justify-center rounded-[24px] border border-dashed border-border/70 bg-muted/15 px-6 text-center">
+          <div className="flex min-h-[240px] items-center justify-center rounded-[24px] border border-dashed border-border/70 bg-muted/15 px-6 text-center">
             <p className="max-w-md text-sm text-muted-foreground">
               {search
                 ? "Nenhum cliente encontrado para essa busca. Tente outro termo ou cadastre um novo cliente."
@@ -47,7 +39,7 @@ export function StepCustomerSelect({
             </p>
           </div>
         ) : (
-          <div className="mt-5 grid gap-3 xl:grid-cols-2">
+          <div className="mt-3 grid gap-2.5 sm:gap-3 xl:grid-cols-2">
             {customers.map((customer) => (
               <CustomerListCard key={customer.id} customer={customer} />
             ))}
