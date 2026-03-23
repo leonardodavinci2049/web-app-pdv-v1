@@ -25,11 +25,13 @@ export function CloseOrderButton({
   const href = `/dashboard/order/new-budget?${params.toString()}`;
 
   return (
-    <Button asChild size="lg" className="w-full sm:w-auto">
-      <Link href={href}>
-        <ArrowRight className="mr-2 h-4 w-4" />
-        Revisar resumo do orçamento
-      </Link>
-    </Button>
+    <div className="flex justify-end">
+      <Button asChild size="lg" className="w-full sm:w-auto">
+        <Link href={href}>
+          <ArrowRight className="mr-2 h-4 w-4" />
+          Revisar resumo do orçamento
+        </Link>
+      </Button>
+    </div>
   );
 }

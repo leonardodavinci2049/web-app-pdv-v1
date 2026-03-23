@@ -6,8 +6,6 @@ export const BUDGET_FLOW_STEPS = {
 } as const;
 
 const LEGACY_STEP_MAP: Record<number, number> = {
-  3: BUDGET_FLOW_STEPS.cart,
-  4: BUDGET_FLOW_STEPS.payment,
   5: BUDGET_FLOW_STEPS.summary,
 };
 
