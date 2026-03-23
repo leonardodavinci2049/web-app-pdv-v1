@@ -98,8 +98,8 @@ export function BudgetStepper({
             </p>
           </div>
 
-          <nav aria-label="Progresso do orçamento">
-            <ol className="flex items-start justify-between gap-2 overflow-x-auto">
+          <nav aria-label="Progresso do orçamento" className="relative">
+            <ol className="flex items-start justify-between gap-1 overflow-x-auto pb-2 sm:gap-2 sm:pb-0 scrollbar-none">
               {STEPS.map((step, index) => {
                 const isCompleted = index < currentStepIndex;
                 const isCurrent = index === currentStepIndex;
@@ -120,7 +120,7 @@ export function BudgetStepper({
                       }
                       disabled={!isClickable || isPending}
                       className={cn(
-                        "group flex w-full min-w-[88px] flex-col items-center gap-1.5 text-center transition-all",
+                        "group flex w-full min-w-[50px] flex-col items-center gap-1.5 text-center transition-all sm:min-w-[88px]",
                         isClickable && !isCurrent
                           ? "cursor-pointer"
                           : "cursor-default",
@@ -128,7 +128,7 @@ export function BudgetStepper({
                     >
                       <div
                         className={cn(
-                          "relative flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all sm:h-11 sm:w-11",
+                          "relative flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all sm:h-11 sm:w-11",
                           isCompleted &&
                             "border-primary bg-primary text-primary-foreground shadow-sm",
                           isCurrent &&
@@ -143,16 +143,16 @@ export function BudgetStepper({
                         )}
                       >
                         {isCompleted ? (
-                          <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                          <Check className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                         ) : (
-                          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                          <Icon className="h-3 w-3 sm:h-5 sm:w-5" />
                         )}
                       </div>
 
                       <div className="flex min-w-0 flex-col items-center">
                         <span
                           className={cn(
-                            "text-[11px] font-semibold sm:text-xs",
+                            "text-[9px] font-semibold sm:text-xs tracking-tight",
                             isCompleted && "text-primary",
                             isCurrent && "text-primary",
                             !isCompleted &&
@@ -166,10 +166,10 @@ export function BudgetStepper({
                     </button>
 
                     {index < STEPS.length - 1 && (
-                      <div className="flex items-center gap-1 px-1 pt-3 sm:gap-1.5 sm:px-2">
+                      <div className="flex flex-1 items-center justify-center gap-0.5 px-0 pt-2 sm:gap-1.5 sm:px-2 sm:pt-3">
                         <div
                           className={cn(
-                            "h-0.5 w-4 rounded-full transition-colors sm:w-6",
+                            "h-px w-2 sm:h-0.5 sm:w-6 rounded-full transition-colors hidden min-[360px]:block",
                             isCompleted
                               ? "bg-primary"
                               : "bg-muted-foreground/20",
@@ -177,7 +177,7 @@ export function BudgetStepper({
                         />
                         <ArrowRight
                           className={cn(
-                            "h-5 w-5 shrink-0 stroke-[2.5] transition-colors sm:h-6 sm:w-6",
+                            "h-3 w-3 shrink-0 stroke-[2.5] transition-colors sm:h-5 sm:w-5",
                             isCompleted
                               ? "text-primary"
                               : "text-muted-foreground/35",

@@ -38,8 +38,8 @@ export function ProductList({
   );
 
   return (
-    <div className="max-h-[720px] overflow-y-auto pr-1">
-      <div className="grid gap-3 xl:grid-cols-2">
+    <div className="pb-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
         {sortedProducts.map((product) => (
           <ProductCard
             key={product.id}

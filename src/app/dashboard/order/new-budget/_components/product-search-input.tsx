@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useRef, useTransition } from "react";
 
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 import { BUDGET_FLOW_STEPS } from "../budget-flow";
 
@@ -55,9 +54,7 @@ export function ProductSearchInput({
   );
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor="product-search">Buscar produtos</Label>
-
+    <div className="max-w-[400px] space-y-2">
       <div className="relative">
         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input

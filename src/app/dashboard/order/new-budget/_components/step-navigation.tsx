@@ -42,11 +42,7 @@ export function StepNavigation({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-[24px] border border-border/60 bg-card/95 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-sm text-muted-foreground">
-        Carrinho pronto. Avance para definir a forma de pagamento e concluir o
-        orçamento.
-      </p>
+    <div className="flex flex-col gap-3 rounded-[24px] border border-border/60 bg-card/95 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-end">
       <Button asChild>
         <Link href={href}>
           {nextLabel}
