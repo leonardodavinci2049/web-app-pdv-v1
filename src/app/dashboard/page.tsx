@@ -1,10 +1,16 @@
 import {
   ArrowRight,
+  BadgeCheck,
   BarChart3,
+  Bolt,
   CalendarDays,
   ClipboardList,
+  LayoutGrid,
+  Mail,
   PackageSearch,
+  PhoneCall,
   Settings,
+  ShieldCheck,
   Store,
   Target,
   Users,
@@ -12,6 +18,8 @@ import {
 import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -97,6 +105,50 @@ const modules = [
   },
 ];
 
+const quickInfoItems = [
+  {
+    title: "Acesse o Painel de Vendas para acompanhar indicadores do dia.",
+    icon: Bolt,
+    color: "text-amber-500",
+  },
+  {
+    title: "Seus dados permanecem protegidos com autenticação e sessão ativa.",
+    icon: ShieldCheck,
+    color: "text-emerald-500",
+  },
+  {
+    title: "Relatórios e metas ficam centralizados para consulta rápida.",
+    icon: BarChart3,
+    color: "text-sky-500",
+  },
+  {
+    title: "Clientes e agenda ajudam a priorizar contatos e retornos.",
+    icon: PhoneCall,
+    color: "text-teal-500",
+  },
+];
+
+function getInitials(name?: string | null) {
+  if (!name) return "US";
+
+  const initials = name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+
+  return initials || "US";
+}
+
+function formatRole(role?: string | null) {
+  if (!role) return "Usuário";
+
+  return role
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/^./, (char) => char.toUpperCase());
+}
+
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
 
@@ -106,59 +158,222 @@ export default async function DashboardPage() {
 
   const { user } = session;
   const firstName = user?.name?.split(" ")[0] || "Vendedor";
+  const userInitials = getInitials(user?.name);
+  const userRole = formatRole(user?.role);
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background">
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.12),transparent_28%),radial-gradient(circle_at_top_right,rgba(148,163,184,0.1),transparent_20%)]" />
+
       <SiteHeaderWithBreadcrumb
         title="Início"
         breadcrumbItems={[{ label: "Início", isActive: true }]}
       />
 
-      <main className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-6 lg:p-8 space-y-8">
-        <div className="flex flex-col gap-2 pt-2 md:pt-4 animate-in fade-in slide-in-from-bottom-3 duration-500">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
-            Olá, {firstName}! 👋
-          </h1>
-          <p className="text-muted-foreground text-base md:text-lg max-w-2xl">
-            Bem-vindo ao seu painel. Selecione abaixo o módulo que deseja
-            acessar para começar a trabalhar.
-          </p>
-        </div>
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8">
+        <Card className="overflow-hidden border-border/60 bg-linear-to-br from-card via-card to-muted/30 shadow-sm animate-in fade-in slide-in-from-bottom-3 duration-500">
+          <CardContent className="relative px-6 py-6 sm:px-8 sm:py-7">
+            <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-40 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_65%)] lg:block" />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          {modules.map((mod) => (
-            <Link
-              key={mod.title}
-              href={mod.href}
-              className="group outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl block h-full"
-            >
-              <Card
-                className={`h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 bg-card/60 backdrop-blur-sm border-border/60 ${mod.borderColor} relative overflow-hidden flex flex-col`}
-              >
-                <CardHeader className="pb-3 flex-none">
-                  <div className="flex items-center justify-between">
-                    <div
-                      className={`p-3 rounded-2xl ${mod.bgColor} ${mod.color} shadow-inner`}
-                    >
-                      <mod.icon className="w-6 h-6 md:w-7 md:h-7 stroke-[1.5]" />
-                    </div>
-                    <div className="bg-background/80 border border-border/50 rounded-full p-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                      <ArrowRight className="w-4 h-4 text-foreground/70" />
-                    </div>
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-start gap-4 sm:gap-5">
+                <Avatar className="size-16 border border-border/60 shadow-sm sm:size-20">
+                  <AvatarImage
+                    src={user.image ?? ""}
+                    alt={user.name ?? firstName}
+                  />
+                  <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold sm:text-xl">
+                    {userInitials}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                      Olá, {firstName}!
+                    </h1>
+                    <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
+                      Bem-vindo ao painel principal. Acesse os módulos mais
+                      importantes, acompanhe informações rápidas e entre direto
+                      nos fluxos do dia.
+                    </p>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-2 flex-grow flex flex-col justify-end pt-2">
-                  <CardTitle className="text-lg md:text-[1.15rem] font-semibold text-foreground/90 transition-colors tracking-tight">
-                    {mod.title}
-                  </CardTitle>
-                  <CardDescription className="text-sm font-medium opacity-85 leading-relaxed text-muted-foreground line-clamp-2">
-                    {mod.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge className="gap-1.5 rounded-full px-3 py-1">
+                      <BadgeCheck className="size-3.5" />
+                      {userRole}
+                    </Badge>
+
+                    {user.email ? (
+                      <Badge
+                        variant="outline"
+                        className="gap-1.5 rounded-full border-border/60 px-3 py-1 text-muted-foreground"
+                      >
+                        <Mail className="size-3.5" />
+                        {user.email}
+                      </Badge>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 rounded-3xl border border-border/60 bg-background/70 p-4 shadow-sm backdrop-blur sm:min-w-56 lg:justify-center">
+                <div className="space-y-1 lg:hidden">
+                  <p className="text-sm font-medium text-foreground">
+                    {modules.length} módulos disponíveis
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    atalhos e áreas principais do sistema
+                  </p>
+                </div>
+
+                <div className="hidden lg:block lg:space-y-3">
+                  <div className="mx-auto flex size-18 items-center justify-center rounded-2xl bg-muted text-foreground shadow-inner">
+                    <LayoutGrid className="size-8 stroke-[1.75]" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-foreground">
+                      {modules.length} módulos disponíveis
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      painel inicial de navegação
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex size-14 items-center justify-center rounded-2xl bg-muted text-foreground shadow-inner lg:hidden">
+                  <LayoutGrid className="size-6 stroke-[1.75]" />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <section className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="space-y-1">
+            <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+              Módulos principais
+            </h2>
+            <p className="text-sm text-muted-foreground sm:text-base">
+              Escolha um dos acessos abaixo para continuar o trabalho.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {modules.map((mod) => (
+              <Link
+                key={mod.title}
+                href={mod.href}
+                className="group block h-full rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <Card
+                  className={`relative flex h-full flex-col overflow-hidden border-border/60 bg-card/70 text-center backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 ${mod.borderColor}`}
+                >
+                  <CardHeader className="items-center pb-2">
+                    <div className="flex items-center justify-center">
+                      <div
+                        className={`rounded-2xl p-3.5 shadow-inner ${mod.bgColor} ${mod.color}`}
+                      >
+                        <mod.icon className="h-6 w-6 stroke-[1.75] md:h-7 md:w-7" />
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex grow flex-col justify-end space-y-2 pt-2">
+                    <CardTitle className="text-lg font-semibold tracking-tight text-foreground/90 md:text-[1.15rem]">
+                      {mod.title}
+                    </CardTitle>
+                    <CardDescription className="line-clamp-2 text-sm leading-relaxed font-medium text-muted-foreground opacity-85">
+                      {mod.description}
+                    </CardDescription>
+
+                    <div className="pt-3">
+                      <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground/80 transition-transform duration-300 group-hover:translate-x-1">
+                        Abrir módulo
+                        <ArrowRight className="size-4" />
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 gap-4 pb-4 xl:grid-cols-[1.1fr_0.9fr]">
+          <Card className="border-border/60 bg-card/70 animate-in fade-in slide-in-from-bottom-5 duration-700">
+            <CardHeader className="space-y-1 pb-3">
+              <CardTitle className="flex items-center gap-2 text-xl tracking-tight">
+                <Bolt className="size-5 text-amber-500" />
+                Informações rápidas
+              </CardTitle>
+              <CardDescription>
+                Resumo objetivo para facilitar sua navegação inicial.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {quickInfoItems.map((item) => (
+                <div
+                  key={item.title}
+                  className="flex items-start gap-3 rounded-2xl border border-transparent px-1 py-1"
+                >
+                  <div className={`mt-0.5 ${item.color}`}>
+                    <item.icon className="size-4.5" />
+                  </div>
+                  <p className="text-sm leading-6 text-muted-foreground sm:text-[0.95rem]">
+                    {item.title}
+                  </p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/60 bg-card/70 animate-in fade-in slide-in-from-bottom-5 duration-700">
+            <CardHeader className="space-y-1 pb-3">
+              <CardTitle className="flex items-center gap-2 text-xl tracking-tight">
+                <LayoutGrid className="size-5 text-foreground/80" />
+                Acesso rápido
+              </CardTitle>
+              <CardDescription>
+                Os mesmos módulos principais organizados como lista de atalho.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-1">
+              {modules.map((mod, index) => (
+                <Link
+                  key={mod.title}
+                  href={mod.href}
+                  className="group block rounded-2xl outline-none transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <div
+                    className={`flex items-start gap-3 px-3 py-3 ${
+                      index < modules.length - 1
+                        ? "border-b border-border/50"
+                        : ""
+                    }`}
+                  >
+                    <div
+                      className={`mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl ${mod.bgColor} ${mod.color}`}
+                    >
+                      <mod.icon className="size-4.5 stroke-[1.75]" />
+                    </div>
+
+                    <div className="min-w-0 grow">
+                      <p className="text-sm font-medium text-foreground">
+                        {mod.title}
+                      </p>
+                      <p className="line-clamp-1 text-xs text-muted-foreground sm:text-sm">
+                        {mod.description}
+                      </p>
+                    </div>
+
+                    <ArrowRight className="mt-1 size-4 shrink-0 text-foreground/40 transition-transform duration-300 group-hover:translate-x-1" />
+                  </div>
+                </Link>
+              ))}
+            </CardContent>
+          </Card>
+        </section>
       </main>
     </div>
   );
