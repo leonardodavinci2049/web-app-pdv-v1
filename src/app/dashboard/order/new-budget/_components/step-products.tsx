@@ -60,9 +60,6 @@ export function StepProducts({
               <h3 className="text-xl font-semibold tracking-tight text-foreground">
                 Produtos disponíveis
               </h3>
-              <p className="text-sm text-muted-foreground">
-                Selecione os itens abaixo para adicioná-los ao pedido
-              </p>
             </div>
 
             <ProductList
@@ -92,7 +89,7 @@ export function StepProducts({
               orderId={orderId}
               customerId={customerId}
               disabled={cartItems.length === 0}
-              nextLabel="Ir para Pagamento"
+              nextLabel="Selecionar Pagamento"
             />
           )}
         </div>
@@ -104,13 +101,14 @@ export function StepProducts({
         orderId={orderId}
         customerId={customerId}
         nextStep={BUDGET_FLOW_STEPS.payment}
-        nextLabel="Ir para Pagamento"
+        nextLabel="Selecionar Pagamento"
         disabled={cartItems.length === 0}
       >
         <CartItemsList
           items={cartItems}
           summary={summary}
           orderId={orderId}
+          variant="mobile"
           emptyMessage={
             hasOrder
               ? "Nenhum item adicionado."
