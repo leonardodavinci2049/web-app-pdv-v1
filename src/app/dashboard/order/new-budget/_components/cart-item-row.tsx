@@ -14,14 +14,14 @@ export function CartItemRow({ item }: CartItemRowProps) {
   return (
     <div className="rounded-[24px] border border-border/60 bg-background/80 p-3 shadow-xs transition-colors hover:bg-accent/30">
       <div className="flex items-start gap-3">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-muted/60">
+        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-muted/60">
           {item.imagePath ? (
             <Image
               src={item.imagePath}
               alt={item.product}
-              width={56}
-              height={56}
-              className="h-14 w-14 rounded-2xl object-cover"
+              fill
+              sizes="56px"
+              className="rounded-2xl object-cover"
             />
           ) : (
             <Package className="h-6 w-6 text-muted-foreground" />

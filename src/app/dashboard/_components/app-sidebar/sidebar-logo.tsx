@@ -66,6 +66,7 @@ export function SidebarLogo() {
               alt="Logo da Empresa"
               width={300}
               height={80}
+              priority
               unoptimized={isExternalUrl}
               onError={() => {
                 if (logoSrc !== FALLBACK_LOGO_SRC) {

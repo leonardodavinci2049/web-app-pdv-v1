@@ -27,14 +27,14 @@ export function ProductCard({
     <Card className="overflow-hidden border-border/60 bg-card/95 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
       <CardContent className="space-y-4 p-4">
         <div className="flex items-start gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-muted/60">
+          <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-muted/60">
             {product.imagePath ? (
               <Image
                 src={product.imagePath}
                 alt={product.name}
-                width={64}
-                height={64}
-                className="h-16 w-16 rounded-2xl object-cover"
+                fill
+                sizes="64px"
+                className="rounded-2xl object-cover"
               />
             ) : (
               <Package className="h-7 w-7 text-muted-foreground" />
