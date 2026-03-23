@@ -15,29 +15,31 @@ import { useCallback, useTransition } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
+import { BUDGET_FLOW_STEPS } from "../budget-flow";
+
 const STEPS = [
   {
-    routeStep: 1,
+    routeStep: BUDGET_FLOW_STEPS.customer,
     label: "Cliente",
-    description: "Selecionar cliente",
+    description: "Escolha quem vai receber o orçamento",
     icon: UserSearch,
   },
   {
-    routeStep: 3,
-    label: "Produto",
-    description: "Adicionar itens",
+    routeStep: BUDGET_FLOW_STEPS.cart,
+    label: "Carrinho",
+    description: "Monte e ajuste os itens do pedido",
     icon: Package,
   },
   {
-    routeStep: 4,
+    routeStep: BUDGET_FLOW_STEPS.payment,
     label: "Pagamento",
-    description: "Forma de pagamento",
+    description: "Defina a forma de pagamento",
     icon: CreditCard,
   },
   {
-    routeStep: 5,
+    routeStep: BUDGET_FLOW_STEPS.summary,
     label: "Resumo",
-    description: "Conferir orçamento",
+    description: "Valide o orçamento final",
     icon: ShoppingCart,
   },
 ] as const;
@@ -80,24 +82,39 @@ export function BudgetStepper({
   );
 
   const canNavigateToStep = (step: (typeof STEPS)[number]["routeStep"]) => {
-    if (step === 1) return !orderId;
-    if (step === 3) return !!customerId;
-    if (step === 4) return !!orderId;
-    if (step === 5) return !!orderId;
+    if (step === BUDGET_FLOW_STEPS.customer) return !orderId;
+    if (step === BUDGET_FLOW_STEPS.cart) return !!customerId;
+    if (step === BUDGET_FLOW_STEPS.payment) return !!orderId;
+    if (step === BUDGET_FLOW_STEPS.summary) return !!orderId;
     return false;
   };
 
   return (
-    <div className="space-y-5">
-      <Card>
-        <CardContent className="px-3 py-3 sm:px-5 sm:py-4">
+    <div className="space-y-6">
+      <Card className="border-border/60 bg-card/95 shadow-sm backdrop-blur">
+        <CardContent className="space-y-4 px-4 py-4 sm:px-6 sm:py-5">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+                Progresso do fluxo
+              </p>
+              <h2 className="text-lg font-semibold text-foreground">
+                {STEPS[currentStepIndex]?.label ?? "Cliente"}
+              </h2>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Etapa {currentStepIndex + 1} de {STEPS.length}
+            </p>
+          </div>
+
           <nav aria-label="Progresso do orçamento">
-            <ol className="flex items-start justify-between gap-2">
+            <ol className="flex items-start justify-between gap-2 overflow-x-auto pb-1">
               {STEPS.map((step, index) => {
                 const isCompleted = index < currentStepIndex;
                 const isCurrent = index === currentStepIndex;
                 const isClickable = canNavigateToStep(step.routeStep);
-                const isLocked = step.routeStep === 1 && !!orderId;
+                const isLocked =
+                  step.routeStep === BUDGET_FLOW_STEPS.customer && !!orderId;
                 const Icon = step.icon;
 
                 return (
@@ -112,7 +129,7 @@ export function BudgetStepper({
                       }
                       disabled={!isClickable || isPending}
                       className={cn(
-                        "group flex w-full min-w-0 flex-col items-center gap-1 text-center transition-all",
+                        "group flex w-full min-w-[88px] flex-col items-center gap-2 text-center transition-all",
                         isClickable && !isCurrent
                           ? "cursor-pointer"
                           : "cursor-default",
@@ -120,7 +137,7 @@ export function BudgetStepper({
                     >
                       <div
                         className={cn(
-                          "relative flex h-9 w-9 items-center justify-center rounded-full border-2 transition-all sm:h-10 sm:w-10",
+                          "relative flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all sm:h-11 sm:w-11",
                           isCompleted &&
                             "border-primary bg-primary text-primary-foreground shadow-sm",
                           isCurrent &&
@@ -156,7 +173,7 @@ export function BudgetStepper({
                         </span>
                         <span
                           className={cn(
-                            "hidden text-[9px] leading-tight sm:block",
+                            "hidden max-w-24 text-[10px] leading-tight sm:block",
                             isCurrent
                               ? "text-muted-foreground"
                               : "text-muted-foreground/50",

@@ -29,7 +29,10 @@ export function StepNavigation({
 
   if (disabled) {
     return (
-      <div className="flex justify-end">
+      <div className="flex flex-col gap-3 rounded-[24px] border border-border/60 bg-card/95 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-muted-foreground">
+          Adicione pelo menos um item para avançar para a próxima etapa.
+        </p>
         <Button disabled>
           {nextLabel}
           <ArrowRight className="ml-2 h-4 w-4" />
@@ -39,7 +42,11 @@ export function StepNavigation({
   }
 
   return (
-    <div className="flex justify-end">
+    <div className="flex flex-col gap-3 rounded-[24px] border border-border/60 bg-card/95 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-sm text-muted-foreground">
+        Carrinho pronto. Avance para definir a forma de pagamento e concluir o
+        orçamento.
+      </p>
       <Button asChild>
         <Link href={href}>
           {nextLabel}
