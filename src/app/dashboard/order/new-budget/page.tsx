@@ -1,3 +1,4 @@
+import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
 import { getAuthContext } from "@/server/auth-context";
 import { getCustomers } from "@/services/api-main/customer-general/customer-general-cached-service";
 import { getOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
@@ -73,77 +74,84 @@ export default async function NewBudgetPage({
     customerId ?? orderDashboard?.customer?.customerId;
 
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 pt-0 lg:p-6 lg:pt-0">
-      <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-6">
-        <section className="overflow-hidden rounded-[28px] border border-border/60 bg-gradient-to-br from-background via-background to-muted/50 shadow-sm">
-          <div className="flex flex-col gap-4 px-5 py-6 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary/80">
-                Fluxo de Orçamento
-              </p>
+    <div className="flex flex-1 flex-col">
+      <SiteHeaderWithBreadcrumb
+        title="Início"
+        breadcrumbItems={[{ label: "Início", isActive: true }]}
+      />
+
+      <main className="flex flex-1 flex-col gap-6 p-4 pt-0 lg:p-6 lg:pt-0">
+        <div className="mx-auto flex w-full max-w-350 flex-col gap-6">
+          <section className="overflow-hidden rounded-[28px] border border-border/60 bg-linear-to-br from-background via-background to-muted/50 shadow-sm">
+            <div className="flex flex-col gap-4 px-5 py-6 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
               <div className="space-y-2">
-                <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-                  Novo orçamento com carrinho operacional
-                </h1>
-                <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
-                  Selecione o cliente, monte o carrinho com ajustes em tempo
-                  real, defina o pagamento e finalize com uma visão clara do
-                  resumo.
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary/80">
+                  Fluxo de Orçamento
                 </p>
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+                    Novo orçamento com carrinho operacional
+                  </h1>
+                  <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
+                    Selecione o cliente, monte o carrinho com ajustes em tempo
+                    real, defina o pagamento e finalize com uma visão clara do
+                    resumo.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:w-auto">
+                <div className="rounded-2xl border border-border/60 bg-background/85 px-4 py-3 shadow-xs">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    Etapas
+                  </p>
+                  <p className="text-2xl font-semibold text-foreground">4</p>
+                </div>
+                <div className="rounded-2xl border border-border/60 bg-background/85 px-4 py-3 shadow-xs">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    Fluxo atual
+                  </p>
+                  <p className="text-2xl font-semibold text-foreground">
+                    {step}/4
+                  </p>
+                </div>
               </div>
             </div>
+          </section>
 
-            <div className="grid grid-cols-2 gap-3 sm:w-auto">
-              <div className="rounded-2xl border border-border/60 bg-background/85 px-4 py-3 shadow-xs">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                  Etapas
-                </p>
-                <p className="text-2xl font-semibold text-foreground">4</p>
-              </div>
-              <div className="rounded-2xl border border-border/60 bg-background/85 px-4 py-3 shadow-xs">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                  Fluxo atual
-                </p>
-                <p className="text-2xl font-semibold text-foreground">
-                  {step}/4
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+          <BudgetStepper
+            currentStep={step}
+            customerId={effectiveCustomerId}
+            orderId={orderId}
+          >
+            {step === BUDGET_FLOW_STEPS.customer && (
+              <StepCustomerSelect customers={customers} search={search} />
+            )}
 
-        <BudgetStepper
-          currentStep={step}
-          customerId={effectiveCustomerId}
-          orderId={orderId}
-        >
-          {step === BUDGET_FLOW_STEPS.customer && (
-            <StepCustomerSelect customers={customers} search={search} />
-          )}
+            {step === BUDGET_FLOW_STEPS.cart && effectiveCustomerId && (
+              <StepProducts
+                products={products}
+                orderDashboard={orderDashboard}
+                search={search}
+                orderId={orderId}
+                customerId={effectiveCustomerId}
+              />
+            )}
 
-          {step === BUDGET_FLOW_STEPS.cart && effectiveCustomerId && (
-            <StepProducts
-              products={products}
-              orderDashboard={orderDashboard}
-              search={search}
-              orderId={orderId}
-              customerId={effectiveCustomerId}
-            />
-          )}
+            {step === BUDGET_FLOW_STEPS.payment && orderId && (
+              <StepPayment
+                orderDashboard={orderDashboard}
+                orderId={orderId}
+                customerId={effectiveCustomerId}
+              />
+            )}
 
-          {step === BUDGET_FLOW_STEPS.payment && orderId && (
-            <StepPayment
-              orderDashboard={orderDashboard}
-              orderId={orderId}
-              customerId={effectiveCustomerId}
-            />
-          )}
-
-          {step === BUDGET_FLOW_STEPS.summary && orderId && (
-            <StepSummary orderDashboard={orderDashboard} orderId={orderId} />
-          )}
-        </BudgetStepper>
-      </div>
+            {step === BUDGET_FLOW_STEPS.summary && orderId && (
+              <StepSummary orderDashboard={orderDashboard} orderId={orderId} />
+            )}
+          </BudgetStepper>
+        </div>
+      </main>
     </div>
   );
 }

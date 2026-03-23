@@ -36,7 +36,7 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(circle_at_top_left,var(--tw-gradient-stops))] from-primary/10 via-background to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-105 bg-[radial-gradient(circle_at_top_left,var(--tw-gradient-stops))] from-primary/10 via-background to-transparent" />
 
       <SiteHeaderWithBreadcrumb
         title="PDV"
@@ -48,7 +48,7 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
 
       <div className="relative flex flex-1 flex-col overflow-hidden">
         <div className="flex-1 overflow-auto">
-          <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-4 pb-6 pt-4 md:px-6 md:pb-8">
+          <div className="mx-auto flex w-full max-w-350 flex-col gap-4 px-4 pb-6 pt-4 md:px-6 md:pb-8">
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(360px,420px)] xl:grid-cols-[minmax(0,2fr)_minmax(380px,450px)]">
               <main className="flex min-w-0 flex-col gap-4 order-1">
                 <HeaderOrderSection details={dashboardData?.details ?? null} />
