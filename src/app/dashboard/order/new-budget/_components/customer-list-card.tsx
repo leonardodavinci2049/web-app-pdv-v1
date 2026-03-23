@@ -78,12 +78,12 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
             <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
               {customer.customerType && (
                 <span className="rounded-full bg-background px-3 py-1 shadow-xs">
-                   Cliente: {customer.customerType}
+                  Cliente: {customer.customerType}
                 </span>
               )}
               {customer.personType && (
                 <span className="rounded-full bg-background px-3 py-1 shadow-xs">
-                 {customer.personType}
+                  {customer.personType}
                 </span>
               )}
               {customer.companyName && (
@@ -92,7 +92,6 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
                 </span>
               )}
             </div>
-
 
             {customer.email && (
               <a
