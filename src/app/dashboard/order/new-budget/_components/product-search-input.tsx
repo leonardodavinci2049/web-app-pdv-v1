@@ -5,6 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useRef, useTransition } from "react";
 
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { BUDGET_FLOW_STEPS } from "../budget-flow";
 
 interface ProductSearchInputProps {
   defaultValue: string;
@@ -28,7 +31,7 @@ export function ProductSearchInput({
 
       debounceRef.current = setTimeout(() => {
         const params = new URLSearchParams(searchParams.toString());
-        params.set("step", "3");
+        params.set("step", String(BUDGET_FLOW_STEPS.cart));
         params.set("customerId", String(customerId));
 
         if (orderId) {
@@ -52,14 +55,19 @@ export function ProductSearchInput({
   );
 
   return (
-    <div className="relative">
-      <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-      <Input
-        placeholder="Buscar por nome, referência, modelo, etiqueta..."
-        defaultValue={defaultValue}
-        onChange={(e) => handleSearch(e.target.value)}
-        className={isPending ? "pl-10 opacity-60" : "pl-10"}
-      />
+    <div className="space-y-2">
+      <Label htmlFor="product-search">Buscar produtos</Label>
+
+      <div className="relative">
+        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          id="product-search"
+          placeholder="Buscar por nome, referência, modelo, etiqueta..."
+          defaultValue={defaultValue}
+          onChange={(e) => handleSearch(e.target.value)}
+          className={isPending ? "pl-10 opacity-60" : "pl-10"}
+        />
+      </div>
     </div>
   );
 }

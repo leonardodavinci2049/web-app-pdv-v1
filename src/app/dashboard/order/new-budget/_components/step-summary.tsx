@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { UIOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
+import { formatCurrency } from "@/utils/common-utils";
 
 import { SummaryPostActions } from "./summary-post-actions";
 
@@ -20,20 +21,34 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">
-          Resumo do Orçamento #{orderId}
-        </h2>
-        {details && (
-          <Badge variant={isClosed ? "default" : "secondary"}>
-            {details.orderStatus || "Em aberto"}
-          </Badge>
-        )}
-      </div>
+      <section className="rounded-[28px] border border-border/60 bg-card/95 p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+              Etapa 4
+            </p>
+            <div className="space-y-1">
+              <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                Resumo do orçamento #{orderId}
+              </h2>
+              <p className="max-w-3xl text-sm text-muted-foreground">
+                Revise cliente, itens e totais finais antes de compartilhar ou
+                seguir com as ações pós-fechamento.
+              </p>
+            </div>
+          </div>
+
+          {details && (
+            <Badge variant={isClosed ? "default" : "secondary"}>
+              {details.orderStatus || "Em aberto"}
+            </Badge>
+          )}
+        </div>
+      </section>
 
       {/* Customer info */}
       {customer && (
-        <Card>
+        <Card className="border-border/60 bg-card/95 shadow-sm">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
               <User className="h-4 w-4" />
@@ -69,7 +84,7 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
       )}
 
       {/* Items */}
-      <Card>
+      <Card className="border-border/60 bg-card/95 shadow-sm">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <Package className="h-4 w-4" />
@@ -113,10 +128,10 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
                     {item.quantity}x
                   </span>
                   <span className="col-span-4 text-right text-xs text-muted-foreground sm:col-span-2 sm:text-sm">
-                    R$ {Number(item.unitValue).toFixed(2)}
+                    {formatCurrency(Number(item.unitValue))}
                   </span>
                   <span className="col-span-4 text-right text-xs font-medium sm:col-span-2 sm:text-sm">
-                    R$ {Number(item.totalValue).toFixed(2)}
+                    {formatCurrency(Number(item.totalValue))}
                   </span>
                 </div>
               ))}
@@ -131,35 +146,35 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
 
       {/* Summary totals */}
       {summary && (
-        <Card>
+        <Card className="border-border/60 bg-card/95 shadow-sm">
           <CardContent className="pt-6">
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>R$ {Number(summary.subtotalValue).toFixed(2)}</span>
+                <span>{formatCurrency(Number(summary.subtotalValue))}</span>
               </div>
               {Number(summary.discountValue) > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Desconto</span>
-                  <span>-R$ {Number(summary.discountValue).toFixed(2)}</span>
+                  <span>-{formatCurrency(Number(summary.discountValue))}</span>
                 </div>
               )}
               {Number(summary.freightValue) > 0 && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Frete</span>
-                  <span>R$ {Number(summary.freightValue).toFixed(2)}</span>
+                  <span>{formatCurrency(Number(summary.freightValue))}</span>
                 </div>
               )}
               {Number(summary.additionValue) > 0 && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Acréscimo</span>
-                  <span>R$ {Number(summary.additionValue).toFixed(2)}</span>
+                  <span>{formatCurrency(Number(summary.additionValue))}</span>
                 </div>
               )}
               <Separator />
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
-                <span>R$ {Number(summary.totalOrderValue).toFixed(2)}</span>
+                <span>{formatCurrency(Number(summary.totalOrderValue))}</span>
               </div>
             </div>
           </CardContent>

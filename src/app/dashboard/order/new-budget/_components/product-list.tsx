@@ -1,3 +1,4 @@
+import { PackageSearch } from "lucide-react";
 import type { UIProductPdv } from "@/services/api-main/product-pdv/transformers/transformers";
 
 import { ProductCard } from "./product-card";
@@ -15,10 +16,19 @@ export function ProductList({
 }: ProductListProps) {
   if (products.length === 0) {
     return (
-      <div className="flex min-h-[200px] items-center justify-center rounded-lg border border-dashed">
-        <p className="text-sm text-muted-foreground">
-          Nenhum produto encontrado.
-        </p>
+      <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[24px] border border-dashed border-border/70 bg-muted/15 px-6 text-center">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <PackageSearch className="h-6 w-6" />
+        </div>
+        <div className="space-y-2">
+          <p className="text-base font-semibold text-foreground">
+            Nenhum produto encontrado
+          </p>
+          <p className="max-w-md text-sm text-muted-foreground">
+            Ajuste o termo da busca ou limpe os filtros para visualizar mais
+            itens disponíveis para o cliente.
+          </p>
+        </div>
       </div>
     );
   }
@@ -28,15 +38,17 @@ export function ProductList({
   );
 
   return (
-    <div className="max-h-[500px] space-y-2 overflow-y-auto pr-1">
-      {sortedProducts.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          orderId={orderId}
-          customerId={customerId}
-        />
-      ))}
+    <div className="max-h-[720px] overflow-y-auto pr-1">
+      <div className="grid gap-3 xl:grid-cols-2">
+        {sortedProducts.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            orderId={orderId}
+            customerId={customerId}
+          />
+        ))}
+      </div>
     </div>
   );
 }
