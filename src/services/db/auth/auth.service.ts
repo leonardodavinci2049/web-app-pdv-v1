@@ -286,7 +286,7 @@ async function findMembersByOrganization(params: {
 
     const query = `
       SELECT 
-        id, organizationId, userId, role, createdAt, updatedAt
+        id, organizationId, userId, role, createdAt, updatedAt, person_id
       FROM ${AUTH_TABLES.MEMBER}
       WHERE organizationId = ?
       ORDER BY createdAt ASC
@@ -326,7 +326,7 @@ async function findFirstMemberByUser(params: {
 
     const query = `
       SELECT 
-        id, organizationId, userId, role, createdAt, updatedAt
+        id, organizationId, userId, role, createdAt, updatedAt, person_id
       FROM ${AUTH_TABLES.MEMBER}
       WHERE userId = ?
       ORDER BY createdAt ASC
@@ -375,7 +375,7 @@ async function findMembersByUser(params: {
 
     const query = `
       SELECT 
-        id, organizationId, userId, role, createdAt, updatedAt
+        id, organizationId, userId, role, createdAt, updatedAt, person_id
       FROM ${AUTH_TABLES.MEMBER}
       WHERE userId = ?
       ORDER BY createdAt ASC
@@ -392,6 +392,50 @@ async function findMembersByUser(params: {
     };
   } catch (error) {
     return handleError<Member[]>(error, "findMembersByUser");
+  }
+}
+
+/**
+ * Finds a member for a user within a specific organization
+ *
+ * Replaces: prisma.member.findFirst({ where: { userId, organizationId } })
+ */
+async function findMemberByUserAndOrganization(params: {
+  userId: string;
+  organizationId: string;
+}): Promise<ServiceResponse<Member | null>> {
+  try {
+    validateId(params.userId, "userId");
+    validateId(params.organizationId, "organizationId");
+
+    const query = `
+      SELECT 
+        id, organizationId, userId, role, createdAt, updatedAt, person_id
+      FROM ${AUTH_TABLES.MEMBER}
+      WHERE userId = ? AND organizationId = ?
+      LIMIT 1
+    `;
+
+    const results = await dbService.selectExecute<MemberEntity>(query, [
+      params.userId,
+      params.organizationId,
+    ]);
+
+    if (results.length === 0) {
+      return {
+        success: true,
+        data: null,
+        error: null,
+      };
+    }
+
+    return {
+      success: true,
+      data: mapMemberEntityToDto(results[0]),
+      error: null,
+    };
+  } catch (error) {
+    return handleError<Member | null>(error, "findMemberByUserAndOrganization");
   }
 }
 
@@ -636,7 +680,7 @@ async function findOrganizationBySlugWithMembers(params: {
     // Then find the members with users
     const membersQuery = `
       SELECT 
-        m.id, m.organizationId, m.userId, m.role, m.createdAt, m.updatedAt,
+        m.id, m.organizationId, m.userId, m.role, m.createdAt, m.updatedAt, m.person_id,
         u.id as user_id, u.name as user_name, u.email as user_email,
         u.emailVerified as user_emailVerified, u.image as user_image,
         u.createdAt as user_createdAt, u.updatedAt as user_updatedAt,
@@ -1141,6 +1185,7 @@ export const AuthService = {
   findMembersByOrganization,
   findFirstMemberByUser,
   findMembersByUser,
+  findMemberByUserAndOrganization,
   deleteMember,
 
   // Organization Methods

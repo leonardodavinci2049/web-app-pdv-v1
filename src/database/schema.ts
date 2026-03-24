@@ -44,6 +44,7 @@ export type Member = {
   role: string;
   createdAt: Date;
   updatedAt: Date;
+  personId?: number | null;
   active_organization?: number | null;
   user?: User;
 };
@@ -174,7 +175,6 @@ export type TwoFactor = {
 
 export type User = {
   id: string;
-  personId?: number | null;
   name: string;
   email: string;
   emailVerified: boolean;

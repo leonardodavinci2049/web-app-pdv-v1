@@ -1,5 +1,7 @@
 "use server";
 
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import type { Role } from "@/db/schema";
 import { auth } from "@/lib/auth/auth";
 import { AuthService } from "@/services/db/auth/auth.service";
@@ -15,13 +17,18 @@ export const addMember = async (
   organizationId: string,
   userId: string,
   role: Role,
+  personId?: number | null,
 ) => {
   try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) redirect("/sign-in");
+
     await auth.api.addMember({
       body: {
         userId,
         organizationId,
         role: roleMap[role],
+        ...(personId != null ? { personId } : {}),
       },
     });
   } catch (error) {
