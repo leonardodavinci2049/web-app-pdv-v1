@@ -94,7 +94,8 @@ export interface MemberEntity extends RowDataPacket {
   role: string;
   createdAt: Date;
   updatedAt: Date;
-  person_id: number | null;
+  person_id?: number | null;
+  personId?: number | null;
 }
 
 /**
@@ -479,7 +480,7 @@ export function mapMemberEntityToDto(entity: MemberEntity): Member {
     role: entity.role,
     createdAt: new Date(entity.createdAt),
     updatedAt: new Date(entity.updatedAt),
-    personId: entity.person_id ?? null,
+    personId: entity.personId ?? entity.person_id ?? null,
   };
 }
 
@@ -496,7 +497,7 @@ export function mapMemberWithUserEntityToDto(
     role: entity.role,
     createdAt: new Date(entity.createdAt),
     updatedAt: new Date(entity.updatedAt),
-    personId: entity.person_id ?? null,
+    personId: entity.personId ?? entity.person_id ?? null,
     user: {
       id: entity.user_id,
       name: entity.user_name,

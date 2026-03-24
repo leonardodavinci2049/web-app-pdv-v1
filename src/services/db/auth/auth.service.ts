@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { RowDataPacket } from "mysql2/promise";
 import { z } from "zod";
 import dbService, {
   ErroConexaoBancoDados,
@@ -42,6 +43,14 @@ const SlugSchema = z
   .min(1, "Slug é obrigatório")
   .max(255, "Slug muito longo")
   .regex(/^[a-z0-9-]+$/, "Slug inválido");
+
+type MemberPersonIdColumn = "personId" | "person_id" | null;
+
+interface InformationSchemaColumnEntity extends RowDataPacket {
+  COLUMN_NAME: string;
+}
+
+let memberPersonIdColumnPromise: Promise<MemberPersonIdColumn> | null = null;
 
 // ============================================================================
 // Private Utility Functions
@@ -143,6 +152,59 @@ function handleModifyError(error: unknown, operation: string): ModifyResponse {
     affectedRows: 0,
     error: "Erro ao realizar operação de modificação",
   };
+}
+
+async function resolveMemberPersonIdColumn(): Promise<MemberPersonIdColumn> {
+  if (!memberPersonIdColumnPromise) {
+    memberPersonIdColumnPromise = dbService
+      .selectExecute<InformationSchemaColumnEntity>(
+        `
+          SELECT COLUMN_NAME
+          FROM INFORMATION_SCHEMA.COLUMNS
+          WHERE TABLE_SCHEMA = DATABASE()
+            AND TABLE_NAME = ?
+            AND COLUMN_NAME IN ('person_id', 'personId')
+          ORDER BY FIELD(COLUMN_NAME, 'person_id', 'personId')
+          LIMIT 1
+        `,
+        [AUTH_TABLES.MEMBER],
+      )
+      .then((results) => {
+        if (results.length === 0) {
+          return null;
+        }
+
+        const columnName = results[0].COLUMN_NAME;
+        if (columnName === "person_id" || columnName === "personId") {
+          return columnName;
+        }
+
+        return null;
+      })
+      .catch((error) => {
+        console.warn(
+          "[AuthService] Não foi possível resolver a coluna de personId do member. Seguindo com fallback null.",
+          error,
+        );
+        return null;
+      });
+  }
+
+  return memberPersonIdColumnPromise;
+}
+
+async function getMemberPersonIdSelect(tableAlias?: string): Promise<string> {
+  const personIdColumn = await resolveMemberPersonIdColumn();
+
+  if (!personIdColumn) {
+    return "NULL as person_id";
+  }
+
+  const columnReference = tableAlias
+    ? `${tableAlias}.${personIdColumn}`
+    : personIdColumn;
+
+  return `${columnReference} as person_id`;
 }
 
 // ============================================================================
@@ -284,9 +346,11 @@ async function findMembersByOrganization(params: {
   try {
     validateId(params.organizationId, "organizationId");
 
+    const memberPersonIdSelect = await getMemberPersonIdSelect();
+
     const query = `
       SELECT 
-        id, organizationId, userId, role, createdAt, updatedAt, person_id
+        id, organizationId, userId, role, createdAt, updatedAt, ${memberPersonIdSelect}
       FROM ${AUTH_TABLES.MEMBER}
       WHERE organizationId = ?
       ORDER BY createdAt ASC
@@ -324,9 +388,11 @@ async function findFirstMemberByUser(params: {
   try {
     validateId(params.userId, "userId");
 
+    const memberPersonIdSelect = await getMemberPersonIdSelect();
+
     const query = `
       SELECT 
-        id, organizationId, userId, role, createdAt, updatedAt, person_id
+        id, organizationId, userId, role, createdAt, updatedAt, ${memberPersonIdSelect}
       FROM ${AUTH_TABLES.MEMBER}
       WHERE userId = ?
       ORDER BY createdAt ASC
@@ -373,9 +439,11 @@ async function findMembersByUser(params: {
   try {
     validateId(params.userId, "userId");
 
+    const memberPersonIdSelect = await getMemberPersonIdSelect();
+
     const query = `
       SELECT 
-        id, organizationId, userId, role, createdAt, updatedAt, person_id
+        id, organizationId, userId, role, createdAt, updatedAt, ${memberPersonIdSelect}
       FROM ${AUTH_TABLES.MEMBER}
       WHERE userId = ?
       ORDER BY createdAt ASC
@@ -408,9 +476,11 @@ async function findMemberByUserAndOrganization(params: {
     validateId(params.userId, "userId");
     validateId(params.organizationId, "organizationId");
 
+    const memberPersonIdSelect = await getMemberPersonIdSelect();
+
     const query = `
       SELECT 
-        id, organizationId, userId, role, createdAt, updatedAt, person_id
+        id, organizationId, userId, role, createdAt, updatedAt, ${memberPersonIdSelect}
       FROM ${AUTH_TABLES.MEMBER}
       WHERE userId = ? AND organizationId = ?
       LIMIT 1
@@ -653,6 +723,8 @@ async function findOrganizationBySlugWithMembers(params: {
   try {
     validateSlug(params.slug, "slug");
 
+    const memberPersonIdSelect = await getMemberPersonIdSelect("m");
+
     // First find the organization
     const orgQuery = `
       SELECT 
@@ -680,7 +752,7 @@ async function findOrganizationBySlugWithMembers(params: {
     // Then find the members with users
     const membersQuery = `
       SELECT 
-        m.id, m.organizationId, m.userId, m.role, m.createdAt, m.updatedAt, m.person_id,
+        m.id, m.organizationId, m.userId, m.role, m.createdAt, m.updatedAt, ${memberPersonIdSelect},
         u.id as user_id, u.name as user_name, u.email as user_email,
         u.emailVerified as user_emailVerified, u.image as user_image,
         u.createdAt as user_createdAt, u.updatedAt as user_updatedAt,

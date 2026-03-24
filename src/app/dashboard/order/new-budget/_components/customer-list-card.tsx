@@ -24,14 +24,14 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
   const handleSelect = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("step", String(BUDGET_FLOW_STEPS.cart));
-    params.set("customerId", String(customer.id));
+    params.set("customerId", String(customer.customerId));
     params.delete("orderId");
     params.delete("search");
 
     startTransition(() => {
       router.push(`/dashboard/order/new-budget?${params.toString()}`);
     });
-  }, [customer.id, searchParams, router]);
+  }, [customer.customerId, searchParams, router]);
 
   return (
     <Card
@@ -55,7 +55,7 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
                 {customer.name}
               </p>
               <span className="shrink-0 text-xs font-medium text-muted-foreground">
-                #{customer.id}
+                #{customer.customerId}
               </span>
             </div>
 

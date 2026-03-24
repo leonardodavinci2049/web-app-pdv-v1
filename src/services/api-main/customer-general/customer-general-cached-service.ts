@@ -56,7 +56,9 @@ export async function getCustomers(
       pe_person_id: params.pe_person_id,
     });
 
+
     const customers = customerGeneralServiceApi.extractCustomers(response);
+  
     return transformCustomerList(customers);
   } catch (error) {
     logger.error("Erro ao buscar clientes:", error);
