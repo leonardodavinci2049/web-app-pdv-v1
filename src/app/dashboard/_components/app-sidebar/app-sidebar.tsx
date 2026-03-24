@@ -143,7 +143,7 @@ const data = {
     },
     {
       name: "CRM",
-      url: "/dashboard/crm/crm-panel",
+      url: "/dashboard/crm",
       icon: PieChart,
     },
     {
