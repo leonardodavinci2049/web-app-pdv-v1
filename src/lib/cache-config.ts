@@ -45,6 +45,19 @@ export const CACHE_TAGS = {
   agendaNotificationsByUser: (userId: string) =>
     `agenda-notifications-${userId}`,
 
+  // CRM dynamic tags
+  crmLead: (id: string) => `crm-lead-${id}`,
+  crmLeadsByOrg: (orgId: string) => `crm-leads-org-${orgId}`,
+  crmStage: (id: string) => `crm-stage-${id}`,
+  crmLeadStageHistory: (leadId: string) => `crm-lead-stage-history-${leadId}`,
+  crmActivity: (id: string) => `crm-activity-${id}`,
+  crmActivitiesByLead: (leadId: string) => `crm-activities-lead-${leadId}`,
+  crmTask: (id: string) => `crm-task-${id}`,
+  crmTasksByUser: (userId: string) => `crm-tasks-user-${userId}`,
+  crmTasksByLead: (leadId: string) => `crm-tasks-lead-${leadId}`,
+  crmDeal: (id: string) => `crm-deal-${id}`,
+  crmDealByLead: (leadId: string) => `crm-deal-lead-${leadId}`,
+
   // Static tags
   products: "products",
   categories: "categories",
@@ -72,6 +85,14 @@ export const CACHE_TAGS = {
   logOperations: "log-operations",
   agendaEntries: "agenda-entries",
   agendaNotifications: "agenda-notifications",
+  crmLeads: "crm-leads",
+  crmStages: "crm-stages",
+  crmPipeline: "crm-pipeline",
+  crmActivities: "crm-activities",
+  crmTasks: "crm-tasks",
+  crmDeals: "crm-deals",
+  crmDashboard: "crm-dashboard",
+  crmReports: "crm-reports",
 } as const;
 
 // Cache life profiles (matching next.config.ts cacheLife)
