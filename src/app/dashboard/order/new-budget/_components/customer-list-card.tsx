@@ -50,10 +50,13 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
             className="h-12 w-12 shrink-0 rounded-xl object-cover"
           />
           <div className="min-w-0 flex-1 space-y-2">
-            <div className="space-y-1">
-              <p className="truncate text-base font-semibold text-foreground">
+            <div className="flex items-start justify-between gap-3">
+              <p className="min-w-0 truncate text-base font-semibold text-foreground">
                 {customer.name}
               </p>
+              <span className="shrink-0 text-xs font-medium text-muted-foreground">
+                #{customer.id}
+              </span>
             </div>
 
             <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
