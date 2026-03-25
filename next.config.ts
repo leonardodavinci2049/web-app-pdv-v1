@@ -54,7 +54,9 @@ const nextConfig: NextConfig = {
         port: "5582",
         pathname: "/**",
       },
+      
     ],
+    dangerouslyAllowLocalIP: true,
   },
 };
 

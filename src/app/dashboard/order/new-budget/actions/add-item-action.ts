@@ -5,6 +5,7 @@ import { createLogger } from "@/core/logger";
 import { CACHE_TAGS } from "@/lib/cache-config";
 import { getAuthContext } from "@/server/auth-context";
 import { orderOperationsServiceApi } from "@/services/api-main/order-operations";
+import { OrderOperationsError } from "@/services/api-main/order-operations/types/order-operations-types";
 import type { ActionState } from "@/types/action-types";
 
 const logger = createLogger("addItemAction");
@@ -41,16 +42,9 @@ export async function addItemAction(
         ...apiContext,
       });
 
-      const createdOrder = createOrderResponse.data?.[0];
-      if (createdOrder?.sp_error_id !== 0) {
-        return {
-          success: false,
-          message: createdOrder?.sp_message || "Erro ao criar pedido.",
-        };
-      }
-
       targetOrderId =
-        createdOrder?.sp_return_id ?? createOrderResponse.recordId;
+        createOrderResponse.data?.[0]?.sp_return_id ??
+        createOrderResponse.recordId;
 
       if (!targetOrderId) {
         return {
@@ -60,7 +54,7 @@ export async function addItemAction(
       }
     }
 
-    const response = await orderOperationsServiceApi.addItem({
+    await orderOperationsServiceApi.addItem({
       pe_order_id: targetOrderId,
       pe_customer_id: customerId,
       pe_seller_id: apiContext.pe_person_id,
@@ -71,14 +65,6 @@ export async function addItemAction(
       pe_notes: "PDV ONLINE",
       ...apiContext,
     });
-
-    const result = response.data?.[0];
-    if (result?.sp_error_id !== 0) {
-      return {
-        success: false,
-        message: result?.sp_message || "Erro ao adicionar item.",
-      };
-    }
 
     revalidateTag(CACHE_TAGS.orderItems, "seconds");
     revalidateTag(CACHE_TAGS.orderSale(String(targetOrderId)), "hours");
@@ -92,9 +78,20 @@ export async function addItemAction(
     };
   } catch (error) {
     logger.error("Erro ao adicionar item:", error);
+
+    if (error instanceof OrderOperationsError) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+
+    const fallbackMessage =
+      error instanceof Error ? error.message : "Erro ao adicionar item.";
+
     return {
       success: false,
-      message: "Erro ao adicionar item. Tente novamente.",
+      message: fallbackMessage,
     };
   }
 }
