@@ -31,10 +31,19 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
               <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                 Resumo do orçamento #{orderId}
               </h2>
-              <p className="max-w-3xl text-sm text-muted-foreground">
-                Revise cliente, itens e totais finais antes de compartilhar ou
-                seguir com as ações pós-fechamento.
-              </p>
+              {/* Details */}
+              {details && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Calendar className="h-3 w-3" />
+                  <span>
+                    Criado em:{" "}
+                    {new Date(details.createdAt).toLocaleString("pt-BR", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    })}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -179,14 +188,6 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
             </div>
           </CardContent>
         </Card>
-      )}
-
-      {/* Details */}
-      {details && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Calendar className="h-3 w-3" />
-          <span>Criado em: {details.createdAt}</span>
-        </div>
       )}
 
       {/* Actions */}

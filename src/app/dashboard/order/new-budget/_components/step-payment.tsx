@@ -35,10 +35,6 @@ export function StepPayment({
               <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                 Confirme a forma de pagamento
               </h2>
-              <p className="max-w-3xl text-sm text-muted-foreground">
-                O carrinho já está pronto. Agora alinhe a forma de pagamento
-                antes de revisar o orçamento final.
-              </p>
             </div>
           </div>
 
@@ -53,12 +49,7 @@ export function StepPayment({
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <Card className="border-border/60 bg-card/95 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <CreditCard className="h-4 w-4" />
-              Pagamento do orçamento
-            </CardTitle>
-          </CardHeader>
+
           <CardContent>
             <PaymentMethodSelect
               orderId={orderId}
