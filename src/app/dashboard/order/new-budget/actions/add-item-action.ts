@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { createLogger } from "@/core/logger";
 import { CACHE_TAGS } from "@/lib/cache-config";
 import { getAuthContext } from "@/server/auth-context";
@@ -68,8 +68,6 @@ export async function addItemAction(
 
     revalidateTag(CACHE_TAGS.orderItems, "seconds");
     revalidateTag(CACHE_TAGS.orderSale(String(targetOrderId)), "hours");
-    revalidateTag(CACHE_TAGS.orderSales, "seconds");
-    revalidatePath("/dashboard/order/new-budget");
 
     return {
       success: true,
