@@ -31,10 +31,19 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
               <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                 Resumo do orçamento #{orderId}
               </h2>
-              <p className="max-w-3xl text-sm text-muted-foreground">
-                Revise cliente, itens e totais finais antes de compartilhar ou
-                seguir com as ações pós-fechamento.
-              </p>
+              {/* Details */}
+              {details && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Calendar className="h-3 w-3" />
+                  <span>
+                    Criado em:{" "}
+                    {new Date(details.createdAt).toLocaleString("pt-BR", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    })}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -49,9 +58,9 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
       {/* Customer info */}
       {customer && (
         <Card className="border-border/60 bg-card/95 shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <User className="h-4 w-4" />
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-1 text-base">
+              <User className="h-8 w-8" />
               Cliente
             </CardTitle>
           </CardHeader>
@@ -87,7 +96,7 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
       <Card className="border-border/60 bg-card/95 shadow-sm">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Package className="h-4 w-4" />
+            <Package className="h-8 w-8" />
             Itens ({items?.length ?? 0})
           </CardTitle>
         </CardHeader>
@@ -179,14 +188,6 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
             </div>
           </CardContent>
         </Card>
-      )}
-
-      {/* Details */}
-      {details && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Calendar className="h-3 w-3" />
-          <span>Criado em: {details.createdAt}</span>
-        </div>
       )}
 
       {/* Actions */}

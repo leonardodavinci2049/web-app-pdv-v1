@@ -4,6 +4,7 @@ import { MessageCircle } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { useOrganizationMeta } from "@/components/common/organization-meta-provider";
+import { useUserData } from "@/hooks/use-user-data";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +32,7 @@ interface SendWhatsAppButtonProps {
   details: UIOrderDashboardDetails | null;
   items: UIOrderDashboardItem[];
   customer: UIOrderCustomer | null;
+  triggerClassName?: string;
 }
 
 /**
@@ -91,18 +93,35 @@ function translateStatus(status: string | undefined): string {
   return map[status.toUpperCase()] ?? status.toLowerCase();
 }
 
+const PAYMENT_METHOD_NAMES: Record<number, string> = {
+  1: "Dinheiro",
+  2: "PIX",
+  3: "Cartão Débito",
+  4: "Cartão Crédito",
+  5: "Depósito",
+  7: "Boleto",
+  8: "Cheque",
+};
+
+function getPaymentMethodName(id: number | undefined): string {
+  if (!id) return "";
+  return PAYMENT_METHOD_NAMES[id] ?? "";
+}
+
 function buildWhatsAppMessage(params: {
   summary: UIOrderSalesSummary | null;
   details: UIOrderDashboardDetails | null;
   items: UIOrderDashboardItem[];
   customer: UIOrderCustomer | null;
   companyName: string;
+  sellerName: string;
 }): string {
-  const { summary, details, items, customer, companyName } = params;
+  const { summary, details, items, customer, companyName, sellerName } = params;
   const orderId = summary?.orderId ?? details?.orderId ?? 0;
   const status = translateStatus(details?.orderStatus);
   const customerName = customer?.customerName ?? "Cliente";
   const orderDate = formatOrderDate(details?.createdAt);
+  const paymentMethod = getPaymentMethodName(details?.paymentFormId);
 
   const subtotal = summary ? Number(summary.subtotalValue) : 0;
   const discount = summary ? Number(summary.discountValue) : 0;
@@ -111,21 +130,21 @@ function buildWhatsAppMessage(params: {
   const itemsText = items
     .map(
       (item, i) =>
-        `${i + 1}. ${item.product}\n   Qtd: ${item.quantity} × ${formatCurrency(Number(item.unitValue))} = ${formatCurrency(Number(item.totalValue))}`,
+        `${i + 1}. ${item.product}\n   Qtd: ${item.quantity} \u00D7 ${formatCurrency(Number(item.unitValue))} = ${formatCurrency(Number(item.totalValue))}`,
     )
     .join("\n");
 
   const lines = [
     `Olá *${customerName}*, segue os dados do *${status}* conforme solicitado:`,
     "",
-    `📋 *PEDIDO #${orderId}*`,
-    `📅 Data: ${orderDate}`,
-    `📌 Status: ${status.toUpperCase()}`,
+    `*PEDIDO #${orderId}*`,
+    `Data: ${orderDate}`,
+    `Status: ${status.toUpperCase()}`,
     "",
-    "🛒 *Itens:*",
+    `*Itens:*`,
     itemsText,
     "",
-    "💰 *Resumo:*",
+    `*Resumo:*`,
     `Subtotal: ${formatCurrency(subtotal)}`,
   ];
 
@@ -134,8 +153,17 @@ function buildWhatsAppMessage(params: {
   }
 
   lines.push(`*Total: ${formatCurrency(total)}*`);
+
+  if (paymentMethod) {
+    lines.push("");
+    lines.push(`*Pagamento:* ${paymentMethod}`);
+  }
+
   lines.push("");
   lines.push(`_${companyName}_`);
+  if (sellerName) {
+    lines.push(`_Vendedor: ${sellerName}_`);
+  }
 
   return lines.join("\n");
 }
@@ -145,12 +173,15 @@ export function SendWhatsAppButton({
   details,
   items,
   customer,
+  triggerClassName,
 }: SendWhatsAppButtonProps) {
   const [open, setOpen] = useState(false);
   const [phoneInput, setPhoneInput] = useState("");
   const { meta } = useOrganizationMeta();
+  const { user } = useUserData();
 
   const companyName = meta.COMMERCIAL_NAME ?? "";
+  const sellerName = user?.name ?? "";
   const customerPhone = getCustomerPhone(customer);
 
   const handleOpenChange = useCallback(
@@ -178,12 +209,13 @@ export function SendWhatsAppButton({
       items,
       customer,
       companyName,
+      sellerName,
     });
 
     const url = `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank", "noopener,noreferrer");
     setOpen(false);
-  }, [summary, details, items, customer, companyName, phoneInput]);
+  }, [summary, details, items, customer, companyName, sellerName, phoneInput]);
 
   return (
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
@@ -191,11 +223,16 @@ export function SendWhatsAppButton({
         <Button
           type="button"
           variant="outline"
-          className="h-12 rounded-2xl border-border/70 bg-background/80 text-sm font-semibold shadow-none hover:bg-secondary/70 dark:bg-white/4"
-          size="lg"
+          className={
+            triggerClassName ??
+            "h-12 rounded-2xl border-border/70 bg-background/80 text-sm font-semibold shadow-none hover:bg-secondary/70 dark:bg-white/4"
+          }
+          size={triggerClassName ? undefined : "lg"}
         >
-          <MessageCircle className="h-4 w-4" />
-          Enviar WhatsApp
+          <MessageCircle className={triggerClassName ? "h-5 w-5" : "h-4 w-4"} />
+          <span className={triggerClassName ? "text-xs" : undefined}>
+            Enviar WhatsApp
+          </span>
         </Button>
       </AlertDialogTrigger>
 
