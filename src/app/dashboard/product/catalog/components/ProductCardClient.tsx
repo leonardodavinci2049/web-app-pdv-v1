@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { UIProductPdv } from "@/services/api-main/product-pdv/transformers/transformers";
 import {
-  createImageErrorHandler,
+  DEFAULT_PRODUCT_IMAGE,
   getValidImageUrl,
 } from "../../../../../utils/image-utils";
 import { ProductImageUpload } from "./ProductImageUpload";
@@ -36,15 +36,14 @@ function ProductImageSection({
   const isOutOfStock = product.storeStock === 0;
 
   const imageUrl = getValidImageUrl(product.imagePath);
-  const imageErrorHandler = createImageErrorHandler();
 
-  const hasRealImage =
+  const hasImagePath =
     product.imagePath &&
     product.imagePath.trim() !== "" &&
-    product.imagePath !== "/images/product/no-image.jpeg" &&
-    !imageError;
+    product.imagePath !== "/images/product/no-image.jpeg";
 
-  if (!hasRealImage) {
+  // No image set at all - show upload UI
+  if (!hasImagePath) {
     return (
       <ProductImageUpload
         productId={String(product.id)}
@@ -55,21 +54,20 @@ function ProductImageSection({
     );
   }
 
+  // Use fallback when image failed to load
+  const displayUrl = imageError ? DEFAULT_PRODUCT_IMAGE : imageUrl;
+
   if (viewMode === "list") {
     const imageContent = (
       <div className="relative h-24 w-24 flex-shrink-0">
         <Image
-          src={imageUrl}
+          src={displayUrl}
           alt={`Imagem do produto ${product.name}`}
           fill
           className="rounded-md object-cover"
           sizes="(max-width: 96px) 100vw, 96px"
           loading="lazy"
-          onError={(e) => {
-            setImageError(true);
-            imageErrorHandler.onError(e);
-          }}
-          onLoad={() => setImageError(false)}
+          onError={() => setImageError(true)}
         />
         {isOutOfStock && (
           <div className="absolute inset-0 flex items-center justify-center rounded-md bg-black/50">
@@ -89,17 +87,13 @@ function ProductImageSection({
   const gridImageContent = (
     <div className="relative aspect-square overflow-hidden rounded-md">
       <Image
-        src={imageUrl}
+        src={displayUrl}
         alt={`Imagem do produto ${product.name}`}
         fill
         className="object-cover transition-transform duration-200 group-hover:scale-105"
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
         loading="lazy"
-        onError={(e) => {
-          setImageError(true);
-          imageErrorHandler.onError(e);
-        }}
-        onLoad={() => setImageError(false)}
+        onError={() => setImageError(true)}
       />
 
       <div className="absolute top-2 left-2 flex flex-col gap-1">

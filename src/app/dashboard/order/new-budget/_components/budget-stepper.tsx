@@ -43,6 +43,7 @@ const STEPS = [
 interface BudgetStepperProps {
   currentStep: number;
   customerId?: number;
+  customerName?: string;
   orderId?: number;
   children: ReactNode;
 }
@@ -50,6 +51,7 @@ interface BudgetStepperProps {
 export function BudgetStepper({
   currentStep,
   customerId,
+  customerName,
   orderId,
   children,
 }: BudgetStepperProps) {
@@ -88,7 +90,7 @@ export function BudgetStepper({
   return (
     <div className="space-y-6">
       <Card className="border-border/60 bg-card/95 shadow-sm backdrop-blur">
-        <CardContent className="space-y-3 px-4 py-3 sm:px-6 sm:py-">
+        <CardContent className="space-y-2 px-4 py-2 sm:px-6 sm:py-2.5">
           <div className="flex justify-end">
             <p className="text-sm text-muted-foreground">
               Etapa {currentStepIndex + 1} de {STEPS.length} —{"  "}
@@ -190,6 +192,19 @@ export function BudgetStepper({
               })}
             </ol>
           </nav>
+
+          {currentStepIndex > 0 && customerId && (
+            <div className="flex items-center gap-1.5 border-t border-border/40 pt-1.5 text-xs text-muted-foreground">
+              <UserSearch className="h-3 w-3 shrink-0" />
+              <span className="font-medium">#{customerId}</span>
+              {customerName && (
+                <>
+                  <span className="text-muted-foreground/40">—</span>
+                  <span className="truncate">{customerName}</span>
+                </>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 

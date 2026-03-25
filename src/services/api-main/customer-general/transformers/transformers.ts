@@ -8,7 +8,7 @@ import type {
 // ===== UI DTOs =====
 
 export interface UICustomerListItem {
-  id: number;
+  customerId: number;
   customerTypeId: number;
   personTypeId: number;
   name: string;
@@ -121,7 +121,7 @@ export function transformCustomerListItem(
   entity: CustomerListItem,
 ): UICustomerListItem {
   return {
-    id: entity.ID_CUSTOMER,
+    customerId: entity.ID_CUSTOMER,
     customerTypeId: entity.ID_TIPO_CLIENTE,
     personTypeId: entity.ID_PESSOA_TIPO,
     name: entity.NOME,

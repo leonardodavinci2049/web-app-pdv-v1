@@ -41,7 +41,7 @@ export function StepCustomerSelect({
         ) : (
           <div className="mt-3 grid gap-2.5 sm:gap-3 xl:grid-cols-2">
             {customers.map((customer) => (
-              <CustomerListCard key={customer.id} customer={customer} />
+              <CustomerListCard key={customer.customerId} customer={customer} />
             ))}
           </div>
         )}

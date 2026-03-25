@@ -1,6 +1,9 @@
 import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
 import { getAuthContext } from "@/server/auth-context";
-import { getCustomers } from "@/services/api-main/customer-general/customer-general-cached-service";
+import {
+  getCustomerById,
+  getCustomers,
+} from "@/services/api-main/customer-general/customer-general-cached-service";
 import { getOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
 import { searchProductsPdv } from "@/services/api-main/product-pdv/product-pdv-cached-service";
 
@@ -73,6 +76,19 @@ export default async function NewBudgetPage({
   const effectiveCustomerId =
     customerId ?? orderDashboard?.customer?.customerId;
 
+  let customerName: string | undefined;
+  if (effectiveCustomerId && step >= BUDGET_FLOW_STEPS.cart) {
+    if (orderDashboard?.customer?.customerName) {
+      customerName = orderDashboard.customer.customerName;
+    } else {
+      const customerData = await getCustomerById(
+        effectiveCustomerId,
+        apiContext,
+      );
+      customerName = customerData?.customer.name;
+    }
+  }
+
   return (
     <div className="flex flex-1 flex-col">
       <SiteHeaderWithBreadcrumb
@@ -89,6 +105,7 @@ export default async function NewBudgetPage({
           <BudgetStepper
             currentStep={step}
             customerId={effectiveCustomerId}
+            customerName={customerName}
             orderId={orderId}
           >
             {step === BUDGET_FLOW_STEPS.customer && (
