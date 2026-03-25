@@ -49,7 +49,6 @@ export function StepPayment({
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <Card className="border-border/60 bg-card/95 shadow-sm">
-
           <CardContent>
             <PaymentMethodSelect
               orderId={orderId}
