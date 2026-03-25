@@ -18,11 +18,6 @@ export function ProductCard({
   orderId,
   customerId,
 }: ProductCardProps) {
-  const price =
-    product.retailPrice !== "0.000000"
-      ? product.retailPrice
-      : product.wholesalePrice;
-
   return (
     <Card className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-border/40 bg-card p-0 gap-0 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg dark:border-border/50 dark:bg-zinc-900/80 dark:shadow-md dark:backdrop-blur-sm dark:hover:border-primary/40">
       {/* Imagem (Topo) */}
@@ -89,10 +84,10 @@ export function ProductCard({
         <div className="mt-4 flex items-end justify-between">
           <div className="space-y-0.5">
             <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-              Preço Unitário
+              Preço {product.valueType}
             </p>
             <p className="text-xl font-bold tracking-tight text-foreground">
-              {formatCurrency(Number(price))}
+              {formatCurrency(Number(product.productValue))}
             </p>
           </div>
         </div>
