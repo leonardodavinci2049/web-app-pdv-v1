@@ -1,5 +1,3 @@
-import { CreditCard } from "lucide-react";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { UIOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
@@ -49,7 +47,6 @@ export function StepPayment({
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <Card className="border-border/60 bg-card/95 shadow-sm">
-
           <CardContent>
             <PaymentMethodSelect
               orderId={orderId}

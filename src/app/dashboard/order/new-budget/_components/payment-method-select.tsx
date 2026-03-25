@@ -68,7 +68,6 @@ export function PaymentMethodSelect({
       <input type="hidden" name="pgMethodId" value={selected} />
 
       <fieldset disabled={isPending} className="space-y-3">
-
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
           {PAYMENT_METHODS.map((method) => {
             const Icon = method.icon;
