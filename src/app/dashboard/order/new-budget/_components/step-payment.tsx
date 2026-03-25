@@ -1,5 +1,3 @@
-import { CreditCard } from "lucide-react";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { UIOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
