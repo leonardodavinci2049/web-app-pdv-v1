@@ -61,8 +61,8 @@ export class CustomerGeneralServiceApi extends BaseApiService {
         pe_user_role: validatedParams.pe_user_role,
         pe_person_id: validatedParams.pe_person_id,
         pe_search: validatedParams.pe_search ?? "",
-        pe_qt_registros: validatedParams.pe_qt_registros ?? 1,
-        pe_page_id: validatedParams.pe_page_id ?? 1,
+        pe_qt_registros: validatedParams.pe_qt_registros ?? 50,
+        pe_page_id: validatedParams.pe_page_id ?? 0,
         pe_column_id: validatedParams.pe_column_id ?? 1,
         pe_order_id: validatedParams.pe_order_id ?? 1,
       });

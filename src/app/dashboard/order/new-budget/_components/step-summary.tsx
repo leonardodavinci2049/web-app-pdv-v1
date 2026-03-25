@@ -58,9 +58,9 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
       {/* Customer info */}
       {customer && (
         <Card className="border-border/60 bg-card/95 shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <User className="h-4 w-4" />
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-1 text-base">
+              <User className="h-8 w-8" />
               Cliente
             </CardTitle>
           </CardHeader>
@@ -96,7 +96,7 @@ export function StepSummary({ orderDashboard, orderId }: StepSummaryProps) {
       <Card className="border-border/60 bg-card/95 shadow-sm">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Package className="h-4 w-4" />
+            <Package className="h-8 w-8" />
             Itens ({items?.length ?? 0})
           </CardTitle>
         </CardHeader>
