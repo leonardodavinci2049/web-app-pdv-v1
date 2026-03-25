@@ -68,12 +68,12 @@ export class CustomerGeneralServiceApi extends BaseApiService {
       });
 
       // console.debug("Buscando clientes com payload:", requestBody);
-      
+
       const response = await this.post<CustomerFindAllResponse>(
         CUSTOMER_GENERAL_ENDPOINTS.FIND_ALL,
         requestBody,
       );
-/* 
+      /* 
       console.log(
         "Clientes encontrados:\n%s",
         JSON.stringify(response, null, 2),
