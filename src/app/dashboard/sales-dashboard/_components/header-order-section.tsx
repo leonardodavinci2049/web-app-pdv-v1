@@ -85,7 +85,6 @@ export function HeaderOrderSection({ details, customerName }: HeaderPDVProps) {
                       ? `#${details.customerId} - ${customerName}`
                       : "Cliente nao vinculado"}
                   </span>
-  
                 </div>
               </div>
             ) : (

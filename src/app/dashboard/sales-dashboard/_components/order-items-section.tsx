@@ -1,12 +1,14 @@
-import { Boxes, Plus, ShieldCheck, Sparkles } from "lucide-react";
+import { Package, Plus } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import type { UIOrderDashboardItem } from "@/services/api-main/order-sales/transformers/transformers";
 import { formatCurrency } from "@/utils/common-utils";
 import { AddProductDialog } from "./add-product-dialog";
 import { DeleteItemButton } from "./delete-item-button";
+import { ItemImagePreview } from "./item-image-preview";
 import { QuantityControls } from "./quantity-controls";
 
 const EDITABLE_ORDER_STATUS_ID = 22;
@@ -20,11 +22,6 @@ interface OrderItemsSectionProps {
   paymentFormId: number;
 }
 
-function formatWarranty(warrantyDays: number): string | null {
-  if (!warrantyDays) return null;
-  return `${warrantyDays} dias de garantia`;
-}
-
 export function OrderItemsSection({
   items,
   orderStatusId,
@@ -33,175 +30,21 @@ export function OrderItemsSection({
   sellerId,
   paymentFormId,
 }: OrderItemsSectionProps) {
-  const totalUnits = items.reduce((acc, item) => acc + item.quantity, 0);
+  const isEditable = orderStatusId === EDITABLE_ORDER_STATUS_ID;
 
   return (
-    <Card className="flex min-h-105 flex-1 overflow-hidden rounded-[28px] border-border/70 bg-gradient-to-b from-card via-card to-muted/40 p-0 shadow-xl shadow-black/10 dark:shadow-black/30">
-      <div className="border-b border-border/60 px-5 py-4 md:px-6">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Carrinho e produtos
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-lg font-semibold tracking-tight text-foreground md:text-xl">
-                Itens do pedido
-              </h3>
-              <Badge variant="outline" className="rounded-full px-3">
-                {items.length} produtos
-              </Badge>
-              <Badge className="rounded-full bg-primary/10 px-3 text-primary hover:bg-primary/10">
-                {totalUnits} unidades
-              </Badge>
-            </div>
-          </div>
+    <Card className="border-border/60 bg-card/95 shadow-sm">
+      <CardHeader className="pb-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Package className="h-5 w-5" />
+            Itens do pedido
+            <Badge variant="outline" className="rounded-full px-2.5 text-xs">
+              {items.length} {items.length === 1 ? "produto" : "produtos"}
+            </Badge>
+          </CardTitle>
 
-          <AddProductDialog
-            orderId={orderId}
-            customerId={customerId}
-            sellerId={sellerId}
-            paymentFormId={paymentFormId}
-            orderStatusId={orderStatusId}
-          >
-            <Button size="sm" className="rounded-full px-4">
-              <Plus className="h-4 w-4" />
-              Adicionar produto
-            </Button>
-          </AddProductDialog>
-        </div>
-      </div>
-
-      {items.length > 0 ? (
-        <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:px-6 md:py-5">
-          {items.map((item) => (
-            <Card
-              key={item.movementId}
-              className="group relative gap-0 overflow-hidden rounded-[24px] border border-border/70 bg-background/85 p-0 shadow-lg shadow-black/5 transition-all hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-xl hover:shadow-black/10 dark:bg-white/3"
-            >
-              {orderStatusId === EDITABLE_ORDER_STATUS_ID && (
-                <DeleteItemButton
-                  movementId={item.movementId}
-                  productName={item.product}
-                />
-              )}
-
-              <div className="grid gap-4 p-4 md:grid-cols-[minmax(0,1fr)_230px] md:p-5">
-                <div className="flex min-w-0 items-start gap-4">
-                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-4xl border border-border/60 bg-muted/50 md:h-24 md:w-24">
-                    {item.imagePath ? (
-                      <Image
-                        src={item.imagePath}
-                        alt={item.product}
-                        fill
-                        sizes="96px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-secondary/50 p-2 text-center text-xs text-muted-foreground">
-                        Sem imagem
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="min-w-0 flex-1 space-y-3">
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        {item.label && (
-                          <Badge
-                            variant="outline"
-                            className="rounded-full px-2.5 py-0.5 text-[11px]"
-                          >
-                            {item.label}
-                          </Badge>
-                        )}
-                        {item.model && (
-                          <Badge className="rounded-full bg-primary/10 px-2.5 py-0.5 text-primary hover:bg-primary/10">
-                            {item.model}
-                          </Badge>
-                        )}
-                        {item.promotion ? (
-                          <Badge className="rounded-full bg-accent px-2.5 py-0.5 text-accent-foreground hover:bg-accent">
-                            Oferta ativa
-                          </Badge>
-                        ) : null}
-                      </div>
-
-                      <div>
-                        <h4 className="line-clamp-2 text-base font-semibold tracking-tight text-foreground md:text-lg">
-                          {item.product}
-                        </h4>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          SKU {item.sku || "nao informado"} • REF{" "}
-                          {item.ref || "nao informada"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                      {formatWarranty(item.warrantyDays) ? (
-                        <span className="inline-flex items-center gap-2 rounded-full bg-secondary/70 px-3 py-1">
-                          <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-                          {formatWarranty(item.warrantyDays)}
-                        </span>
-                      ) : null}
-
-                      <span className="inline-flex items-center gap-2 rounded-full bg-secondary/70 px-3 py-1">
-                        <Boxes className="h-3.5 w-3.5 text-primary" />
-                        Estoque loja {item.storeStock}
-                      </span>
-
-                      {item.notes ? (
-                        <span className="inline-flex items-center gap-2 rounded-full bg-secondary/70 px-3 py-1">
-                          Observacao disponivel
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col justify-between gap-4 md:items-end">
-                  <div className="grid gap-3 sm:grid-cols-2 md:w-full md:grid-cols-1">
-                    <div className="rounded-2xl border border-border/60 bg-secondary/35 px-4 py-3 md:text-right">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                        Preco unitario
-                      </p>
-                      <p className="mt-2 text-base font-semibold text-foreground">
-                        {formatCurrency(Number(item.unitValue))}
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl border border-primary/15 bg-primary/10 px-4 py-3 md:text-right">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-                        Total do item
-                      </p>
-                      <p className="mt-2 text-xl font-semibold tracking-tight text-foreground">
-                        {formatCurrency(Number(item.totalValue))}
-                      </p>
-                    </div>
-                  </div>
-
-                  <QuantityControls
-                    movementId={item.movementId}
-                    quantity={item.quantity}
-                    storeStock={item.storeStock}
-                    disabled={orderStatusId !== EDITABLE_ORDER_STATUS_ID}
-                  />
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-1 items-center justify-center px-5 py-10 md:px-6">
-          <div className="w-full rounded-[24px] border border-dashed border-border bg-background/70 p-10 text-center dark:bg-white/4">
-            <p className="text-lg font-semibold text-foreground">
-              Nenhum item no carrinho
-            </p>
-            <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">
-              Monte a venda com produtos de maior apelo visual, mantendo
-              quantidade, preco e beneficios em evidenca para o vendedor.
-            </p>
+          {isEditable && (
             <AddProductDialog
               orderId={orderId}
               customerId={customerId}
@@ -209,14 +52,143 @@ export function OrderItemsSection({
               paymentFormId={paymentFormId}
               orderStatusId={orderStatusId}
             >
-              <Button className="mt-5 rounded-full px-4">
+              <Button size="sm" className="rounded-full px-4">
                 <Plus className="h-4 w-4" />
-                Adicionar primeiro produto
+                Adicionar produto
               </Button>
             </AddProductDialog>
-          </div>
+          )}
         </div>
-      )}
+      </CardHeader>
+
+      <CardContent>
+        {items.length > 0 ? (
+          <div className="space-y-2">
+            {/* Table header - desktop only */}
+            <div className="hidden grid-cols-12 items-center gap-2 text-xs font-medium text-muted-foreground sm:grid">
+              <span className="col-span-5">Produto</span>
+              <span className="col-span-2 text-center">Qtd</span>
+              <span className="col-span-2 text-right">Unit.</span>
+              <span
+                className={
+                  isEditable ? "col-span-2 text-right" : "col-span-3 text-right"
+                }
+              >
+                Total
+              </span>
+              {isEditable && <span className="col-span-1" />}
+            </div>
+            <Separator className="hidden sm:block" />
+
+            {items.map((item) => (
+              <div
+                key={item.movementId}
+                className="grid grid-cols-12 items-center gap-x-2 gap-y-2 rounded-lg border p-3 text-sm sm:rounded-none sm:border-0 sm:p-1.5"
+              >
+                {/* Image + Product name */}
+                <div className="col-span-10 flex items-center gap-3 sm:col-span-5">
+                  {item.imagePath ? (
+                    <ItemImagePreview src={item.imagePath} alt={item.product}>
+                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-border/60 bg-muted/50 sm:h-9 sm:w-9">
+                        <Image
+                          src={item.imagePath}
+                          alt={item.product}
+                          fill
+                          sizes="40px"
+                          className="object-cover"
+                        />
+                      </div>
+                    </ItemImagePreview>
+                  ) : (
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted sm:h-9 sm:w-9">
+                      <Package className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <span className="line-clamp-2 text-sm font-medium leading-tight sm:line-clamp-1">
+                      {item.product}
+                    </span>
+                    <span className="text-xs text-muted-foreground sm:hidden">
+                      Estoque: {item.storeStock}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Delete button - mobile */}
+                {isEditable && (
+                  <div className="col-span-2 flex justify-end sm:hidden">
+                    <DeleteItemButton
+                      movementId={item.movementId}
+                      productName={item.product}
+                    />
+                  </div>
+                )}
+
+                {/* Quantity */}
+                <div className="col-span-4 sm:col-span-2 sm:flex sm:justify-center">
+                  {isEditable ? (
+                    <QuantityControls
+                      movementId={item.movementId}
+                      quantity={item.quantity}
+                      storeStock={item.storeStock}
+                      disabled={!isEditable}
+                    />
+                  ) : (
+                    <span className="text-sm text-muted-foreground sm:text-center">
+                      {item.quantity}x
+                    </span>
+                  )}
+                </div>
+
+                {/* Unit price */}
+                <span className="col-span-4 text-right text-xs text-muted-foreground sm:col-span-2 sm:text-sm">
+                  {formatCurrency(Number(item.unitValue))}
+                </span>
+
+                {/* Total */}
+                <span
+                  className={`text-right text-sm font-medium ${isEditable ? "col-span-4 sm:col-span-2" : "col-span-4 sm:col-span-3"}`}
+                >
+                  {formatCurrency(Number(item.totalValue))}
+                </span>
+
+                {/* Delete button - desktop */}
+                {isEditable && (
+                  <div className="col-span-1 hidden justify-end sm:flex">
+                    <DeleteItemButton
+                      movementId={item.movementId}
+                      productName={item.product}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-8 text-center">
+            <p className="text-sm font-medium text-foreground">
+              Nenhum item no carrinho
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Adicione produtos para montar o pedido.
+            </p>
+            {isEditable && (
+              <AddProductDialog
+                orderId={orderId}
+                customerId={customerId}
+                sellerId={sellerId}
+                paymentFormId={paymentFormId}
+                orderStatusId={orderStatusId}
+              >
+                <Button className="mt-4 rounded-full px-4" size="sm">
+                  <Plus className="h-4 w-4" />
+                  Adicionar primeiro produto
+                </Button>
+              </AddProductDialog>
+            )}
+          </div>
+        )}
+      </CardContent>
     </Card>
   );
 }
