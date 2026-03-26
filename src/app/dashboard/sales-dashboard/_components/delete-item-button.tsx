@@ -43,12 +43,12 @@ export function DeleteItemButton({
   return (
     <Button
       variant="ghost"
-      size="icon"
-      className="absolute top-3 right-3 z-10 h-9 w-9 rounded-full border border-border/60 bg-background/90 text-muted-foreground opacity-100 backdrop-blur transition-opacity hover:bg-destructive/10 hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100"
+      size="icon-xs"
+      className="shrink-0 rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
       disabled={isPending}
       onClick={handleDelete}
     >
-      <Trash2 className="h-4 w-4" />
+      <Trash2 className="h-3.5 w-3.5" />
     </Button>
   );
 }

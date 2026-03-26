@@ -1,34 +1,16 @@
-import { ShieldCheck, Tag, WalletCards } from "lucide-react";
+import { Tag, WalletCards } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import type {
-  UIOrderCustomer,
-  UIOrderDashboardDetails,
-  UIOrderDashboardItem,
-  UIOrderSalesSummary,
-} from "@/services/api-main/order-sales/transformers/transformers";
+import type { UIOrderSalesSummary } from "@/services/api-main/order-sales/transformers/transformers";
 import { formatCurrency } from "@/utils/common-utils";
-import { FinalizeSaleButton } from "./finalize-sale-button";
 import { PaymentMethodsSection } from "./payment-methods-section";
-import { PrintOrderButton } from "./print-order-button";
-import { SendWhatsAppButton } from "./send-whatsapp-button";
 
 interface OrderSummaryProps {
   summary: UIOrderSalesSummary | null;
-  details: UIOrderDashboardDetails | null;
-  items: UIOrderDashboardItem[];
-  customer: UIOrderCustomer | null;
-  orderStatusId: number;
 }
 
-export function OrderSummarySection({
-  summary,
-  details,
-  items,
-  customer,
-  orderStatusId,
-}: OrderSummaryProps) {
+export function OrderSummarySection({ summary }: OrderSummaryProps) {
   const subtotal = summary ? Number(summary.subtotalValue) : 0;
   const freight = summary ? Number(summary.freightValue) : 0;
   const additions = summary ? Number(summary.additionValue) : 0;
@@ -115,39 +97,8 @@ export function OrderSummarySection({
           </div>
         </div>
 
-        <div className="rounded-[24px] border border-border/70 bg-background/75 p-4 dark:bg-white/4">
-          <div className="mb-4 flex items-start justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                Formas de pagamento
-              </h3>
-            </div>
-
-            <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" />
-          </div>
-
+        <div className="rounded-3xl border border-border/70 bg-background/75 p-4 dark:bg-white/4">
           <PaymentMethodsSection />
-        </div>
-
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <PrintOrderButton
-              summary={summary}
-              details={details}
-              items={items}
-              customer={customer}
-            />
-            <SendWhatsAppButton
-              summary={summary}
-              details={details}
-              items={items}
-              customer={customer}
-            />
-          </div>
-          <FinalizeSaleButton
-            orderId={summary?.orderId ?? 0}
-            orderStatusId={orderStatusId}
-          />
         </div>
       </div>
     </Card>

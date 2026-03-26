@@ -7,6 +7,7 @@ import {
 } from "@/services/api-main/order-sales/order-sales-cached-service";
 import { CustomerSection } from "./_components/customer-section";
 import { HeaderOrderSection } from "./_components/header-order-section";
+import { OrderActionsSection } from "./_components/order-actions-section";
 import { OrderItemsSection } from "./_components/order-items-section";
 import { OrderLoadErrorState } from "./_components/order-load-error-state";
 import { OrderSummarySection } from "./_components/order-summary-section";
@@ -96,8 +97,11 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
                 </main>
 
                 <aside className="order-2 min-w-0">
-                  <div className="xl:sticky xl:top-4">
+                  <div className="space-y-4 xl:sticky xl:top-4">
                     <OrderSummarySection
+                      summary={dashboardData?.summary ?? null}
+                    />
+                    <OrderActionsSection
                       summary={dashboardData?.summary ?? null}
                       details={dashboardData?.details ?? null}
                       items={dashboardData?.items ?? []}

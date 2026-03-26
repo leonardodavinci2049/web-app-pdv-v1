@@ -78,7 +78,7 @@ export function OrderLoadErrorState({
                   Falha ao consultar o pedido
                 </CardTitle>
                 <CardDescription className="mt-1 leading-6">
-                  {orderId > 0
+                  {orderId != null && orderId > 0
                     ? `Pedido #${orderId} não pôde ser carregado com segurança.`
                     : "Nenhum pedido válido pôde ser carregado nesta rota."}
                 </CardDescription>
