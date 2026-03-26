@@ -1,12 +1,14 @@
-import { Package2, Sparkles, Truck, Wallet } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import type { UIOrderDashboardDetails } from "@/services/api-main/order-sales/transformers/transformers"
+import { Package2, Sparkles, Truck, Wallet } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import type { UIOrderDashboardDetails } from "@/services/api-main/order-sales/transformers/transformers";
 
 interface PurchaseDetailsSectionProps {
-  details: UIOrderDashboardDetails | null
+  details: UIOrderDashboardDetails | null;
 }
 
-export function PurchaseDetailsSection({ details }: PurchaseDetailsSectionProps) {
+export function PurchaseDetailsSection({
+  details,
+}: PurchaseDetailsSectionProps) {
   return (
     <Card className="overflow-hidden rounded-[28px] border-border/70 bg-linear-to-b from-card via-card to-muted/40 p-0 shadow-xl shadow-black/10 dark:shadow-black/30">
       <div className="border-b border-border/60 px-5 py-4 md:px-6">
@@ -67,5 +69,5 @@ export function PurchaseDetailsSection({ details }: PurchaseDetailsSectionProps)
         )}
       </div>
     </Card>
-  )
+  );
 }

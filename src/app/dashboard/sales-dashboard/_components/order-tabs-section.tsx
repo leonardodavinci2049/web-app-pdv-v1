@@ -1,18 +1,13 @@
-"use client"
+"use client";
 
-import type * as React from "react"
-import { FileText, ShoppingCart, UserRound } from "lucide-react"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
+import { FileText, ShoppingCart, UserRound } from "lucide-react";
+import type * as React from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface OrderTabsSectionProps {
-  cartContent: React.ReactNode
-  purchaseDetailsContent: React.ReactNode
-  customerDetailsContent: React.ReactNode
+  cartContent: React.ReactNode;
+  purchaseDetailsContent: React.ReactNode;
+  customerDetailsContent: React.ReactNode;
 }
 
 export function OrderTabsSection({
@@ -32,9 +27,7 @@ export function OrderTabsSection({
             className="flex-1 gap-2 rounded-full px-3 py-2 text-[13px] font-semibold transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/25 md:px-4 md:py-2.5 md:text-sm"
           >
             <ShoppingCart className="h-4 w-4" />
-            <span className="hidden whitespace-nowrap xs:inline">
-              Carrinho
-            </span>
+            <span className="hidden whitespace-nowrap xs:inline">Carrinho</span>
           </TabsTrigger>
 
           <TabsTrigger
@@ -83,5 +76,5 @@ export function OrderTabsSection({
         {customerDetailsContent}
       </TabsContent>
     </Tabs>
-  )
+  );
 }

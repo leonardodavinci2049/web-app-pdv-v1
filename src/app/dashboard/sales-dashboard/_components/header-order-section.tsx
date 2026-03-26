@@ -1,7 +1,6 @@
 import {
   CalendarDays,
   HelpCircle,
-  Package2,
   Plus,
   Settings2,
   UserRound,
@@ -85,7 +84,6 @@ export function HeaderOrderSection({ details, customerName }: HeaderPDVProps) {
                       ? `#${details.customerId} - ${customerName}`
                       : "Cliente nao vinculado"}
                   </span>
-  
                 </div>
               </div>
             ) : (

@@ -43,34 +43,29 @@ export function QuantityControls({
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/90 p-2 md:min-w-55 dark:bg-white/4">
+    <div className="flex items-center gap-1 rounded-full border border-border/60 bg-muted/40 p-0.5">
       <Button
         variant="ghost"
-        size="icon-sm"
-        className="rounded-full hover:bg-secondary/80"
+        size="icon-xs"
+        className="rounded-full hover:bg-background"
         disabled={isDecrementDisabled}
         onClick={handleDecrement}
       >
-        <Minus className="h-5 w-5" strokeWidth={3} />
+        <Minus className="h-3.5 w-3.5" strokeWidth={2.5} />
       </Button>
 
-      <div className="text-center">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          Quantidade
-        </p>
-        <p className="text-lg font-semibold text-foreground">
-          {isPending ? "..." : quantity}
-        </p>
-      </div>
+      <span className="min-w-7 text-center text-sm font-semibold tabular-nums text-foreground">
+        {isPending ? "..." : quantity}
+      </span>
 
       <Button
         variant="ghost"
-        size="icon-sm"
-        className="rounded-full hover:bg-secondary/80"
+        size="icon-xs"
+        className="rounded-full hover:bg-background"
         disabled={isIncrementDisabled}
         onClick={handleIncrement}
       >
-        <Plus className="h-5 w-5" strokeWidth={3} />
+        <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
       </Button>
     </div>
   );
