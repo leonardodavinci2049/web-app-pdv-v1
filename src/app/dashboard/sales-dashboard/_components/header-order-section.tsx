@@ -82,10 +82,7 @@ export function HeaderOrderSection({ details }: HeaderPDVProps) {
                     <UserRound className="h-4 w-4 text-primary" />
                     Vendedor em atendimento
                   </span>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1.5 backdrop-blur">
-                    <Package2 className="h-4 w-4 text-primary" />
-                    Fluxo de fechamento rapido
-                  </span>
+  
                 </div>
               </div>
             ) : (
