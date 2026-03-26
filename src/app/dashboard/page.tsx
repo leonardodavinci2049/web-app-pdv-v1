@@ -265,6 +265,7 @@ export default async function DashboardPage() {
               <Link
                 key={mod.title}
                 href={mod.href}
+                prefetch={false}
                 className="group block h-full rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <Card
@@ -343,6 +344,7 @@ export default async function DashboardPage() {
                 <Link
                   key={mod.title}
                   href={mod.href}
+                  prefetch={false}
                   className="group block rounded-2xl outline-none transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <div

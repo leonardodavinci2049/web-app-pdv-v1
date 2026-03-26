@@ -8,6 +8,7 @@ import {
 import { CustomerSection } from "./_components/customer-section";
 import { HeaderOrderSection } from "./_components/header-order-section";
 import { OrderItemsSection } from "./_components/order-items-section";
+import { OrderLoadErrorState } from "./_components/order-load-error-state";
 import { OrderSummarySection } from "./_components/order-summary-section";
 
 const logger = createLogger("dashboard-pdv-page");
@@ -27,12 +28,15 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
     dashboardData =
       (await getOrderDashboard(orderId, {
         ...apiContext,
-        sellerId: 2,
+        sellerId: apiContext.pe_person_id,
         typeBusiness: 1,
       })) ?? null;
   } catch (error) {
     logger.error("Erro ao carregar dados do pedido:", error);
   }
+
+  const errorMessage = dashboardData?.error ?? null;
+  const shouldShowErrorState = Boolean(errorMessage) || !dashboardData?.details;
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background">
@@ -49,32 +53,41 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
       <div className="relative flex flex-1 flex-col overflow-hidden">
         <div className="flex-1 overflow-auto">
           <div className="mx-auto flex w-full max-w-350 flex-col gap-4 px-4 pb-6 pt-4 md:px-6 md:pb-8">
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(360px,420px)] xl:grid-cols-[minmax(0,2fr)_minmax(380px,450px)]">
-              <main className="flex min-w-0 flex-col gap-4 order-1">
-                <HeaderOrderSection details={dashboardData?.details ?? null} />
-                <CustomerSection customer={dashboardData?.customer ?? null} />
-                <OrderItemsSection
-                  items={dashboardData?.items ?? []}
-                  orderStatusId={dashboardData?.details?.orderStatusId ?? 0}
-                  orderId={dashboardData?.details?.orderId ?? 0}
-                  customerId={dashboardData?.details?.customerId ?? 0}
-                  sellerId={dashboardData?.details?.sellerId ?? 0}
-                  paymentFormId={dashboardData?.details?.paymentFormId ?? 0}
-                />
-              </main>
-
-              <aside className="min-w-0 order-2">
-                <div className="xl:sticky xl:top-4">
-                  <OrderSummarySection
-                    summary={dashboardData?.summary ?? null}
+            {shouldShowErrorState ? (
+              <OrderLoadErrorState
+                errorMessage={errorMessage}
+                orderId={orderId > 0 ? orderId : undefined}
+              />
+            ) : (
+              <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(360px,420px)] xl:grid-cols-[minmax(0,2fr)_minmax(380px,450px)]">
+                <main className="order-1 flex min-w-0 flex-col gap-4">
+                  <HeaderOrderSection
                     details={dashboardData?.details ?? null}
-                    items={dashboardData?.items ?? []}
-                    customer={dashboardData?.customer ?? null}
-                    orderStatusId={dashboardData?.details?.orderStatusId ?? 0}
                   />
-                </div>
-              </aside>
-            </div>
+                  <CustomerSection customer={dashboardData?.customer ?? null} />
+                  <OrderItemsSection
+                    items={dashboardData?.items ?? []}
+                    orderStatusId={dashboardData?.details?.orderStatusId ?? 0}
+                    orderId={dashboardData?.details?.orderId ?? 0}
+                    customerId={dashboardData?.details?.customerId ?? 0}
+                    sellerId={dashboardData?.details?.sellerId ?? 0}
+                    paymentFormId={dashboardData?.details?.paymentFormId ?? 0}
+                  />
+                </main>
+
+                <aside className="order-2 min-w-0">
+                  <div className="xl:sticky xl:top-4">
+                    <OrderSummarySection
+                      summary={dashboardData?.summary ?? null}
+                      details={dashboardData?.details ?? null}
+                      items={dashboardData?.items ?? []}
+                      customer={dashboardData?.customer ?? null}
+                      orderStatusId={dashboardData?.details?.orderStatusId ?? 0}
+                    />
+                  </div>
+                </aside>
+              </div>
+            )}
           </div>
         </div>
       </div>
