@@ -13,11 +13,11 @@ import {
   ShieldCheck,
   Store,
   Target,
+  TriangleAlert,
   Users,
 } from "lucide-react";
-import { headers } from "next/headers";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -27,7 +27,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { auth } from "@/lib/auth/auth";
+import { getAuthContext } from "@/server/auth-context";
 import { SiteHeaderWithBreadcrumb } from "./_components/header/site-header-with-breadcrumb";
 
 const modules = [
@@ -150,11 +150,7 @@ function formatRole(role?: string | null) {
 }
 
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  if (!session) {
-    redirect("/sign-in");
-  }
+  const { session, authWarning } = await getAuthContext();
 
   const { user } = session;
   const firstName = user?.name?.split(" ")[0] || "Vendedor";
@@ -171,6 +167,16 @@ export default async function DashboardPage() {
       />
 
       <main className="mx-auto flex w-full max-w-350 flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8">
+        {authWarning ? (
+          <Alert className="border-amber-500/40 bg-amber-500/10 text-amber-950 dark:text-amber-100">
+            <TriangleAlert className="text-amber-600 dark:text-amber-300" />
+            <AlertTitle>{authWarning.title}</AlertTitle>
+            <AlertDescription className="text-amber-900/80 dark:text-amber-100/80">
+              {authWarning.description}
+            </AlertDescription>
+          </Alert>
+        ) : null}
+
         <Card className="overflow-hidden border-border/60 bg-linear-to-br from-card via-card to-muted/30 shadow-sm animate-in fade-in slide-in-from-bottom-3 duration-500">
           <CardContent className="relative px-6 py-6 sm:px-8 sm:py-7">
             <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-40 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_65%)] lg:block" />

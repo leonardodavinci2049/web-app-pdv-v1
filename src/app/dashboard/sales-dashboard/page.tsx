@@ -10,6 +10,8 @@ import { HeaderOrderSection } from "./_components/header-order-section";
 import { OrderItemsSection } from "./_components/order-items-section";
 import { OrderLoadErrorState } from "./_components/order-load-error-state";
 import { OrderSummarySection } from "./_components/order-summary-section";
+import { OrderTabsSection } from "./_components/order-tabs-section";
+import { PurchaseDetailsSection } from "./_components/purchase-details-section";
 
 const logger = createLogger("dashboard-pdv-page");
 
@@ -63,15 +65,33 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
                 <main className="order-1 flex min-w-0 flex-col gap-4">
                   <HeaderOrderSection
                     details={dashboardData?.details ?? null}
+                    customerName={dashboardData?.customer?.customerName ?? null}
                   />
-                  <CustomerSection customer={dashboardData?.customer ?? null} />
-                  <OrderItemsSection
-                    items={dashboardData?.items ?? []}
-                    orderStatusId={dashboardData?.details?.orderStatusId ?? 0}
-                    orderId={dashboardData?.details?.orderId ?? 0}
-                    customerId={dashboardData?.details?.customerId ?? 0}
-                    sellerId={dashboardData?.details?.sellerId ?? 0}
-                    paymentFormId={dashboardData?.details?.paymentFormId ?? 0}
+                  <OrderTabsSection
+                    cartContent={
+                      <OrderItemsSection
+                        items={dashboardData?.items ?? []}
+                        orderStatusId={
+                          dashboardData?.details?.orderStatusId ?? 0
+                        }
+                        orderId={dashboardData?.details?.orderId ?? 0}
+                        customerId={dashboardData?.details?.customerId ?? 0}
+                        sellerId={dashboardData?.details?.sellerId ?? 0}
+                        paymentFormId={
+                          dashboardData?.details?.paymentFormId ?? 0
+                        }
+                      />
+                    }
+                    purchaseDetailsContent={
+                      <PurchaseDetailsSection
+                        details={dashboardData?.details ?? null}
+                      />
+                    }
+                    customerDetailsContent={
+                      <CustomerSection
+                        customer={dashboardData?.customer ?? null}
+                      />
+                    }
                   />
                 </main>
 
