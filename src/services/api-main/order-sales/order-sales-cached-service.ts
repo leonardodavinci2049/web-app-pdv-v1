@@ -341,6 +341,7 @@ export interface UIOrderDashboard {
   details: UIOrderDashboardDetails | null;
   items: UIOrderDashboardItem[];
   customer: UIOrderCustomer | null;
+  error?: string;
 }
 
 export async function getOrderDashboard(
@@ -348,7 +349,7 @@ export async function getOrderDashboard(
   params: BaseParams & { sellerId?: number } = {},
 ): Promise<UIOrderDashboard | undefined> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("quarter");
   cacheTag(CACHE_TAGS.orderSale(String(orderId)), CACHE_TAGS.orderSales);
 
   if (!params.pe_system_client_id) {
@@ -388,11 +389,27 @@ export async function getOrderDashboard(
       logger.warn(
         `Dashboard do pedido ${orderId} indisponivel por falha de conexao com a API`,
       );
-      return undefined;
+      return {
+        summary: null,
+        details: null,
+        items: [],
+        customer: null,
+        error: "Falha de conexão com a API. Tente novamente mais tarde.",
+      };
     }
 
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Erro ao carregar dados do pedido";
     logger.error(`Erro ao buscar dashboard do pedido ${orderId}:`, error);
-    return undefined;
+    return {
+      summary: null,
+      details: null,
+      items: [],
+      customer: null,
+      error: errorMessage,
+    };
   }
 }
 
@@ -401,7 +418,7 @@ export async function getOrderEquipment(
   params: BaseParams = {},
 ): Promise<UIOrderEquipment | undefined> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("quarter");
   cacheTag(CACHE_TAGS.orderSale(String(orderId)), CACHE_TAGS.orderSales);
 
   if (!params.pe_system_client_id) {
