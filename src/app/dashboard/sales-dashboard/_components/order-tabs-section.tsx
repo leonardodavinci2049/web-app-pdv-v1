@@ -1,7 +1,7 @@
 "use client";
 
-import type * as React from "react";
 import { FileText, ShoppingCart, UserRound } from "lucide-react";
+import type * as React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface OrderTabsSectionProps {

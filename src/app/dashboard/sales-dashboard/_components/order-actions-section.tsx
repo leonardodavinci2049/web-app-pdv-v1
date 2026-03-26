@@ -1,10 +1,10 @@
+import { Card, CardContent } from "@/components/ui/card";
 import type {
   UIOrderCustomer,
   UIOrderDashboardDetails,
   UIOrderDashboardItem,
   UIOrderSalesSummary,
 } from "@/services/api-main/order-sales/transformers/transformers";
-import { Card, CardContent } from "@/components/ui/card";
 import { FinalizeSaleButton } from "./finalize-sale-button";
 import { PrintOrderButton } from "./print-order-button";
 import { SendWhatsAppButton } from "./send-whatsapp-button";

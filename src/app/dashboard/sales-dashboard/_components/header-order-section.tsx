@@ -1,7 +1,6 @@
 import {
   CalendarDays,
   HelpCircle,
-  Package2,
   Plus,
   Settings2,
   UserRound,

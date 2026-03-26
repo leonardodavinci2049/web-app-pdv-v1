@@ -7,9 +7,9 @@ import {
 } from "@/services/api-main/order-sales/order-sales-cached-service";
 import { CustomerSection } from "./_components/customer-section";
 import { HeaderOrderSection } from "./_components/header-order-section";
+import { OrderActionsSection } from "./_components/order-actions-section";
 import { OrderItemsSection } from "./_components/order-items-section";
 import { OrderLoadErrorState } from "./_components/order-load-error-state";
-import { OrderActionsSection } from "./_components/order-actions-section";
 import { OrderSummarySection } from "./_components/order-summary-section";
 import { OrderTabsSection } from "./_components/order-tabs-section";
 import { PurchaseDetailsSection } from "./_components/purchase-details-section";
