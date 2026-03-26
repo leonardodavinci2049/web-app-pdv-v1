@@ -13,6 +13,7 @@ import type { UIOrderDashboardDetails } from "@/services/api-main/order-sales/tr
 
 interface HeaderPDVProps {
   details: UIOrderDashboardDetails | null;
+  customerName: string | null;
 }
 
 function formatOrderDate(dateStr: string): string {
@@ -43,7 +44,7 @@ function getOrderStatusClassName(orderStatusId: number): string {
   }
 }
 
-export function HeaderOrderSection({ details }: HeaderPDVProps) {
+export function HeaderOrderSection({ details, customerName }: HeaderPDVProps) {
   return (
     <header className="relative overflow-hidden rounded-[28px] border border-border/70 bg-gradient-to-br from-card via-card to-muted/70 p-4 text-foreground shadow-xl shadow-black/10 dark:shadow-black/30 md:p-6">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
@@ -74,13 +75,15 @@ export function HeaderOrderSection({ details }: HeaderPDVProps) {
                 <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1.5 backdrop-blur">
                     <CalendarDays className="h-4 w-4 text-primary" />
-                    {details.orderDate
-                      ? formatOrderDate(details.orderDate)
+                    {details.createdAt
+                      ? formatOrderDate(details.createdAt)
                       : "Data pendente"}
                   </span>
                   <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1.5 backdrop-blur">
                     <UserRound className="h-4 w-4 text-primary" />
-                    Vendedor em atendimento
+                    {customerName
+                      ? `#${details.customerId} - ${customerName}`
+                      : "Cliente nao vinculado"}
                   </span>
   
                 </div>
@@ -127,37 +130,6 @@ export function HeaderOrderSection({ details }: HeaderPDVProps) {
             </Button>
           </div>
         </div>
-
-        {details && (
-          <div className="grid gap-3 md:grid-cols-3">
-            <div className="rounded-2xl border border-border/70 bg-background/70 p-4 backdrop-blur">
-              <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-                Status comercial
-              </p>
-              <p className="mt-2 text-lg font-semibold text-foreground">
-                {details.orderStatus || "Aguardando definicao"}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border/70 bg-background/70 p-4 backdrop-blur">
-              <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-                Financeiro
-              </p>
-              <p className="mt-2 text-lg font-semibold text-foreground">
-                {details.financialStatus || "Nao informado"}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border/70 bg-background/70 p-4 backdrop-blur">
-              <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-                Entrega e retirada
-              </p>
-              <p className="mt-2 text-lg font-semibold text-foreground">
-                {details.deliveryStatus || "Pendente"}
-              </p>
-            </div>
-          </div>
-        )}
       </div>
     </header>
   );
