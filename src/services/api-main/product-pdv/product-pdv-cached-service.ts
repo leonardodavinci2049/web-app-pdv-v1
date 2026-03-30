@@ -70,7 +70,7 @@ export async function getProductsPdv(
     return transformProductPdvList(products);
   } catch (error) {
     logger.error("Erro ao buscar produtos PDV:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -126,7 +126,7 @@ export async function getProductPdvById(
     return { product, relatedCategories };
   } catch (error) {
     logger.error(`Erro ao buscar produto PDV por ID ${id}:`, error);
-    return undefined;
+    throw error;
   }
 }
 
@@ -170,6 +170,6 @@ export async function searchProductsPdv(
     return transformProductPdvSearchList(products);
   } catch (error) {
     logger.error("Erro ao buscar produtos PDV por termo de pesquisa:", error);
-    return [];
+    throw error;
   }
 }
