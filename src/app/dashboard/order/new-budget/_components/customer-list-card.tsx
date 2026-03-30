@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Phone } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useTransition } from "react";
 
@@ -31,9 +31,6 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
     });
   }, [customer.customerId, searchParams, router]);
 
-  const document = customer.cpf || customer.cnpj;
-  const documentLabel = customer.cpf ? "CPF" : customer.cnpj ? "CNPJ" : "";
-
   return (
     <div
       className={cn(
@@ -60,18 +57,17 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
           </div>
 
           <div className="mt-0.5 flex items-center gap-x-2 overflow-hidden text-xs text-muted-foreground">
-            {document && (
+            {customer.customerType && (
               <span className="min-w-0 truncate">
-                {documentLabel} {document}
+                {customer.customerType}
               </span>
             )}
-            {document && customer.phone && (
+            {customer.customerType && customer.personType && (
               <span className="shrink-0 text-border">·</span>
             )}
-            {customer.phone && (
-              <span className="flex min-w-0 shrink-0 items-center gap-0.5 truncate">
-                <Phone className="h-3 w-3 shrink-0" />
-                {customer.phone}
+            {customer.personType && (
+              <span className="min-w-0 truncate">
+                {customer.personType}
               </span>
             )}
           </div>
