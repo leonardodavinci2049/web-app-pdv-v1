@@ -41,7 +41,7 @@ export default function ModeToggle() {
       {theme === "dark" ? (
         <Sun className="size-5 text-yellow-400" />
       ) : (
-        <Moon className="size-5 text-white" />
+        <Moon className="size-5 text-black hover:text-white" />
       )}
     </Button>
   );
