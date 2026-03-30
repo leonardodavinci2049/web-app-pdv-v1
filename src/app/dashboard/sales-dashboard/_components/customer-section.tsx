@@ -52,6 +52,21 @@ function formatDate(date: string | null): string {
   }
 }
 
+function getLastPurchaseDate(
+  lastPurchase: string | null,
+  createdAt: string | null,
+): string | null {
+  if (!createdAt) return null;
+  if (!lastPurchase) return createdAt;
+  try {
+    const lastDate = new Date(lastPurchase);
+    const createdDate = new Date(createdAt);
+    return lastDate < createdDate ? createdAt : lastPurchase;
+  } catch {
+    return createdAt;
+  }
+}
+
 function formatCpf(cpf: string): string {
   if (!cpf || cpf.length !== 11) return cpf || "Não informado";
   return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
@@ -164,6 +179,10 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
   const isPessoaFisica = customer?.personTypeId === 1;
   const isPessoaJuridica = customer?.personTypeId === 2;
 
+  const displayLastPurchaseDate = customer
+    ? getLastPurchaseDate(customer.lastPurchaseDate, customer.createdAt)
+    : null;
+
   return (
     <Card className="overflow-hidden rounded-[28px] border-border/70 bg-linear-to-b from-card via-card to-muted/40 p-0 shadow-xl shadow-black/10 dark:shadow-black/30">
       {/* Header */}
@@ -188,20 +207,18 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
           >
             <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               {/* Avatar + Name */}
-              <div className="flex min-w-0 items-start gap-4">
-                <Avatar className="h-16 w-16 shrink-0 rounded-2xl ring-4 ring-primary/10 md:h-20 md:w-20">
-                  {customer.imagePath ? (
-                    <AvatarImage
-                      src={customer.imagePath}
-                      alt={customer.customerName}
-                    />
-                  ) : null}
+              <div className="flex min-w-0 flex-col items-center gap-4 sm:flex-row sm:items-start">
+                <Avatar className="h-20 w-20 shrink-0 rounded-2xl ring-4 ring-primary/10 md:h-20 md:w-20">
+                  <AvatarImage
+                    src={customer.imagePath || "/avatars/customer.png"}
+                    alt={customer.customerName}
+                  />
                   <AvatarFallback className="rounded-2xl bg-primary/10 text-lg font-semibold text-primary">
                     {getInitials(customer.customerName)}
                   </AvatarFallback>
                 </Avatar>
 
-                <div className="min-w-0 space-y-2.5">
+                <div className="min-w-0 space-y-2.5 text-center sm:text-left">
                   <div>
                     <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground/70">
                       ID #{customer.customerId}
@@ -211,7 +228,7 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
                     </h4>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                     {customer.accountType && (
                       <Badge
                         variant="outline"
@@ -239,23 +256,23 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
               </div>
 
               {/* Date cards */}
-              <div className="flex flex-wrap gap-3 lg:flex-col">
-                <div className="rounded-xl border border-primary/15 bg-primary/5 px-4 py-2.5">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary/80">
-                    Última compra
-                  </p>
-                  <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-foreground">
-                    <Calendar className="h-3.5 w-3.5 text-primary" />
-                    {formatDate(customer.lastPurchaseDate)}
-                  </p>
-                </div>
-                <div className="rounded-xl border border-border/70 bg-muted/30 px-4 py-2.5">
+              <div className="flex w-full justify-center gap-3 lg:w-auto lg:justify-start">
+                <div className="rounded-xl border border-border/70 bg-muted/30 px-3 py-2.5">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/70">
                     Cliente desde
                   </p>
-                  <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                  <p className="mt-1 flex items-center gap-1 text-sm font-semibold text-foreground">
                     <Clock3 className="h-3.5 w-3.5 text-muted-foreground" />
                     {formatDate(customer.createdAt)}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-primary/15 bg-primary/5 px-3 py-2.5">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary/80">
+                    Última compra
+                  </p>
+                  <p className="mt-1 flex items-center gap-1 text-sm font-semibold text-foreground">
+                    <Calendar className="h-3.5 w-3.5 text-primary" />
+                    {formatDate(displayLastPurchaseDate)}
                   </p>
                 </div>
               </div>
