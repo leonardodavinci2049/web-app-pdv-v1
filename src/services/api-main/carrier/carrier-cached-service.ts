@@ -49,7 +49,7 @@ export async function getCarriers(
     return transformCarrierList(carriers);
   } catch (error) {
     logger.error("Erro ao buscar transportadoras:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -91,6 +91,6 @@ export async function getCarrierById(
     return transformCarrier(carrier) ?? undefined;
   } catch (error) {
     logger.error(`Erro ao buscar transportadora por ID ${id}:`, error);
-    return undefined;
+    throw error;
   }
 }

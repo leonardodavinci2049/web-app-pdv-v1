@@ -50,7 +50,7 @@ export async function getOrderItems(
     return transformOrderItemList(items);
   } catch (error) {
     logger.error("Erro ao buscar itens de pedido:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -92,6 +92,6 @@ export async function getOrderItemById(
     return transformOrderItemDetailEntity(item);
   } catch (error) {
     logger.error(`Erro ao buscar item de pedido por ID ${id}:`, error);
-    return undefined;
+    throw error;
   }
 }

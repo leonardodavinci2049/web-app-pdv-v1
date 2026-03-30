@@ -49,7 +49,7 @@ export async function getPtypes(
     return transformPtypeList(ptypes);
   } catch (error) {
     logger.error("Erro ao buscar tipos:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -91,6 +91,6 @@ export async function getPtypeById(
     return transformPtype(ptype) ?? undefined;
   } catch (error) {
     logger.error(`Erro ao buscar tipo por ID ${id}:`, error);
-    return undefined;
+    throw error;
   }
 }

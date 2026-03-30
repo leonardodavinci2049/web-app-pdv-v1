@@ -61,7 +61,7 @@ export async function getTaxonomies(
     return transformTaxonomyList(taxonomies);
   } catch (error) {
     logger.error("Erro ao buscar taxonomias:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -101,7 +101,7 @@ export async function getTaxonomyById(
     return transformTaxonomyDetail(taxonomy);
   } catch (error) {
     logger.error("Erro ao buscar taxonomia por ID:", error);
-    return undefined;
+    throw error;
   }
 }
 
@@ -141,6 +141,6 @@ export async function getTaxonomyMenu(
     return transformTaxonomyMenuList(menuItems);
   } catch (error) {
     logger.error("Erro ao buscar menu de taxonomias:", error);
-    return [];
+    throw error;
   }
 }

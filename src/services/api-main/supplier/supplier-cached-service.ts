@@ -51,7 +51,7 @@ export async function getSuppliers(
     return transformSupplierList(suppliers);
   } catch (error) {
     logger.error("Erro ao buscar fornecedores:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -93,7 +93,7 @@ export async function getSupplierById(
     return transformSupplier(supplier) ?? undefined;
   } catch (error) {
     logger.error(`Erro ao buscar fornecedor por ID ${id}:`, error);
-    return undefined;
+    throw error;
   }
 }
 
@@ -133,6 +133,6 @@ export async function getSupplierRelProds(
     return transformSupplierRelProdList(relProds);
   } catch (error) {
     logger.error("Erro ao buscar relações fornecedor-produto:", error);
-    return [];
+    throw error;
   }
 }

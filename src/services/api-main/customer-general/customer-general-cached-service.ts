@@ -61,7 +61,7 @@ export async function getCustomers(
     return transformCustomerList(customers);
   } catch (error) {
     logger.error("Erro ao buscar clientes:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -111,7 +111,7 @@ export async function getCustomerById(
     };
   } catch (error) {
     logger.error(`Erro ao buscar cliente por ID ${customerId}:`, error);
-    return undefined;
+    throw error;
   }
 }
 
@@ -157,6 +157,6 @@ export async function getCustomerLatestProducts(
       `Erro ao buscar últimos produtos do cliente ${customerId}:`,
       error,
     );
-    return [];
+    throw error;
   }
 }

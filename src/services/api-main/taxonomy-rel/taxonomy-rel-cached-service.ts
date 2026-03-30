@@ -49,6 +49,6 @@ export async function getProductsByTaxonomy(
     return transformTaxonomyRelProductList(products);
   } catch (error) {
     logger.error("Erro ao buscar produtos por taxonomia:", error);
-    return [];
+    throw error;
   }
 }

@@ -51,7 +51,7 @@ export async function getBrands(
     return transformBrandList(brands);
   } catch (error) {
     logger.error("Erro ao buscar marcas:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -93,6 +93,6 @@ export async function getBrandById(
     return transformBrand(brand) ?? undefined;
   } catch (error) {
     logger.error(`Erro ao buscar marca por ID ${id}:`, error);
-    return undefined;
+    throw error;
   }
 }
