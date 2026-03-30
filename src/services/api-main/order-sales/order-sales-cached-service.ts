@@ -389,27 +389,14 @@ export async function getOrderDashboard(
       logger.warn(
         `Dashboard do pedido ${orderId} indisponivel por falha de conexao com a API`,
       );
-      return {
-        summary: null,
-        details: null,
-        items: [],
-        customer: null,
-        error: "Falha de conexão com a API. Tente novamente mais tarde.",
-      };
+    } else {
+      logger.error(`Erro ao buscar dashboard do pedido ${orderId}:`, error);
     }
 
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "Erro ao carregar dados do pedido";
-    logger.error(`Erro ao buscar dashboard do pedido ${orderId}:`, error);
-    return {
-      summary: null,
-      details: null,
-      items: [],
-      customer: null,
-      error: errorMessage,
-    };
+    // Re-throw para não cachear respostas de erro.
+    // Quando "use cache" lança exceção, o Next.js NÃO cacheia o resultado
+    // e vai tentar novamente na próxima requisição.
+    throw error;
   }
 }
 
