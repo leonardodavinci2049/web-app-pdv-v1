@@ -58,17 +58,13 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
 
           <div className="mt-0.5 flex items-center gap-x-2 overflow-hidden text-xs text-muted-foreground">
             {customer.customerType && (
-              <span className="min-w-0 truncate">
-                {customer.customerType}
-              </span>
+              <span className="min-w-0 truncate">{customer.customerType}</span>
             )}
             {customer.customerType && customer.personType && (
               <span className="shrink-0 text-border">·</span>
             )}
             {customer.personType && (
-              <span className="min-w-0 truncate">
-                {customer.personType}
-              </span>
+              <span className="min-w-0 truncate">{customer.personType}</span>
             )}
           </div>
         </div>
