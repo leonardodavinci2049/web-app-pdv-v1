@@ -10,6 +10,7 @@ import {
   User,
 } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 import {
   Dialog,
@@ -27,7 +28,13 @@ interface CustomerDetailDialogProps {
 export function CustomerDetailDialog({ customer }: CustomerDetailDialogProps) {
   const document = customer.cpf || customer.cnpj;
   const documentLabel = customer.cpf ? "CPF" : customer.cnpj ? "CNPJ" : "";
-  const hasImage = !!customer.imagePath;
+  const validImage =
+    customer.imagePath &&
+    (customer.imagePath.startsWith("/") ||
+      customer.imagePath.startsWith("http"))
+      ? customer.imagePath
+      : undefined;
+  const [imgSrc, setImgSrc] = useState(validImage || "/avatars/customer.png");
 
   return (
     <Dialog>
@@ -42,19 +49,14 @@ export function CustomerDetailDialog({ customer }: CustomerDetailDialogProps) {
       </DialogTrigger>
       <DialogContent className="max-w-sm gap-0 overflow-hidden p-0">
         <div className="flex flex-col items-center gap-3 overflow-hidden bg-muted/30 px-6 pt-6 pb-4">
-          {hasImage && customer.imagePath ? (
-            <Image
-              src={customer.imagePath}
-              alt={customer.name}
-              width={80}
-              height={80}
-              className="h-20 w-20 rounded-full border-2 border-primary/20 object-cover shadow-sm"
-            />
-          ) : (
-            <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary/20 bg-primary/10 shadow-sm">
-              <User className="h-8 w-8 text-primary" />
-            </div>
-          )}
+          <Image
+            src={imgSrc}
+            alt={customer.name}
+            width={80}
+            height={80}
+            className="h-20 w-20 rounded-full border-2 border-primary/20 object-cover shadow-sm"
+            onError={() => setImgSrc("/avatars/customer.png")}
+          />
           <DialogHeader className="w-full items-center space-y-0.5 overflow-hidden">
             <DialogTitle className="max-w-full truncate text-center text-base">
               {customer.name}
