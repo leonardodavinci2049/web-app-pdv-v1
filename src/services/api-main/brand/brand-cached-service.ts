@@ -27,7 +27,7 @@ export async function getBrands(
   } = {},
 ): Promise<UIBrand[]> {
   "use cache";
-  cacheLife("seconds");
+  cacheLife("quarter");
   cacheTag(CACHE_TAGS.brands);
 
   if (!params.pe_system_client_id) {
