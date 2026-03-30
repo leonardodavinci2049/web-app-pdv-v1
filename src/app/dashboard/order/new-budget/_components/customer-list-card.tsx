@@ -1,16 +1,14 @@
 "use client";
 
-import { ArrowRight, Mail, Phone } from "lucide-react";
-import Image from "next/image";
+import { ArrowRight, Phone } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useTransition } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { UICustomerListItem } from "@/services/api-main/customer-general/transformers/transformers";
 
 import { BUDGET_FLOW_STEPS } from "../budget-flow";
+import { CustomerDetailDialog } from "./customer-detail-dialog";
 
 interface CustomerListCardProps {
   customer: UICustomerListItem;
@@ -33,95 +31,54 @@ export function CustomerListCard({ customer }: CustomerListCardProps) {
     });
   }, [customer.customerId, searchParams, router]);
 
+  const document = customer.cpf || customer.cnpj;
+  const documentLabel = customer.cpf ? "CPF" : customer.cnpj ? "CNPJ" : "";
+
   return (
-    <Card
+    <div
       className={cn(
-        "overflow-hidden border-border/60 bg-neutral-100 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-neutral-200/80 hover:shadow-md dark:bg-neutral-700/60 dark:hover:bg-neutral-600/60",
+        "group flex w-full overflow-hidden items-center gap-2 rounded-xl border border-border/60 bg-neutral-100 p-2 text-left transition-all hover:bg-neutral-200/80 hover:shadow-sm dark:bg-neutral-700/60 dark:hover:bg-neutral-600/60 sm:gap-3 sm:p-3",
         isPending && "pointer-events-none opacity-60",
       )}
     >
-      <CardContent className="p-3 sm:p-4">
-        <div className="flex items-start gap-3">
-          <Image
-            src="/avatars/customer.png"
-            alt={customer.name}
-            width={48}
-            height={48}
-            className="h-12 w-12 shrink-0 rounded-xl object-cover"
-          />
-          <div className="min-w-0 flex-1 space-y-2">
-            <div className="flex items-start justify-between gap-3">
-              <p className="min-w-0 truncate text-base font-semibold text-foreground">
-                {customer.name}
-              </p>
-              <span className="shrink-0 text-xs font-medium text-muted-foreground">
-                #{customer.customerId}
+      <CustomerDetailDialog customer={customer} />
+
+      <button
+        type="button"
+        onClick={handleSelect}
+        disabled={isPending}
+        className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden"
+      >
+        <div className="min-w-0 flex-1 overflow-hidden">
+          <div className="flex items-center gap-1.5">
+            <p className="min-w-0 truncate text-sm font-semibold text-foreground">
+              {customer.name}
+            </p>
+            <span className="hidden shrink-0 text-[10px] font-medium text-muted-foreground/70 sm:inline">
+              #{customer.customerId}
+            </span>
+          </div>
+
+          <div className="mt-0.5 flex items-center gap-x-2 overflow-hidden text-xs text-muted-foreground">
+            {document && (
+              <span className="min-w-0 truncate">
+                {documentLabel} {document}
               </span>
-            </div>
-
-            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-              {customer.cpf && (
-                <span className="rounded-full bg-background px-3 py-1 shadow-xs">
-                  CPF {customer.cpf}
-                </span>
-              )}
-              {customer.cnpj && (
-                <span className="rounded-full bg-background px-3 py-1 shadow-xs">
-                  CNPJ {customer.cnpj}
-                </span>
-              )}
-              {customer.phone && (
-                <span className="flex items-center gap-1 rounded-full bg-background px-3 py-1 shadow-xs">
-                  <Phone className="h-3 w-3" />
-                  {customer.phone}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-              {customer.customerType && (
-                <span className="rounded-full bg-background px-3 py-1 shadow-xs">
-                  Cliente: {customer.customerType}
-                </span>
-              )}
-              {customer.personType && (
-                <span className="rounded-full bg-background px-3 py-1 shadow-xs">
-                  {customer.personType}
-                </span>
-              )}
-              {customer.companyName && (
-                <span className="rounded-full bg-background px-3 py-1 shadow-xs">
-                  Empresa: {customer.companyName}
-                </span>
-              )}
-            </div>
-
-            {customer.email && (
-              <a
-                href={`mailto:${customer.email}`}
-                className="flex items-center gap-1.5 truncate text-sm text-muted-foreground hover:text-foreground"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Mail className="h-3.5 w-3.5 shrink-0" />
-                {customer.email}
-              </a>
+            )}
+            {document && customer.phone && (
+              <span className="shrink-0 text-border">·</span>
+            )}
+            {customer.phone && (
+              <span className="flex min-w-0 shrink-0 items-center gap-0.5 truncate">
+                <Phone className="h-3 w-3 shrink-0" />
+                {customer.phone}
+              </span>
             )}
           </div>
         </div>
 
-        <div className="mt-2.5 flex justify-end">
-          <Button
-            type="button"
-            size="sm"
-            onClick={handleSelect}
-            disabled={isPending}
-            className="gap-1.5"
-          >
-            Selecionar
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+        <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+      </button>
+    </div>
   );
 }
