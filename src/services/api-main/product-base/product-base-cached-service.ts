@@ -67,7 +67,7 @@ export async function getProducts(
     return transformProductList(products);
   } catch (error) {
     logger.error("Erro ao buscar produtos:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -109,7 +109,7 @@ export async function searchProducts(params: {
     return transformProductSearchList(products);
   } catch (error) {
     logger.error("Erro ao pesquisar produtos:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -154,6 +154,6 @@ export async function getProductById(
     return transformProductDetail(product, categories, related);
   } catch (error) {
     logger.error(`Erro ao buscar produto por ID ${id}:`, error);
-    return undefined;
+    throw error;
   }
 }

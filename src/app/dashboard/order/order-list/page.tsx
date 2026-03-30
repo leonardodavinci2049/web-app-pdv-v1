@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
+import { createLogger } from "@/core/logger";
 import { getAuthContext } from "@/server/auth-context";
 import { getSaleOrders } from "@/services/api-main/order-reports/order-reports-cached-service";
 import { OrderListContent } from "./_components/order-list-content";
@@ -13,6 +14,8 @@ import {
 interface OrderListPageProps {
   searchParams: Promise<OrderListSearchParams>;
 }
+
+const logger = createLogger("order-list-page");
 
 function toOptionalNumber(value?: string): number | undefined {
   if (!value) {
@@ -38,18 +41,24 @@ export default async function OrderListPage(props: OrderListPageProps) {
     defaultFilters,
   );
 
-  const orders = await getSaleOrders({
-    sellerId: toOptionalNumber(currentFilters.sellerId),
-    orderStatusId: toOptionalNumber(currentFilters.orderStatusId),
-    financialStatusId: toOptionalNumber(currentFilters.financialStatusId),
-    locationId: toOptionalNumber(currentFilters.locationId),
-    initialDate: currentFilters.initialDate,
-    finalDate: currentFilters.finalDate,
-    limit:
-      toOptionalNumber(currentFilters.limit) ??
-      Number(DEFAULT_ORDER_LIST_LIMIT),
-    ...apiContext,
-  });
+  let orders: Awaited<ReturnType<typeof getSaleOrders>> = [];
+
+  try {
+    orders = await getSaleOrders({
+      sellerId: toOptionalNumber(currentFilters.sellerId),
+      orderStatusId: toOptionalNumber(currentFilters.orderStatusId),
+      financialStatusId: toOptionalNumber(currentFilters.financialStatusId),
+      locationId: toOptionalNumber(currentFilters.locationId),
+      initialDate: currentFilters.initialDate,
+      finalDate: currentFilters.finalDate,
+      limit:
+        toOptionalNumber(currentFilters.limit) ??
+        Number(DEFAULT_ORDER_LIST_LIMIT),
+      ...apiContext,
+    });
+  } catch (error) {
+    logger.error("Erro ao carregar pedidos de venda:", error);
+  }
 
   return (
     <>

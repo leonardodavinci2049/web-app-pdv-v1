@@ -1,4 +1,5 @@
 import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
+import { createLogger } from "@/core/logger";
 import { getAuthContext } from "@/server/auth-context";
 import {
   getCustomerById,
@@ -6,6 +7,8 @@ import {
 } from "@/services/api-main/customer-general/customer-general-cached-service";
 import { getOrderDashboard } from "@/services/api-main/order-sales/order-sales-cached-service";
 import { searchProductsPdv } from "@/services/api-main/product-pdv/product-pdv-cached-service";
+
+const logger = createLogger("new-budget-page");
 
 import { BudgetStepper } from "./_components/budget-stepper";
 import { StepCustomerSelect } from "./_components/step-customer-select";
@@ -73,16 +76,28 @@ export default async function NewBudgetPage({
     });
 
     if (orderId) {
-      orderDashboard = await getOrderDashboard(orderId, dashboardParams);
+      try {
+        orderDashboard = await getOrderDashboard(orderId, dashboardParams);
+      } catch (error) {
+        logger.error("Erro ao carregar dashboard do pedido (cart):", error);
+      }
     }
   }
 
   if (step === BUDGET_FLOW_STEPS.payment && orderId) {
-    orderDashboard = await getOrderDashboard(orderId, dashboardParams);
+    try {
+      orderDashboard = await getOrderDashboard(orderId, dashboardParams);
+    } catch (error) {
+      logger.error("Erro ao carregar dashboard do pedido (payment):", error);
+    }
   }
 
   if (step === BUDGET_FLOW_STEPS.summary && orderId) {
-    orderDashboard = await getOrderDashboard(orderId, dashboardParams);
+    try {
+      orderDashboard = await getOrderDashboard(orderId, dashboardParams);
+    } catch (error) {
+      logger.error("Erro ao carregar dashboard do pedido (summary):", error);
+    }
   }
 
   const effectiveCustomerId =

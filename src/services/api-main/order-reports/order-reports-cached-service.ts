@@ -85,7 +85,7 @@ export async function getCustomerOrders(
     return transformCustomerAllList(items);
   } catch (error) {
     logger.error("Erro ao buscar pedidos por cliente:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -138,7 +138,7 @@ export async function getCustomerOrderById(
     };
   } catch (error) {
     logger.error(`Erro ao buscar pedido do cliente por ID ${orderId}:`, error);
-    return undefined;
+    throw error;
   }
 }
 
@@ -176,7 +176,7 @@ export async function getLatestOrders(
     return transformReportList(items);
   } catch (error) {
     logger.error("Erro ao buscar últimos pedidos:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -229,7 +229,7 @@ export async function getLatestOrderById(
     };
   } catch (error) {
     logger.error(`Erro ao buscar último pedido por ID ${orderId}:`, error);
-    return undefined;
+    throw error;
   }
 }
 
@@ -267,7 +267,7 @@ export async function getSaleOrders(
     return transformReportList(items);
   } catch (error) {
     logger.error("Erro ao buscar todas as vendas:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -321,7 +321,7 @@ export async function getSaleOrderById(
     };
   } catch (error) {
     logger.error(`Erro ao buscar venda por ID ${orderId}:`, error);
-    return undefined;
+    throw error;
   }
 }
 
@@ -359,6 +359,6 @@ export async function getSellerOrders(
     return transformReportList(items);
   } catch (error) {
     logger.error("Erro ao buscar pedidos por vendedor:", error);
-    return [];
+    throw error;
   }
 }
