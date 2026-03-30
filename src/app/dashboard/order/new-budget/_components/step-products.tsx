@@ -4,6 +4,7 @@ import { BUDGET_FLOW_STEPS } from "../budget-flow";
 import { CartItemsList } from "./cart-items-list";
 import { MobileCartSheet } from "./mobile-cart-sheet";
 import { ProductList } from "./product-list";
+import { ProductLoadMore } from "./product-load-more";
 import { ProductSearchInput } from "./product-search-input";
 import { StepNavigation } from "./step-navigation";
 
@@ -13,6 +14,8 @@ interface StepProductsProps {
   search: string;
   orderId?: number;
   customerId: number;
+  flagStock: number;
+  productLimit: number;
 }
 
 export function StepProducts({
@@ -21,6 +24,8 @@ export function StepProducts({
   search,
   orderId,
   customerId,
+  flagStock,
+  productLimit,
 }: StepProductsProps) {
   const cartItems = orderDashboard?.items ?? [];
   const summary = orderDashboard?.summary;
@@ -33,15 +38,6 @@ export function StepProducts({
           <h2 className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
             Buscar produtos
           </h2>
-
-          <div className="flex items-center gap-2 rounded-2xl border border-border/50 bg-background/50 px-3 py-1.5 shadow-xs">
-            <span className="h-2 w-2 rounded-full bg-primary/70 animate-pulse" />
-            <p className="text-[11px] font-medium text-muted-foreground">
-              {hasOrder
-                ? `Pedido #${orderId} em edição`
-                : "Pedido será criado no primeiro item"}
-            </p>
-          </div>
         </div>
 
         <div className="mt-3">
@@ -49,6 +45,7 @@ export function StepProducts({
             defaultValue={search}
             orderId={orderId}
             customerId={customerId}
+            flagStock={flagStock}
           />
         </div>
       </section>
@@ -56,16 +53,15 @@ export function StepProducts({
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-4">
           <div className="flex flex-col gap-4">
-            <div className="space-y-1 px-1">
-              <h3 className="text-xl font-semibold tracking-tight text-foreground">
-                Produtos disponíveis
-              </h3>
-            </div>
-
             <ProductList
               products={products}
               orderId={orderId}
               customerId={customerId}
+            />
+
+            <ProductLoadMore
+              currentLimit={productLimit}
+              totalLoaded={products.length}
             />
           </div>
         </div>
