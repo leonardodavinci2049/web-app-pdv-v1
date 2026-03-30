@@ -1,16 +1,19 @@
 import type { UICustomerListItem } from "@/services/api-main/customer-general/transformers/transformers";
 import { CustomerCreateDialog } from "./customer-create-dialog";
 import { CustomerListCard } from "./customer-list-card";
+import { CustomerLoadMore } from "./customer-load-more";
 import { CustomerSearchInput } from "./customer-search-input";
 
 interface StepCustomerSelectProps {
   customers: UICustomerListItem[];
   search: string;
+  customerLimit: number;
 }
 
 export function StepCustomerSelect({
   customers,
   search,
+  customerLimit,
 }: StepCustomerSelectProps) {
   return (
     <div className="space-y-4">
@@ -39,11 +42,21 @@ export function StepCustomerSelect({
             </p>
           </div>
         ) : (
-          <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {customers.map((customer) => (
-              <CustomerListCard key={customer.customerId} customer={customer} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {customers.map((customer) => (
+                <CustomerListCard
+                  key={customer.customerId}
+                  customer={customer}
+                />
+              ))}
+            </div>
+
+            <CustomerLoadMore
+              currentLimit={customerLimit}
+              totalLoaded={customers.length}
+            />
+          </>
         )}
       </section>
     </div>

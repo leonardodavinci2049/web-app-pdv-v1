@@ -20,6 +20,9 @@ interface NewBudgetPageProps {
     search?: string;
     customerId?: string;
     orderId?: string;
+    flagStock?: string;
+    limit?: string;
+    customerLimit?: string;
   }>;
 }
 
@@ -38,6 +41,15 @@ export default async function NewBudgetPage({
   const search = params.search ?? "";
   const customerId = params.customerId ? Number(params.customerId) : undefined;
   const orderId = params.orderId ? Number(params.orderId) : undefined;
+  const flagStock = params.flagStock === "0" ? 0 : 1;
+  const DEFAULT_PRODUCT_LIMIT = 20;
+  const productLimit = params.limit
+    ? Math.max(DEFAULT_PRODUCT_LIMIT, Number(params.limit))
+    : DEFAULT_PRODUCT_LIMIT;
+  const DEFAULT_CUSTOMER_LIMIT = 50;
+  const customerLimit = params.customerLimit
+    ? Math.max(DEFAULT_CUSTOMER_LIMIT, Number(params.customerLimit))
+    : DEFAULT_CUSTOMER_LIMIT;
 
   let customers: Awaited<ReturnType<typeof getCustomers>> = [];
   let products: Awaited<ReturnType<typeof searchProductsPdv>> = [];
@@ -46,7 +58,7 @@ export default async function NewBudgetPage({
   if (step === BUDGET_FLOW_STEPS.customer) {
     customers = await getCustomers({
       search,
-      qtRegistros: 50,
+      qtRegistros: customerLimit,
       ...apiContext,
     });
   }
@@ -55,8 +67,8 @@ export default async function NewBudgetPage({
     products = await searchProductsPdv({
       search: search || undefined,
       customerId,
-      flagStock: 1,
-      limit: search ? 50 : 20,
+      flagStock,
+      limit: search ? Math.max(50, productLimit) : productLimit,
       ...apiContext,
     });
 
@@ -109,7 +121,11 @@ export default async function NewBudgetPage({
             orderId={orderId}
           >
             {step === BUDGET_FLOW_STEPS.customer && (
-              <StepCustomerSelect customers={customers} search={search} />
+              <StepCustomerSelect
+                customers={customers}
+                search={search}
+                customerLimit={customerLimit}
+              />
             )}
 
             {step === BUDGET_FLOW_STEPS.cart && effectiveCustomerId && (
@@ -119,6 +135,8 @@ export default async function NewBudgetPage({
                 search={search}
                 orderId={orderId}
                 customerId={effectiveCustomerId}
+                flagStock={flagStock}
+                productLimit={productLimit}
               />
             )}
 
