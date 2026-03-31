@@ -45,6 +45,8 @@ export default async function OrderListPage(props: OrderListPageProps) {
 
   try {
     orders = await getSaleOrders({
+      orderId: toOptionalNumber(currentFilters.orderId),
+      customerId: toOptionalNumber(currentFilters.customerId),
       sellerId: toOptionalNumber(currentFilters.sellerId),
       orderStatusId: toOptionalNumber(currentFilters.orderStatusId),
       financialStatusId: toOptionalNumber(currentFilters.financialStatusId),
@@ -72,16 +74,12 @@ export default async function OrderListPage(props: OrderListPageProps) {
       />
 
       <div className="flex flex-1 flex-col">
-        <div className="@container/main flex flex-1 flex-col gap-6">
-          <div className="flex flex-col gap-6 py-6">
-            <div className="px-4 lg:px-6">
-              <OrderListContent
-                orders={orders}
-                currentFilters={currentFilters}
-                defaultFilters={defaultFilters}
-              />
-            </div>
-          </div>
+        <div className="@container/main mx-auto w-full max-w-[1400px] flex-1 flex-col gap-6 px-4 lg:px-6 py-6">
+          <OrderListContent
+            orders={orders}
+            currentFilters={currentFilters}
+            defaultFilters={defaultFilters}
+          />
         </div>
       </div>
     </>

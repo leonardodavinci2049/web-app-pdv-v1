@@ -1,14 +1,14 @@
 import DevelopmentPage from "@/components/common/DevelopmentPage";
 import { SiteHeaderWithBreadcrumb } from "../../_components/header/site-header-with-breadcrumb";
 
-const Page = () => {
+const ProductsBestSellingPage = () => {
   return (
     <>
       <SiteHeaderWithBreadcrumb
         title="Dashboard"
         breadcrumbItems={[
           { label: "Dashboard", href: "#" },
-          { label: "Relatório de Produtos", isActive: true },
+          { label: "Produtos Mais Vendidos", isActive: true },
         ]}
       />
       <DevelopmentPage />
@@ -16,4 +16,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default ProductsBestSellingPage;
