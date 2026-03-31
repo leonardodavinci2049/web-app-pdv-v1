@@ -1,6 +1,6 @@
 import type { UIOrderReportListItem } from "@/services/api-main/order-reports/transformers/transformers";
-import { OrderCard } from "./order-card";
 import { OrderEmptyState } from "./order-empty-state";
+import { OrderTable } from "./order-table";
 
 interface OrderListGridProps {
   orders: UIOrderReportListItem[];
@@ -12,11 +12,5 @@ export function OrderListGrid({ orders, onClearFilters }: OrderListGridProps) {
     return <OrderEmptyState onClearFilters={onClearFilters} />;
   }
 
-  return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-      {orders.map((order) => (
-        <OrderCard key={order.orderId} order={order} />
-      ))}
-    </div>
-  );
+  return <OrderTable orders={orders} />;
 }

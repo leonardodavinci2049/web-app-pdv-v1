@@ -27,6 +27,8 @@ function getFiltersFromSearchParams(
 ): OrderListFiltersValues {
   return normalizeOrderListFilters(
     {
+      orderId: searchParams.get("orderId") ?? undefined,
+      customerId: searchParams.get("customerId") ?? undefined,
       sellerId: searchParams.get("sellerId") ?? undefined,
       orderStatusId: searchParams.get("orderStatusId") ?? undefined,
       financialStatusId: searchParams.get("financialStatusId") ?? undefined,
@@ -75,6 +77,8 @@ function countActiveFilters(
   defaultFilters: OrderListFiltersValues,
 ): number {
   return [
+    filters.orderId !== defaultFilters.orderId ? filters.orderId : "",
+    filters.customerId !== defaultFilters.customerId ? filters.customerId : "",
     filters.sellerId !== defaultFilters.sellerId ? filters.sellerId : "",
     filters.orderStatusId !== defaultFilters.orderStatusId
       ? filters.orderStatusId
@@ -123,6 +127,14 @@ export function OrderListContent({
 
   const updateFilters = (nextFilters: OrderListFiltersValues) => {
     const params = new URLSearchParams();
+
+    if (nextFilters.orderId !== defaultFilters.orderId) {
+      params.set("orderId", nextFilters.orderId);
+    }
+
+    if (nextFilters.customerId !== defaultFilters.customerId) {
+      params.set("customerId", nextFilters.customerId);
+    }
 
     if (nextFilters.sellerId !== defaultFilters.sellerId) {
       params.set("sellerId", nextFilters.sellerId);
@@ -182,26 +194,27 @@ export function OrderListContent({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <section className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between py-1">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">
             Listagem de pedidos
           </h1>
           <p className="text-muted-foreground text-sm max-w-2xl">
-            Consulte vendas recentes com filtros por vendedor, status,
-            localização e período.
+            Localize rapidamente vendas e orçamentos por ID, cliente ou status
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="rounded-lg border border-border/70 bg-card px-3 py-1.5 text-xs font-medium shadow-sm">
-            {orders.length} resultado{orders.length === 1 ? "" : "s"}
+            {orders.length} pedido{orders.length === 1 ? "" : "s"}
           </div>
-          <div className="rounded-lg border border-border/70 bg-card px-3 py-1.5 text-xs font-medium shadow-sm">
-            {activeFiltersCount} filtro{activeFiltersCount === 1 ? "" : "s"}{" "}
-            ativo{activeFiltersCount === 1 ? "" : "s"}
-          </div>
+          {activeFiltersCount > 0 && (
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-1.5 text-xs font-medium shadow-sm">
+              {activeFiltersCount} filtro{activeFiltersCount === 1 ? "" : "s"}{" "}
+              ativo{activeFiltersCount === 1 ? "" : "s"}
+            </div>
+          )}
         </div>
       </section>
 
