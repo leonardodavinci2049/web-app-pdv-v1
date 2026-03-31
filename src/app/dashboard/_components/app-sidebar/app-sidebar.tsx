@@ -86,9 +86,13 @@ const data = {
           title: "Catálogo",
           url: "/dashboard/product/catalog",
         },
+         {
+          title: "Lista de Produtos",
+          url: "/dashboard/product/product-list",
+        },       
         {
           title: "Mais Vendidos",
-          url: "src/app/dashboard/report/products-best-selling",
+          url: "/dashboard/product/products-best-selling",
         },
       ],
     },
