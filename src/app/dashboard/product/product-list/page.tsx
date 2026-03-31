@@ -1,19 +1,149 @@
-import DevelopmentPage from "@/components/common/DevelopmentPage";
-import { SiteHeaderWithBreadcrumb } from "../../_components/header/site-header-with-breadcrumb";
+import { connection } from "next/server";
+import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
+import { createLogger } from "@/core/logger";
+import { getAuthContext } from "@/server/auth-context";
+import { getBrands } from "@/services/api-main/brand/brand-cached-service";
+import { getProductsPdv } from "@/services/api-main/product-pdv/product-pdv-cached-service";
+import { getPtypes } from "@/services/api-main/ptype/ptype-cached-service";
+import { getTaxonomyMenu } from "@/services/api-main/taxonomy-base/taxonomy-base-cached-service";
+import type { UITaxonomyMenuItem } from "@/services/api-main/taxonomy-base/transformers/transformers";
+import { type CategoryOption, ProductListContent } from "./_components";
 
-const ProductListPage = () => {
+const logger = createLogger("ProductListPage");
+
+interface ProductListPageProps {
+  searchParams: Promise<{
+    search?: string;
+    category?: string;
+    brand?: string;
+    type?: string;
+    stock?: string;
+    sort?: string;
+    limit?: string;
+    page?: string;
+  }>;
+}
+
+function mapSortToApiParams(sortBy?: string): {
+  columnId: number;
+  orderId: number;
+} {
+  switch (sortBy) {
+    case "name-asc":
+      return { columnId: 1, orderId: 1 };
+    case "name-desc":
+      return { columnId: 1, orderId: 2 };
+    case "newest":
+      return { columnId: 2, orderId: 2 };
+    case "price-asc":
+      return { columnId: 3, orderId: 1 };
+    case "price-desc":
+      return { columnId: 3, orderId: 2 };
+    default:
+      return { columnId: 2, orderId: 2 };
+  }
+}
+
+function flattenMenuItems(
+  items: UITaxonomyMenuItem[],
+  allItems: UITaxonomyMenuItem[],
+  level: number = 1,
+): CategoryOption[] {
+  const result: CategoryOption[] = [];
+  for (const item of items) {
+    let displayName = item.name;
+    if (level === 2) displayName = `- ${item.name}`;
+    else if (level === 3) displayName = `-- ${item.name}`;
+
+    result.push({
+      id: item.id,
+      name: item.name,
+      level,
+      displayName,
+    });
+
+    const children = allItems.filter((child) => child.parentId === item.id);
+    if (children.length > 0) {
+      result.push(...flattenMenuItems(children, allItems, level + 1));
+    }
+  }
+  return result;
+}
+
+async function getCategories(
+  apiContext: Record<string, unknown>,
+): Promise<CategoryOption[]> {
+  try {
+    const menuItems = await getTaxonomyMenu(2, 0, apiContext);
+    const rootItems = menuItems.filter((item) => item.parentId === 0);
+    return flattenMenuItems(rootItems, menuItems);
+  } catch (error) {
+    logger.error("Erro ao buscar categorias:", error);
+    return [];
+  }
+}
+
+export default async function ProductListPage(props: ProductListPageProps) {
+  await connection();
+  const searchParams = await props.searchParams;
+  const { apiContext } = await getAuthContext();
+
+  const sort = mapSortToApiParams(searchParams.sort);
+  const limit = Number(searchParams.limit) || 20;
+
+  const [products, brands, categories, ptypes] = await Promise.all([
+    getProductsPdv({
+      search: searchParams.search,
+      taxonomyId: searchParams.category
+        ? Number(searchParams.category)
+        : undefined,
+      brandId: searchParams.brand ? Number(searchParams.brand) : undefined,
+      typeId: searchParams.type ? Number(searchParams.type) : undefined,
+      flagStock: searchParams.stock === "1" ? 1 : undefined,
+      recordsQuantity: limit,
+      pageId: Number(searchParams.page) || 0,
+      columnId: sort.columnId,
+      orderId: sort.orderId,
+      ...apiContext,
+    }),
+    getBrands({ limit: 100, ...apiContext }),
+    getCategories(apiContext),
+    getPtypes({ limit: 100, ...apiContext }),
+  ]);
+
   return (
     <>
       <SiteHeaderWithBreadcrumb
-        title="Dashboard"
+        title="Lista de Produtos"
         breadcrumbItems={[
-          { label: "Dashboard", href: "#" },
-          { label: "Lista de produtos", isActive: true },
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Produtos", href: "#" },
+          { label: "Lista", isActive: true },
         ]}
       />
-      <DevelopmentPage />
+
+      <div className="flex flex-1 flex-col">
+        <div className="@container/main mx-auto w-full max-w-[1400px] flex-1 flex-col gap-6 px-4 lg:px-6 py-6">
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-border/60 bg-card/95 p-4 shadow-sm sm:rounded-[28px] sm:p-5">
+              <div>
+                <h1 className="text-3xl font-bold">Lista de Produtos</h1>
+                <p className="text-muted-foreground mt-2">
+                  Gerencie e visualize todos os produtos do seu catálogo com
+                  filtros avançados.
+                </p>
+              </div>
+
+              <ProductListContent
+                products={products}
+                brands={brands}
+                categories={categories}
+                ptypes={ptypes}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
-};
-
-export default ProductListPage;
+}
