@@ -19,13 +19,13 @@ export function BackToCatalogButton() {
 
   const handleBackToCatalog = () => {
     // Navigate to catalog - filters will be restored from sessionStorage
-    router.push("/dashboard/product/catalog");
+    router.push("/dashboard/product/product-list");
   };
 
   return (
     <Button variant="outline" onClick={handleBackToCatalog}>
       <ArrowLeft className="mr-2 h-4 w-4" />
-      Voltar ao Catálogo
+      Voltar para o Catálogo
     </Button>
   );
 }
