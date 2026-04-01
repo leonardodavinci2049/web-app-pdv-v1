@@ -83,10 +83,6 @@ const data = {
       icon: BookOpen,
       items: [
         {
-          title: "Catálogo",
-          url: "/dashboard/product/catalog",
-        },
-        {
           title: "Lista de Produtos",
           url: "/dashboard/product/product-list",
         },
