@@ -1,3 +1,5 @@
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { SiteHeaderWithBreadcrumb } from "@/components/dashboard/header/site-header-with-breadcrumb";
@@ -8,15 +10,28 @@ import { CustomerDetailHeader } from "./_components/customer-detail-header";
 import { CustomerDetailSections } from "./_components/customer-detail-sections";
 import { CustomerSellerCard } from "./_components/customer-seller-card";
 
+const CUSTOMER_LIST_URL = "/dashboard/customer/customer-list";
+
+function resolveBackUrl(back: string | undefined): string {
+  if (back?.startsWith("/dashboard/customer/customer-list")) {
+    return back;
+  }
+  return CUSTOMER_LIST_URL;
+}
+
 export default async function CustomerDetailsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ back?: string }>;
 }) {
   await connection();
 
   const { apiContext } = await getAuthContext();
   const resolvedParams = await params;
+  const resolvedSearch = await searchParams;
+  const backUrl = resolveBackUrl(resolvedSearch.back);
   const customerId = Number(resolvedParams.id);
 
   if (Number.isNaN(customerId)) {
@@ -37,13 +52,23 @@ export default async function CustomerDetailsPage({
         title="Detalhes do Cliente"
         breadcrumbItems={[
           { label: "Dashboard", href: "/dashboard" },
-          { label: "Clientes", href: "/dashboard/customer/customer-list" },
+          { label: "Clientes", href: backUrl },
           { label: "Detalhes", isActive: true },
         ]}
       />
 
       <div className="flex flex-1 flex-col">
         <div className="@container/main mx-auto w-full max-w-[1400px] flex-1 flex-col gap-6 px-4 lg:px-6 py-6">
+          <div className="mb-4">
+            <Link
+              href={backUrl}
+              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar para a lista
+            </Link>
+          </div>
+
           <CustomerDetailHeader customer={customer} />
 
           <div className="grid gap-6 lg:grid-cols-[1fr,360px]">
@@ -60,12 +85,12 @@ export default async function CustomerDetailsPage({
                 </div>
 
                 <div className="space-y-3">
-                  <a
-                    href={`/dashboard/customer/customer-list`}
+                  <Link
+                    href={backUrl}
                     className="flex w-full items-center justify-center gap-2 rounded-xl border border-border/60 px-4 py-2.5 text-sm font-medium text-foreground transition-all hover:bg-primary/5 hover:border-primary/20"
                   >
                     Ver Todos os Clientes
-                  </a>
+                  </Link>
                 </div>
               </Card>
             </div>
