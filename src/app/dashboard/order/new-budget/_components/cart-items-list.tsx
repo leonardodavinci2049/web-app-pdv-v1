@@ -57,7 +57,7 @@ export function CartItemsList({
       <div
         className={cn(
           "space-y-3",
-          !isMobileVariant && "max-h-130 overflow-y-auto",
+          !isMobileVariant && "max-h-150 overflow-y-auto",
           isMobileVariant && "space-y-4",
         )}
       >
@@ -79,10 +79,10 @@ export function CartItemsList({
           Resumo parcial
         </span>
       </div>
-      <div className="flex justify-between gap-3">
+      {/* <div className="flex justify-between gap-3">
         <span className="text-muted-foreground">Subtotal</span>
         <span>{formatCurrency(Number(summary.subtotalValue))}</span>
-      </div>
+      </div> */}
       {Number(summary.discountValue) > 0 && (
         <div className="flex justify-between gap-3 text-green-600">
           <span>Desconto</span>
@@ -106,9 +106,9 @@ export function CartItemsList({
   if (isMobileVariant) {
     return (
       <div className="space-y-3">
-        <section className="rounded-[28px] border border-border/60 bg-card/95 p-3 shadow-sm">
+        {/* <section className="rounded-[28px] border border-border/60 bg-card/95 p-3 shadow-sm">
           <div className="space-y-4">{headerContent}</div>
-        </section>
+        </section> */}
 
         {itemsContent}
 
@@ -119,9 +119,9 @@ export function CartItemsList({
 
   return (
     <Card className="overflow-hidden border-border/60 bg-card/95 shadow-sm">
-      <CardHeader className="space-y-4 px-4 pt-4 pb-3">
+      {/* <CardHeader className="space-y-4 px-4 pt-4 pb-3">
         {headerContent}
-      </CardHeader>
+      </CardHeader> */}
       <CardContent className="space-y-4 px-3 pb-4">
         {itemsContent}
 
