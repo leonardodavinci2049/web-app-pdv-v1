@@ -49,15 +49,15 @@ export function MobileBottomBar({
   return (
     <>
       {/* Bottom Bar - mobile only */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 backdrop-blur-md xl:hidden">
-        <div className="flex items-center justify-around px-6 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/50 bg-background/80 backdrop-blur-lg xl:hidden">
+        <div className="flex items-center justify-around px-6 py-1.5 pb-[calc(0.35rem+env(safe-area-inset-bottom))]">
           {/* Menu button */}
           <button
             type="button"
             onClick={() => toggleSidebar()}
             className="flex flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground active:scale-95"
           >
-            <Menu className="h-6 w-6" />
+            <Menu className="h-5 w-5" />
             <span className="text-[10px] font-medium">Menu</span>
           </button>
 
@@ -68,7 +68,7 @@ export function MobileBottomBar({
             className="flex flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground active:scale-95"
           >
             <div className="relative">
-              <ShoppingCart className="h-6 w-6" />
+              <ShoppingCart className="h-5 w-5" />
               {itemCount > 0 && (
                 <Badge
                   variant="destructive"
@@ -154,7 +154,7 @@ export function MobileBottomBar({
       </Sheet>
 
       {/* Spacer to prevent content from being hidden behind the bottom bar */}
-      <div className="h-16 xl:hidden" />
+      <div className="h-14 xl:hidden" />
     </>
   );
 }
