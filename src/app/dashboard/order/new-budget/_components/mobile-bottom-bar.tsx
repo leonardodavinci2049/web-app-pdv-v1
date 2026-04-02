@@ -49,7 +49,7 @@ export function MobileBottomBar({
   return (
     <>
       {/* Bottom Bar - mobile only */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/50 bg-background/80 backdrop-blur-lg xl:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/50 bg-background/50 backdrop-blur-lg xl:hidden">
         <div className="flex items-center justify-around px-6 py-1.5 pb-[calc(0.35rem+env(safe-area-inset-bottom))]">
           {/* Menu button */}
           <button
