@@ -132,7 +132,7 @@ export function ProductListTable({ products }: ProductListTableProps) {
                 className="h-7 gap-1.5 rounded-lg text-xs text-muted-foreground hover:text-primary"
                 title="Ver detalhes"
               >
-                <Link href={`/dashboard/product/${product.id}`}>
+                <Link href={`/dashboard/product-details/${product.id}`}>
                   <Eye className="h-3.5 w-3.5" />
                   Detalhes
                 </Link>
@@ -149,7 +149,7 @@ export function ProductListTable({ products }: ProductListTableProps) {
             <TableRow>
               <TableHead className="w-20">Imagem</TableHead>
               <TableHead className="w-20">ID</TableHead>
-              <TableHead className="w-[400px]">Produto</TableHead>
+              <TableHead className="w-100">Produto</TableHead>
               <TableHead className="w-36">Marca / Tipo</TableHead>
               <TableHead className="w-60">Categorias</TableHead>
               <TableHead className="w-24">Estoque</TableHead>
@@ -170,7 +170,7 @@ export function ProductListTable({ products }: ProductListTableProps) {
                 </TableCell>
                 <TableCell className="overflow-hidden">
                   <div className="space-y-0.5">
-                    <p className="font-medium text-foreground break-words">
+                    <p className="font-medium text-foreground wrap-break-word">
                       {product.name}
                     </p>
                     {(product.ref || product.label) && (
@@ -232,7 +232,7 @@ export function ProductListTable({ products }: ProductListTableProps) {
                     className="h-8 w-8"
                     title="Ver detalhes"
                   >
-                    <Link href={`/dashboard/product/${product.id}`}>
+                    <Link href={`/dashboard/product-details/${product.id}`}>
                       <Eye className="h-4 w-4" />
                     </Link>
                   </Button>
