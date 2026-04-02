@@ -15,6 +15,15 @@ interface HeaderPDVProps {
   customerName: string | null;
 }
 
+function formatOrderStatus(orderStatus: string): string {
+  const normalizedStatus = orderStatus.toLocaleLowerCase("pt-BR");
+
+  return (
+    normalizedStatus.charAt(0).toLocaleUpperCase("pt-BR") +
+    normalizedStatus.slice(1)
+  );
+}
+
 function formatOrderDate(dateStr: string): string {
   const date = new Date(dateStr);
   return new Intl.DateTimeFormat("pt-BR", {
@@ -57,17 +66,9 @@ export function HeaderOrderSection({ details, customerName }: HeaderPDVProps) {
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center gap-3">
                     <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-                      Pedido #{details.orderId}
+                      {formatOrderStatus(details.orderStatus)} #
+                      {details.orderId}
                     </h2>
-
-                    {details.orderStatus && (
-                      <Badge
-                        variant="outline"
-                        className={`rounded-full border px-3 py-1 text-xs font-semibold shadow-sm ${getOrderStatusClassName(details.orderStatusId)}`}
-                      >
-                        {details.orderStatus}
-                      </Badge>
-                    )}
                   </div>
                 </div>
 
@@ -97,35 +98,6 @@ export function HeaderOrderSection({ details, customerName }: HeaderPDVProps) {
                 </p>
               </div>
             )}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            <Button
-              size="sm"
-              className="rounded-full bg-primary px-5 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 active:scale-[0.97] dark:shadow-primary/15 dark:hover:shadow-primary/25"
-              asChild
-            >
-              <Link href="/dashboard/order/new-budget">
-                <Plus className="h-4 w-4" />
-                Novo Orçamento
-              </Link>
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full border border-border bg-background/80 text-foreground hover:bg-accent"
-            >
-              <Settings2 className="h-4.5 w-4.5" />
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full border border-border bg-background/80 text-foreground hover:bg-accent"
-            >
-              <HelpCircle className="h-4.5 w-4.5" />
-            </Button>
           </div>
         </div>
       </div>
