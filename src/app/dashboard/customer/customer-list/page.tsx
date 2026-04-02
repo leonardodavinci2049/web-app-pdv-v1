@@ -49,9 +49,6 @@ export default async function CustomerListPage({
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold">Clientes</h2>
-                <p className="text-sm text-muted-foreground">
-                  Gerencie e visualize todos os clientes cadastrados
-                </p>
               </div>
               <Button asChild size="sm">
                 <Link href="/dashboard/customer/add-customer">

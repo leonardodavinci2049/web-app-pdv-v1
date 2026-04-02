@@ -31,16 +31,15 @@ export function StepPayment({
             </p>
             <div className="space-y-1">
               <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-                Confirme a forma de pagamento
+                Forma de pagamentos
               </h2>
             </div>
           </div>
 
           <div className="rounded-2xl border border-border/60 bg-background/80 px-4 py-3 shadow-xs">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Pedido atual
+              Pedido atual #{orderId}
             </p>
-            <p className="text-sm font-semibold text-foreground">#{orderId}</p>
           </div>
         </div>
       </section>
@@ -60,26 +59,6 @@ export function StepPayment({
             <CardTitle className="text-base">Resumo financeiro</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-border/60 bg-background/75 px-4 py-3 shadow-xs">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Itens
-                </p>
-                <p className="text-xl font-semibold text-foreground">
-                  {items.length}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border/60 bg-background/75 px-4 py-3 shadow-xs">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Total
-                </p>
-                <p className="text-xl font-semibold text-foreground">
-                  {formatCurrency(Number(summary?.totalOrderValue ?? 0))}
-                </p>
-              </div>
-            </div>
-
-            <Separator />
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-muted-foreground">
                 <span>Itens</span>
@@ -109,7 +88,6 @@ export function StepPayment({
                   )}
                   <Separator />
                   <div className="flex justify-between text-base font-bold">
-                    <span>Total</span>
                     <span>
                       {formatCurrency(Number(summary.totalOrderValue))}
                     </span>

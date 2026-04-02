@@ -23,7 +23,6 @@ const PAYMENT_METHODS = [
   { id: "4", label: "Cartão Crédito", icon: CreditCard },
   { id: "5", label: "Depósito", icon: Building2 },
   { id: "7", label: "Boleto", icon: FileText },
-  { id: "8", label: "Cheque", icon: Receipt },
 ];
 
 interface PaymentMethodSelectProps {
