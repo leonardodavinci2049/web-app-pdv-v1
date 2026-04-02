@@ -11,6 +11,8 @@ import { searchProductsPdv } from "@/services/api-main/product-pdv/product-pdv-c
 const logger = createLogger("new-budget-page");
 
 import { BudgetStepper } from "./_components/budget-stepper";
+import { CartItemsList } from "./_components/cart-items-list";
+import { MobileBottomBar } from "./_components/mobile-bottom-bar";
 import { StepCustomerSelect } from "./_components/step-customer-select";
 import { StepPayment } from "./_components/step-payment";
 import { StepProducts } from "./_components/step-products";
@@ -116,6 +118,12 @@ export default async function NewBudgetPage({
     }
   }
 
+  const cartItems = orderDashboard?.items ?? [];
+  const summary = orderDashboard?.summary;
+  const hasCartItems = cartItems.length > 0;
+
+  const showCartNextButton = step === BUDGET_FLOW_STEPS.cart;
+
   return (
     <div className="flex flex-1 flex-col">
       <SiteHeaderWithBreadcrumb
@@ -169,6 +177,27 @@ export default async function NewBudgetPage({
           </BudgetStepper>
         </div>
       </main>
+
+      <MobileBottomBar
+        itemCount={cartItems.length}
+        orderId={orderId}
+        customerId={effectiveCustomerId}
+        nextStep={showCartNextButton ? BUDGET_FLOW_STEPS.payment : undefined}
+        nextLabel={showCartNextButton ? "Selecionar Pagamento" : undefined}
+        disabled={showCartNextButton ? cartItems.length === 0 : undefined}
+      >
+        <CartItemsList
+          items={cartItems}
+          summary={summary}
+          orderId={orderId}
+          variant="mobile"
+          emptyMessage={
+            hasCartItems
+              ? "Nenhum item adicionado."
+              : "Selecione um produto para iniciar o carrinho."
+          }
+        />
+      </MobileBottomBar>
     </div>
   );
 }

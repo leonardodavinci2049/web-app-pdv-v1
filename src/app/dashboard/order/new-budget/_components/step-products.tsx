@@ -2,7 +2,6 @@ import type { UIOrderDashboard } from "@/services/api-main/order-sales/order-sal
 import type { UIProductPdv } from "@/services/api-main/product-pdv/transformers/transformers";
 import { BUDGET_FLOW_STEPS } from "../budget-flow";
 import { CartItemsList } from "./cart-items-list";
-import { MobileCartSheet } from "./mobile-cart-sheet";
 import { ProductList } from "./product-list";
 import { ProductLoadMore } from "./product-load-more";
 import { ProductSearchInput } from "./product-search-input";
@@ -90,28 +89,6 @@ export function StepProducts({
           )}
         </div>
       </div>
-
-      {/* Mobile cart sheet with bottom bar */}
-      <MobileCartSheet
-        itemCount={cartItems.length}
-        orderId={orderId}
-        customerId={customerId}
-        nextStep={BUDGET_FLOW_STEPS.payment}
-        nextLabel="Selecionar Pagamento"
-        disabled={cartItems.length === 0}
-      >
-        <CartItemsList
-          items={cartItems}
-          summary={summary}
-          orderId={orderId}
-          variant="mobile"
-          emptyMessage={
-            hasOrder
-              ? "Nenhum item adicionado."
-              : "Selecione o primeiro produto para criar o orçamento e iniciar o carrinho."
-          }
-        />
-      </MobileCartSheet>
     </div>
   );
 }
