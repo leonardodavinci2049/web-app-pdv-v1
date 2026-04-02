@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { addItemAction } from "../actions/add-item-action";
 import { BUDGET_FLOW_STEPS } from "../budget-flow";
 
+const ADD_ITEM_SUCCESS_TOAST_DURATION_MS = 1000;
+
 interface ProductAddButtonProps {
   productId: number;
   productName: string;
@@ -57,7 +59,9 @@ export function ProductAddButton({
     prevStateRef.current = state;
 
     if (state?.success) {
-      toast.success(state.message);
+      toast.success(state.message, {
+        duration: ADD_ITEM_SUCCESS_TOAST_DURATION_MS,
+      });
       setQuantity("1");
 
       const nextOrderId = Number(state.data?.orderId);
