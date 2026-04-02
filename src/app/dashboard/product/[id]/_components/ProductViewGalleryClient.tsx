@@ -5,6 +5,11 @@ import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import {
+  createImageErrorHandler,
+  DEFAULT_PRODUCT_IMAGE,
+  getValidImageUrl,
+} from "@/utils/image-utils";
 
 interface GalleryImage {
   id: string;
@@ -26,6 +31,8 @@ export function ProductViewGalleryClient({
 }: ProductViewGalleryClientProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
+  const imageErrorHandlers = createImageErrorHandler(DEFAULT_PRODUCT_IMAGE);
+  const resolvedFallbackImage = getValidImageUrl(fallbackImage);
 
   const images =
     initialImages.length > 0
@@ -33,10 +40,10 @@ export function ProductViewGalleryClient({
       : [
           {
             id: "fallback",
-            url: fallbackImage || "/images/no-image.jpeg",
-            originalUrl: fallbackImage,
-            mediumUrl: fallbackImage,
-            previewUrl: fallbackImage,
+            url: resolvedFallbackImage,
+            originalUrl: resolvedFallbackImage,
+            mediumUrl: resolvedFallbackImage,
+            previewUrl: resolvedFallbackImage,
             isPrimary: true,
           },
         ];
@@ -54,11 +61,12 @@ export function ProductViewGalleryClient({
     <div className="flex flex-col gap-4">
       <div className="relative aspect-square bg-slate-50 dark:bg-slate-900 rounded-lg overflow-hidden border group">
         <Image
-          src={currentImage?.url || "/images/no-image.jpeg"}
+          src={getValidImageUrl(currentImage?.url)}
           alt="Product image"
           fill
           className="object-contain p-4"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          onError={imageErrorHandlers.onError}
         />
 
         {images.length > 1 && (
@@ -106,11 +114,12 @@ export function ProductViewGalleryClient({
               }`}
             >
               <Image
-                src={img.url || "/images/no-image.jpeg"}
+                src={getValidImageUrl(img.url)}
                 alt={`Thumbnail ${idx + 1}`}
                 fill
                 className="object-cover"
                 sizes="100px"
+                onError={imageErrorHandlers.onError}
               />
             </button>
           ))}
@@ -134,16 +143,15 @@ export function ProductViewGalleryClient({
 
             <div className="relative w-full h-full p-4">
               <Image
-                src={
-                  currentImage?.originalUrl ||
-                  currentImage?.url ||
-                  "/images/no-image.jpeg"
-                }
+                src={getValidImageUrl(
+                  currentImage?.originalUrl || currentImage?.url,
+                )}
                 alt="Product image zoom"
                 fill
                 className="object-contain"
                 sizes="100vw"
                 quality={100}
+                onError={imageErrorHandlers.onError}
               />
             </div>
 

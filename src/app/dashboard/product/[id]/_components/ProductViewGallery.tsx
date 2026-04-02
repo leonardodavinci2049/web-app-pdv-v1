@@ -1,6 +1,7 @@
 import { createLogger } from "@/core/logger";
 import { assetsApiService } from "@/services/api-assets/assets-api-service";
 import { isApiError } from "@/types/api-assets";
+import { getValidImageUrl } from "@/utils/image-utils";
 import { ProductViewGalleryClient } from "./ProductViewGalleryClient";
 
 const logger = createLogger("ProductViewGallery");
@@ -14,6 +15,17 @@ export async function ProductViewGallery({
   productId,
   fallbackImage,
 }: ProductViewGalleryProps) {
+  const resolvedFallbackImage = getValidImageUrl(fallbackImage);
+
+  const fallbackGalleryImage = {
+    id: "fallback",
+    url: resolvedFallbackImage,
+    originalUrl: resolvedFallbackImage,
+    mediumUrl: resolvedFallbackImage,
+    previewUrl: resolvedFallbackImage,
+    isPrimary: true,
+  };
+
   try {
     const galleryResponse = await assetsApiService.getEntityGallery({
       entityType: "PRODUCT",
@@ -26,17 +38,8 @@ export async function ProductViewGallery({
       );
       return (
         <ProductViewGalleryClient
-          initialImages={[
-            {
-              id: "fallback",
-              url: fallbackImage,
-              originalUrl: fallbackImage,
-              mediumUrl: fallbackImage,
-              previewUrl: fallbackImage,
-              isPrimary: true,
-            },
-          ]}
-          fallbackImage={fallbackImage}
+          initialImages={[fallbackGalleryImage]}
+          fallbackImage={resolvedFallbackImage}
         />
       );
     }
@@ -65,17 +68,8 @@ export async function ProductViewGallery({
     if (galleryImages.length === 0) {
       return (
         <ProductViewGalleryClient
-          initialImages={[
-            {
-              id: "fallback",
-              url: fallbackImage,
-              originalUrl: fallbackImage,
-              mediumUrl: fallbackImage,
-              previewUrl: fallbackImage,
-              isPrimary: true,
-            },
-          ]}
-          fallbackImage={fallbackImage}
+          initialImages={[fallbackGalleryImage]}
+          fallbackImage={resolvedFallbackImage}
         />
       );
     }
@@ -83,7 +77,7 @@ export async function ProductViewGallery({
     return (
       <ProductViewGalleryClient
         initialImages={galleryImages}
-        fallbackImage={fallbackImage}
+        fallbackImage={resolvedFallbackImage}
       />
     );
   } catch (error) {
@@ -93,17 +87,8 @@ export async function ProductViewGallery({
     );
     return (
       <ProductViewGalleryClient
-        initialImages={[
-          {
-            id: "fallback",
-            url: fallbackImage,
-            originalUrl: fallbackImage,
-            mediumUrl: fallbackImage,
-            previewUrl: fallbackImage,
-            isPrimary: true,
-          },
-        ]}
-        fallbackImage={fallbackImage}
+        initialImages={[fallbackGalleryImage]}
+        fallbackImage={resolvedFallbackImage}
       />
     );
   }
