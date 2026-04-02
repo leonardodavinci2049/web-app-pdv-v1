@@ -98,35 +98,7 @@ export function HeaderOrderSection({ details, customerName }: HeaderPDVProps) {
               </div>
             )}
           </div>
-
-          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            <Button
-              size="sm"
-              className="rounded-full bg-primary px-5 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 active:scale-[0.97] dark:shadow-primary/15 dark:hover:shadow-primary/25"
-              asChild
-            >
-              <Link href="/dashboard/order/new-budget">
-                <Plus className="h-4 w-4" />
-                Novo Orçamento
-              </Link>
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full border border-border bg-background/80 text-foreground hover:bg-accent"
-            >
-              <Settings2 className="h-4.5 w-4.5" />
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full border border-border bg-background/80 text-foreground hover:bg-accent"
-            >
-              <HelpCircle className="h-4.5 w-4.5" />
-            </Button>
-          </div>
+   
         </div>
       </div>
     </header>
