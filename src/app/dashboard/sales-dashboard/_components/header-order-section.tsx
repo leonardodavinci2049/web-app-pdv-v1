@@ -15,6 +15,15 @@ interface HeaderPDVProps {
   customerName: string | null;
 }
 
+function formatOrderStatus(orderStatus: string): string {
+  const normalizedStatus = orderStatus.toLocaleLowerCase("pt-BR");
+
+  return (
+    normalizedStatus.charAt(0).toLocaleUpperCase("pt-BR") +
+    normalizedStatus.slice(1)
+  );
+}
+
 function formatOrderDate(dateStr: string): string {
   const date = new Date(dateStr);
   return new Intl.DateTimeFormat("pt-BR", {
@@ -57,17 +66,9 @@ export function HeaderOrderSection({ details, customerName }: HeaderPDVProps) {
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center gap-3">
                     <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-                      Pedido #{details.orderId}
+                      {formatOrderStatus(details.orderStatus)} #
+                      {details.orderId}
                     </h2>
-
-                    {details.orderStatus && (
-                      <Badge
-                        variant="outline"
-                        className={`rounded-full border px-3 py-1 text-xs font-semibold shadow-sm ${getOrderStatusClassName(details.orderStatusId)}`}
-                      >
-                        {details.orderStatus}
-                      </Badge>
-                    )}
                   </div>
                 </div>
 
@@ -98,7 +99,6 @@ export function HeaderOrderSection({ details, customerName }: HeaderPDVProps) {
               </div>
             )}
           </div>
-   
         </div>
       </div>
     </header>
