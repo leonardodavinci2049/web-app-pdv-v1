@@ -101,7 +101,6 @@ export function MobileBottomBar({
                     </Badge>
                   )}
                 </SheetTitle>
- 
               </div>
 
               <Button
