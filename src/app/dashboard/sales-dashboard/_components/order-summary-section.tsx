@@ -1,6 +1,4 @@
 import { Tag, WalletCards } from "lucide-react";
-
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import type { UIOrderSalesSummary } from "@/services/api-main/order-sales/transformers/transformers";
 import { formatCurrency } from "@/utils/common-utils";

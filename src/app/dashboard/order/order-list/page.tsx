@@ -73,8 +73,8 @@ export default async function OrderListPage(props: OrderListPageProps) {
         ]}
       />
 
-      <div className="flex flex-1 flex-col">
-        <div className="@container/main mx-auto w-full max-w-[1400px] flex-1 flex-col gap-6 px-4 lg:px-6 py-6">
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="@container/main mx-auto w-full max-w-[1400px] flex-1 flex-col gap-6 px-4 lg:px-6 py-6 overflow-hidden">
           <OrderListContent
             orders={orders}
             currentFilters={currentFilters}

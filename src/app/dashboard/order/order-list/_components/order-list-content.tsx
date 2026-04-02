@@ -200,9 +200,6 @@ export function OrderListContent({
           <h1 className="text-2xl font-semibold tracking-tight">
             Listagem de pedidos
           </h1>
-          <p className="text-muted-foreground text-sm max-w-2xl">
-            Localize rapidamente vendas e orçamentos por ID, cliente ou status
-          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">

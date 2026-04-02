@@ -1,18 +1,14 @@
 "use client";
 
-import {
-  ChevronDown,
-  Filter,
-  RotateCcw,
-  SlidersHorizontal,
-} from "lucide-react";
+import { Filter, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -31,7 +27,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
 import type {
   OrderListFiltersValues,
   OrderListStatusOption,
@@ -108,18 +103,6 @@ function QuickFilters({
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="initialDate">Data inicial</Label>
-        <Input
-          id="initialDate"
-          type="date"
-          value={filters.initialDate}
-          onChange={(event) =>
-            onFilterChange("initialDate", event.target.value)
-          }
-        />
       </div>
     </div>
   );
@@ -206,6 +189,18 @@ function AdvancedFilters({
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="initialDate">Data inicial</Label>
+        <Input
+          id="initialDate"
+          type="date"
+          value={filters.initialDate}
+          onChange={(event) =>
+            onFilterChange("initialDate", event.target.value)
+          }
+        />
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="finalDate">Data final</Label>
         <Input
           id="finalDate"
@@ -228,7 +223,6 @@ export function OrderListFilters({
   onApplyFilters,
   onClearFilters,
 }: OrderListFiltersProps) {
-  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   const handleApply = () => {
@@ -247,9 +241,6 @@ export function OrderListFilters({
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold tracking-tight">Filtros</h2>
-            <p className="text-muted-foreground text-sm">
-              Localize pedidos rapidamente por ID, cliente ou status
-            </p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -311,45 +302,35 @@ export function OrderListFilters({
           </div>
         </div>
 
-        <QuickFilters
-          filters={filters}
-          orderStatusOptions={orderStatusOptions}
-          onFilterChange={onFilterChange}
-        />
+        <div className="hidden md:block">
+          <QuickFilters
+            filters={filters}
+            orderStatusOptions={orderStatusOptions}
+            onFilterChange={onFilterChange}
+          />
+        </div>
 
-        <Collapsible
-          open={isAdvancedOpen}
-          onOpenChange={setIsAdvancedOpen}
-          className="hidden md:block"
+        <Accordion
+          type="single"
+          collapsible
+          className="hidden md:block border-none"
         >
-          <div className="flex items-center justify-between">
-            <CollapsibleTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <SlidersHorizontal className="size-4 mr-2" />
+          <AccordionItem value="advanced-filters" className="border-none">
+            <AccordionTrigger className="py-2 text-muted-foreground hover:text-foreground hover:no-underline">
+              <span className="flex items-center gap-2 text-sm">
+                <SlidersHorizontal className="size-4" />
                 Filtros avançados
-                <ChevronDown
-                  className={cn(
-                    "size-4 ml-2 transition-transform",
-                    isAdvancedOpen && "rotate-180",
-                  )}
-                />
-              </Button>
-            </CollapsibleTrigger>
-          </div>
-
-          <CollapsibleContent className="mt-4">
-            <AdvancedFilters
-              filters={filters}
-              financialStatusOptions={financialStatusOptions}
-              onFilterChange={onFilterChange}
-            />
-          </CollapsibleContent>
-        </Collapsible>
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <AdvancedFilters
+                filters={filters}
+                financialStatusOptions={financialStatusOptions}
+                onFilterChange={onFilterChange}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         <form
           className="hidden md:flex md:flex-col"

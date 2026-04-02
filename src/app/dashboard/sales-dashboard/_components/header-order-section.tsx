@@ -1,13 +1,4 @@
-import {
-  CalendarDays,
-  HelpCircle,
-  Plus,
-  Settings2,
-  UserRound,
-} from "lucide-react";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { CalendarDays, UserRound } from "lucide-react";
 import type { UIOrderDashboardDetails } from "@/services/api-main/order-sales/transformers/transformers";
 
 interface HeaderPDVProps {
@@ -33,7 +24,7 @@ function formatOrderDate(dateStr: string): string {
   }).format(date);
 }
 
-function getOrderStatusClassName(orderStatusId: number): string {
+function _getOrderStatusClassName(orderStatusId: number): string {
   switch (orderStatusId) {
     case 22:
       return "border-border bg-secondary text-secondary-foreground";
