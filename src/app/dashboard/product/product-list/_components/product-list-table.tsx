@@ -132,7 +132,7 @@ export function ProductListTable({ products }: ProductListTableProps) {
                 className="h-7 gap-1.5 rounded-lg text-xs text-muted-foreground hover:text-primary"
                 title="Ver detalhes"
               >
-                <Link href={`/dashboard/product-details/${product.id}`}>
+                <Link href={`/dashboard/product/${product.id}`}>
                   <Eye className="h-3.5 w-3.5" />
                   Detalhes
                 </Link>
@@ -232,7 +232,7 @@ export function ProductListTable({ products }: ProductListTableProps) {
                     className="h-8 w-8"
                     title="Ver detalhes"
                   >
-                    <Link href={`/dashboard/product-details/${product.id}`}>
+                    <Link href={`/dashboard/product/${product.id}`}>
                       <Eye className="h-4 w-4" />
                     </Link>
                   </Button>
