@@ -101,9 +101,7 @@ export function MobileBottomBar({
                     </Badge>
                   )}
                 </SheetTitle>
-                <SheetDescription>
-                  Revise os itens adicionados ao orçamento.
-                </SheetDescription>
+ 
               </div>
 
               <Button
@@ -142,7 +140,7 @@ export function MobileBottomBar({
                 </div>
               ) : (
                 <Button asChild className="h-11 w-full rounded-2xl">
-                  <Link href={href}>
+                  <Link href={href} onClick={() => setCartOpen(false)}>
                     {nextLabel}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
