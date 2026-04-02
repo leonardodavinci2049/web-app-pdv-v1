@@ -1,6 +1,6 @@
 import { ShoppingCart } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import type {
@@ -28,7 +28,7 @@ export function CartItemsList({
 }: CartItemsListProps) {
   const isMobileVariant = variant === "mobile";
 
-  const headerContent = (
+  const _headerContent = (
     <>
       <div className="flex items-start justify-between gap-4">
         {orderId && !isMobileVariant && (

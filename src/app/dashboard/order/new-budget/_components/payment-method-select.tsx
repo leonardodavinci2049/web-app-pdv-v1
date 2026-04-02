@@ -8,7 +8,6 @@ import {
   FileText,
   Loader2,
   QrCode,
-  Receipt,
 } from "lucide-react";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
