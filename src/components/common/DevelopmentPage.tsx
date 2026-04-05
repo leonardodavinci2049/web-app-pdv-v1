@@ -4,7 +4,7 @@ import {
   Code2,
   Coffee,
   Construction,
-  Github,
+  GitBranch,
   Rocket,
   Zap,
 } from "lucide-react";
@@ -191,7 +191,7 @@ const DevelopmentPage = () => {
             </Link>
           </Button>
           <Button variant="default" className="group">
-            <Github className="h-4 w-4 transition-transform duration-200 group-hover:rotate-12" />
+            <GitBranch className="h-4 w-4 transition-transform duration-200 group-hover:rotate-12" />
             Acompanhar Progresso
           </Button>
         </div>
