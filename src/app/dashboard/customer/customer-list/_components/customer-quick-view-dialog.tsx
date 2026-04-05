@@ -42,15 +42,12 @@ export function CustomerQuickViewDialog({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <button
-          type="button"
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => e.stopPropagation()}
-          className="appearance-none border-0 bg-transparent p-0 text-left"
-        >
-          {trigger}
-        </button>
+      <DialogTrigger
+        asChild
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        {trigger}
       </DialogTrigger>
       <DialogContent className="max-w-sm gap-0 overflow-hidden p-0">
         <div className="flex flex-col items-center gap-3 overflow-hidden bg-muted/30 px-6 pt-6 pb-4">
