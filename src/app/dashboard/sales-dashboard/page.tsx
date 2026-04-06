@@ -8,6 +8,7 @@ import {
 import { CustomerSection } from "./_components/customer-section";
 import { HeaderOrderSection } from "./_components/header-order-section";
 import { OrderActionsSection } from "./_components/order-actions-section";
+import { OrderEditSection } from "./_components/order-edit-section";
 import { OrderItemsSection } from "./_components/order-items-section";
 import { OrderLoadErrorState } from "./_components/order-load-error-state";
 import { OrderSummarySection } from "./_components/order-summary-section";
@@ -93,6 +94,7 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
                         customer={dashboardData?.customer ?? null}
                       />
                     }
+                    orderEditContent={<OrderEditSection />}
                   />
                 </main>
 

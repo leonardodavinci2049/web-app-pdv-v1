@@ -60,6 +60,7 @@ export interface UIOrderCustomer {
   country: string;
   municipalityCode: number;
   stateCode: number;
+  notes: string;
 }
 
 export interface UIOrderDelivery {
@@ -182,17 +183,24 @@ export interface UIOrderDashboardDetails {
   cartId: number;
   carrierId: number;
   wholesaleFlag: number;
-  deliveryStatusId: number;
+  discountValue: string;
+  freightValue: string;
+  stockStatusId: number;
   orderStatusId: number;
   financialStatusId: number;
+  deliveryStatusId: number;
   orderStatus: string;
   financialStatus: string;
   deliveryStatus: string;
+  stockStatus: string;
   orderDate: string | null;
   saleDate: string | null;
   pickupDate: string | null;
+  stockDate: string | null;
+  paymentDate: string | null;
   deliveryDate: string | null;
   createdAt: string;
+  notes: string;
 }
 
 export interface UIOrderDashboardItem {
@@ -289,6 +297,7 @@ export function transformCustomerEntity(
     country: entity.PAIS,
     municipalityCode: entity.COD_MUNICIPIO,
     stateCode: entity.COD_UF,
+    notes: entity.ANOTACOES,
   };
 }
 
@@ -441,17 +450,24 @@ export function transformDashboardDetailsEntity(
     cartId: entity.ID_CARRINHO,
     carrierId: entity.ID_TRANSPORTADORA,
     wholesaleFlag: entity.FLAG_VENDA_ATACADO,
-    deliveryStatusId: entity.ID_STATUS_ENTREGA,
+    discountValue: entity.VL_DESCONTO,
+    freightValue: entity.VL_FRETE,
+    stockStatusId: entity.ID_STATUS_ESTOQUE,
     orderStatusId: entity.ID_STATUS_PEDIDO,
     financialStatusId: entity.ID_STATUS_FINANCEIRO,
+    deliveryStatusId: entity.ID_STATUS_ENTREGA,
     orderStatus: entity.STATUS_PEDIDO,
     financialStatus: entity.STATUS_FINANCEIRO,
     deliveryStatus: entity.STATUS_ENTREGA,
+    stockStatus: entity.STATUS_ESTOQUE,
     orderDate: entity.DATA_PEDIDO,
     saleDate: entity.DATA_VENDA,
     pickupDate: entity.DATA_RETIRADA,
+    stockDate: entity.DATA_ESTOQUE,
+    paymentDate: entity.DATA_PAGAMENTO,
     deliveryDate: entity.DATA_ENTREGA,
     createdAt: entity.DATADOCADASTRO,
+    notes: entity.ANOTACOES,
   };
 }
 

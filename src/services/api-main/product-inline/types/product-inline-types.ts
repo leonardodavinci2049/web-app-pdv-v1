@@ -21,12 +21,14 @@ interface ProductInlineBaseResponse {
   info1?: string;
 }
 
-export interface UpdateProductBrandInlineRequest extends ProductInlineBaseRequest {
+export interface UpdateProductBrandInlineRequest
+  extends ProductInlineBaseRequest {
   pe_product_id: number;
   pe_brand_id: number;
 }
 
-export interface UpdateProductFieldInlineRequest extends ProductInlineBaseRequest {
+export interface UpdateProductFieldInlineRequest
+  extends ProductInlineBaseRequest {
   pe_register_id: number;
   pe_field_type: 1 | 2 | 3 | 4;
   pe_field: string;
@@ -36,42 +38,50 @@ export interface UpdateProductFieldInlineRequest extends ProductInlineBaseReques
   pe_value_date?: string | null;
 }
 
-export interface UpdateProductDescriptionInlineRequest extends ProductInlineBaseRequest {
+export interface UpdateProductDescriptionInlineRequest
+  extends ProductInlineBaseRequest {
   pe_product_id: number;
   pe_product_description: string;
 }
 
-export interface UpdateProductNameInlineRequest extends ProductInlineBaseRequest {
+export interface UpdateProductNameInlineRequest
+  extends ProductInlineBaseRequest {
   pe_product_id: number;
   pe_product_name: string;
 }
 
-export interface UpdateProductImagePathInlineRequest extends ProductInlineBaseRequest {
+export interface UpdateProductImagePathInlineRequest
+  extends ProductInlineBaseRequest {
   pe_product_id: number;
   pe_path_imagem: string;
 }
 
-export interface UpdateProductShortDescriptionInlineRequest extends ProductInlineBaseRequest {
+export interface UpdateProductShortDescriptionInlineRequest
+  extends ProductInlineBaseRequest {
   pe_product_id: number;
   pe_descricao_curta: string;
 }
 
-export interface UpdateProductStockMinInlineRequest extends ProductInlineBaseRequest {
+export interface UpdateProductStockMinInlineRequest
+  extends ProductInlineBaseRequest {
   pe_product_id: number;
   pe_stock_min: number;
 }
 
-export interface UpdateProductStockInlineRequest extends ProductInlineBaseRequest {
+export interface UpdateProductStockInlineRequest
+  extends ProductInlineBaseRequest {
   pe_product_id: number;
   pe_stock: number;
 }
 
-export interface UpdateProductTypeInlineRequest extends ProductInlineBaseRequest {
+export interface UpdateProductTypeInlineRequest
+  extends ProductInlineBaseRequest {
   pe_product_id: number;
   pe_type_id: number;
 }
 
-export interface UpdateProductVariousInlineRequest extends ProductInlineBaseRequest {
+export interface UpdateProductVariousInlineRequest
+  extends ProductInlineBaseRequest {
   pe_product_id: number;
   pe_termo: string;
 }
@@ -86,7 +96,8 @@ export interface ProductInlineResponse extends ProductInlineBaseResponse {
   data: StoredProcedureResponse[];
 }
 
-export interface UpdateProductFieldInlineResponse extends ProductInlineBaseResponse {
+export interface UpdateProductFieldInlineResponse
+  extends ProductInlineBaseResponse {
   data: StoredProcedureResponse[];
 }
 
