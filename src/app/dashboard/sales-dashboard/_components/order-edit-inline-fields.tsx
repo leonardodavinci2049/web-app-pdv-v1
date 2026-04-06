@@ -1,0 +1,288 @@
+"use client";
+
+import {
+  Check,
+  FileText,
+  Loader2,
+  PencilLine,
+  Percent,
+  Truck,
+  X,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import type { UIOrderDashboardDetails } from "@/services/api-main/order-sales/transformers/transformers";
+import { updateOrderInlineFieldAction } from "../actions/update-order-inline-field-action";
+
+type EditableFieldKey = "VL_FRETE" | "VL_DESCONTO" | "ANOTACOES";
+
+type FormValues = Record<EditableFieldKey, string>;
+
+const PRICE_FIELDS = [
+  {
+    key: "VL_FRETE" as const,
+    icon: Truck,
+    label: "Valor do frete",
+    description: "Atualize inline o frete do pedido e salve sem sair da guia.",
+  },
+  {
+    key: "VL_DESCONTO" as const,
+    icon: Percent,
+    label: "Valor do desconto",
+    description:
+      "Ajuste o desconto geral do pedido com persistencia imediata por campo.",
+  },
+] as const;
+
+const ORDER_NOTES = {
+  key: "ANOTACOES" as const,
+  icon: FileText,
+  label: "Anotacoes do pedido",
+  description:
+    "Edite observacoes operacionais e comerciais diretamente nesta area.",
+} as const;
+
+function getFieldValue(value: string | null | undefined): string {
+  return value?.trim() ?? "";
+}
+
+function getInitialValues(details: UIOrderDashboardDetails | null): FormValues {
+  return {
+    VL_FRETE: getFieldValue(details?.freightValue),
+    VL_DESCONTO: getFieldValue(details?.discountValue),
+    ANOTACOES: getFieldValue(details?.notes),
+  };
+}
+
+interface OrderEditInlineFieldsProps {
+  details: UIOrderDashboardDetails | null;
+}
+
+export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
+  const router = useRouter();
+  const [activeField, setActiveField] = useState<EditableFieldKey | null>(null);
+  const [pendingField, setPendingField] = useState<EditableFieldKey | null>(
+    null,
+  );
+  const [values, setValues] = useState<FormValues>(() =>
+    getInitialValues(details),
+  );
+  const [isPending, startTransition] = useTransition();
+
+  const initialValues = getInitialValues(details);
+  const canEdit = Boolean(details?.orderId);
+
+  useEffect(() => {
+    setValues(getInitialValues(details));
+  }, [details]);
+
+  function handleValueChange(field: EditableFieldKey, value: string) {
+    setValues((currentValues) => ({
+      ...currentValues,
+      [field]: value,
+    }));
+  }
+
+  function handleEdit(field: EditableFieldKey) {
+    if (!canEdit || isPending) {
+      return;
+    }
+
+    if (activeField && activeField !== field) {
+      setValues((currentValues) => ({
+        ...currentValues,
+        [activeField]: initialValues[activeField],
+      }));
+    }
+
+    setActiveField(field);
+  }
+
+  function handleCancel(field: EditableFieldKey) {
+    setValues((currentValues) => ({
+      ...currentValues,
+      [field]: initialValues[field],
+    }));
+    setActiveField((currentField) =>
+      currentField === field ? null : currentField,
+    );
+  }
+
+  function handleSave(field: EditableFieldKey) {
+    if (!details?.orderId) {
+      toast.error("Pedido invalido para atualizacao inline");
+      return;
+    }
+
+    startTransition(async () => {
+      setPendingField(field);
+
+      try {
+        const result = await updateOrderInlineFieldAction(
+          details.orderId,
+          field,
+          values[field],
+        );
+
+        if (!result.success) {
+          toast.error(result.message);
+          return;
+        }
+
+        toast.success(result.message);
+        setActiveField(null);
+        router.refresh();
+      } catch (_error) {
+        toast.error("Erro inesperado ao atualizar o pedido");
+      } finally {
+        setPendingField(null);
+      }
+    });
+  }
+
+  function renderActions(field: EditableFieldKey) {
+    const isEditing = activeField === field;
+    const isSaving = isPending && pendingField === field;
+
+    if (!isEditing) {
+      return (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={!canEdit || isPending}
+          className="rounded-full"
+          onClick={() => handleEdit(field)}
+        >
+          <PencilLine className="h-4 w-4" />
+          Editar
+        </Button>
+      );
+    }
+
+    return (
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={isSaving}
+          className="rounded-full"
+          onClick={() => handleCancel(field)}
+        >
+          <X className="h-4 w-4" />
+          Cancelar
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          disabled={isSaving}
+          className="rounded-full"
+          onClick={() => handleSave(field)}
+        >
+          {isSaving ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Salvando...
+            </>
+          ) : (
+            <>
+              <Check className="h-4 w-4" />
+              Salvar
+            </>
+          )}
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4 px-5 py-5 md:px-6 md:py-6">
+      <div className="rounded-3xl border border-border/70 bg-background/75 p-4 shadow-sm dark:bg-white/3 md:p-5">
+        <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+          <PencilLine className="h-4 w-4" />
+          Frete e desconto
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {PRICE_FIELDS.map((field) => {
+            const Icon = field.icon;
+            const inputId = `order-inline-${field.key.toLowerCase()}`;
+            const isEditing = activeField === field.key;
+
+            return (
+              <div
+                key={field.key}
+                className={cn(
+                  "rounded-2xl border border-border/70 bg-muted/30 p-4 dark:bg-white/2",
+                  isEditing &&
+                    "border-primary/40 bg-primary/[0.04] dark:bg-primary/10",
+                )}
+              >
+                <Label
+                  htmlFor={inputId}
+                  className="flex items-center gap-2 text-sm font-semibold text-foreground"
+                >
+                  <Icon className="h-4 w-4 text-primary" />
+                  {field.label}
+                </Label>
+         
+                <Input
+                  id={inputId}
+                  type="text"
+                  inputMode="decimal"
+                  readOnly={!isEditing}
+                  value={values[field.key]}
+                  placeholder="Sem valor informado"
+                  className="mt-3 h-11 rounded-xl border-border/70 bg-background/80 text-sm shadow-none dark:bg-background/40"
+                  onChange={(event) =>
+                    handleValueChange(field.key, event.target.value)
+                  }
+                />
+                <div className="mt-3 flex justify-end">
+                  {renderActions(field.key)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="rounded-3xl border border-border/70 bg-background/75 p-4 shadow-sm dark:bg-white/3 md:p-5">
+        <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+          <FileText className="h-4 w-4" />
+          Anotacoes do pedido
+        </div>
+
+        <div
+          className={cn(
+            "rounded-2xl border border-border/70 bg-muted/30 p-4 dark:bg-white/2",
+            activeField === ORDER_NOTES.key &&
+              "border-primary/40 bg-primary/[0.04] dark:bg-primary/10",
+          )}
+        >
+
+          <Textarea
+            id="order-inline-notes"
+            readOnly={activeField !== ORDER_NOTES.key}
+            value={values[ORDER_NOTES.key]}
+            placeholder="Sem anotacoes informadas"
+            className="mt-3 min-h-28 rounded-xl border-border/70 bg-background/80 text-sm shadow-none dark:bg-background/40"
+            onChange={(event) =>
+              handleValueChange(ORDER_NOTES.key, event.target.value)
+            }
+          />
+          <div className="mt-3 flex justify-end">
+            {renderActions(ORDER_NOTES.key)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
