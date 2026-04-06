@@ -1,11 +1,11 @@
 "use client";
 
 import {
+  Banknote,
   Check,
   FileText,
   Loader2,
   PencilLine,
-  Percent,
   Truck,
   X,
 } from "lucide-react";
@@ -33,7 +33,7 @@ const PRICE_FIELDS = [
   },
   {
     key: "VL_DESCONTO" as const,
-    icon: Percent,
+    icon: Banknote,
     label: "Valor do desconto",
     description:
       "Ajuste o desconto geral do pedido com persistencia imediata por campo.",
@@ -203,14 +203,14 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
   }
 
   return (
-    <div className="space-y-4 px-5 py-5 md:px-6 md:py-6">
-      <div className="rounded-3xl border border-border/70 bg-background/75 p-4 shadow-sm dark:bg-white/3 md:p-5">
-        <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+    <div className="space-y-3 px-4 pb-4 pt-2 md:px-5 md:pb-5 md:pt-3">
+      <div className="rounded-3xl border border-border/70 bg-background/75 p-3 shadow-sm dark:bg-white/3 md:p-4">
+        <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
           <PencilLine className="h-4 w-4" />
           Frete e desconto
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-2.5 sm:grid-cols-2">
           {PRICE_FIELDS.map((field) => {
             const Icon = field.icon;
             const inputId = `order-inline-${field.key.toLowerCase()}`;
@@ -220,9 +220,9 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
               <div
                 key={field.key}
                 className={cn(
-                  "rounded-2xl border border-border/70 bg-muted/30 p-4 dark:bg-white/2",
+                  "rounded-2xl border border-border/70 bg-muted/30 p-3 dark:bg-white/2",
                   isEditing &&
-                    "border-primary/40 bg-primary/[0.04] dark:bg-primary/10",
+                    "border-primary/40 bg-primary/4 dark:bg-primary/10",
                 )}
               >
                 <Label
@@ -232,7 +232,7 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
                   <Icon className="h-4 w-4 text-primary" />
                   {field.label}
                 </Label>
-         
+
                 <Input
                   id={inputId}
                   type="text"
@@ -240,12 +240,12 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
                   readOnly={!isEditing}
                   value={values[field.key]}
                   placeholder="Sem valor informado"
-                  className="mt-3 h-11 rounded-xl border-border/70 bg-background/80 text-sm shadow-none dark:bg-background/40"
+                  className="mt-2 h-10 rounded-xl border-border/70 bg-background/80 text-sm shadow-none dark:bg-background/40"
                   onChange={(event) =>
                     handleValueChange(field.key, event.target.value)
                   }
                 />
-                <div className="mt-3 flex justify-end">
+                <div className="mt-2 flex justify-end">
                   {renderActions(field.key)}
                 </div>
               </div>
@@ -254,31 +254,30 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-border/70 bg-background/75 p-4 shadow-sm dark:bg-white/3 md:p-5">
-        <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+      <div className="rounded-3xl border border-border/70 bg-background/75 p-3 shadow-sm dark:bg-white/3 md:p-4">
+        <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
           <FileText className="h-4 w-4" />
           Anotacoes do pedido
         </div>
 
         <div
           className={cn(
-            "rounded-2xl border border-border/70 bg-muted/30 p-4 dark:bg-white/2",
+            "rounded-2xl border border-border/70 bg-muted/30 p-3 dark:bg-white/2",
             activeField === ORDER_NOTES.key &&
-              "border-primary/40 bg-primary/[0.04] dark:bg-primary/10",
+              "border-primary/40 bg-primary/4 dark:bg-primary/10",
           )}
         >
-
           <Textarea
             id="order-inline-notes"
             readOnly={activeField !== ORDER_NOTES.key}
             value={values[ORDER_NOTES.key]}
             placeholder="Sem anotacoes informadas"
-            className="mt-3 min-h-28 rounded-xl border-border/70 bg-background/80 text-sm shadow-none dark:bg-background/40"
+            className="mt-1 min-h-24 rounded-xl border-border/70 bg-background/80 text-sm shadow-none dark:bg-background/40"
             onChange={(event) =>
               handleValueChange(ORDER_NOTES.key, event.target.value)
             }
           />
-          <div className="mt-3 flex justify-end">
+          <div className="mt-2 flex justify-end">
             {renderActions(ORDER_NOTES.key)}
           </div>
         </div>
