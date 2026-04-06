@@ -8,6 +8,8 @@ import { BaseApiService } from "@/lib/axios/base-api-service";
 import type {
   CustomerInlineEmailRequest,
   CustomerInlineEmailResponse,
+  CustomerInlineFieldRequest,
+  CustomerInlineFieldResponse,
   CustomerInlineNameRequest,
   CustomerInlineNameResponse,
   CustomerInlineNotesRequest,
@@ -27,6 +29,7 @@ import type {
 import { CustomerInlineError } from "./types/customer-inline-types";
 import {
   CustomerInlineEmailSchema,
+  CustomerInlineFieldSchema,
   CustomerInlineNameSchema,
   CustomerInlineNotesSchema,
   CustomerInlinePhoneSchema,
@@ -67,6 +70,26 @@ export class CustomerInlineServiceApi extends BaseApiService {
     data: StoredProcedureResponse[];
   }): StoredProcedureResponse | null {
     return (response.data?.[0] as StoredProcedureResponse) ?? null;
+  }
+
+  async updateField(
+    params: CustomerInlineFieldRequest,
+  ): Promise<CustomerInlineFieldResponse> {
+    try {
+      const validatedParams = CustomerInlineFieldSchema.parse(params);
+      const requestBody = this.buildBasePayload(validatedParams);
+
+      const response = await this.post<CustomerInlineFieldResponse>(
+        CUSTOMER_INLINE_ENDPOINTS.UPD_FIELD,
+        requestBody,
+      );
+
+      this.checkStoredProcedureError(response, "atualizar campo inline");
+      return response;
+    } catch (error) {
+      logger.error("Erro ao atualizar campo inline do cliente", error);
+      throw error;
+    }
   }
 
   async updateEmail(

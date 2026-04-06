@@ -25,6 +25,8 @@ import type {
   OrderItemsFindByIdResponse,
   OrderItemsFreteVlRequest,
   OrderItemsFreteVlResponse,
+  OrderItemsInlineFieldRequest,
+  OrderItemsInlineFieldResponse,
   OrderItemsInsuranceVlRequest,
   OrderItemsInsuranceVlResponse,
   OrderItemsNotesRequest,
@@ -46,6 +48,7 @@ import {
   OrderItemsFindAllSchema,
   OrderItemsFindByIdSchema,
   OrderItemsFreteVlSchema,
+  OrderItemsInlineFieldSchema,
   OrderItemsInsuranceVlSchema,
   OrderItemsNotesSchema,
   OrderItemsQtSchema,
@@ -140,6 +143,26 @@ export class OrderItemsServiceApi extends BaseApiService {
       return response;
     } catch (error) {
       logger.error("Erro ao excluir item de pedido", error);
+      throw error;
+    }
+  }
+
+  async updateField(
+    params: OrderItemsInlineFieldRequest,
+  ): Promise<OrderItemsInlineFieldResponse> {
+    try {
+      const validatedParams = OrderItemsInlineFieldSchema.parse(params);
+      const requestBody = this.buildBasePayload(validatedParams);
+
+      const response = await this.post<OrderItemsInlineFieldResponse>(
+        ORDER_ITEMS_ENDPOINTS.UPD_INLINE_FIELD,
+        requestBody,
+      );
+
+      this.checkStoredProcedureError(response);
+      return response;
+    } catch (error) {
+      logger.error("Erro ao atualizar campo inline do item de pedido", error);
       throw error;
     }
   }

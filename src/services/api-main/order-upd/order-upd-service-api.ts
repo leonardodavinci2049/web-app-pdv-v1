@@ -12,6 +12,8 @@ import type {
   OrderUpdDiscountResponse,
   OrderUpdFreteRequest,
   OrderUpdFreteResponse,
+  OrderUpdInlineFieldRequest,
+  OrderUpdInlineFieldResponse,
   OrderUpdNotesRequest,
   OrderUpdNotesResponse,
   OrderUpdPgMethodRequest,
@@ -27,6 +29,7 @@ import {
   OrderUpdCustomerSchema,
   OrderUpdDiscountSchema,
   OrderUpdFreteSchema,
+  OrderUpdInlineFieldSchema,
   OrderUpdNotesSchema,
   OrderUpdPgMethodSchema,
   OrderUpdSellerSchema,
@@ -115,6 +118,26 @@ export class OrderUpdServiceApi extends BaseApiService {
       return response;
     } catch (error) {
       logger.error("Erro ao atualizar frete do pedido", error);
+      throw error;
+    }
+  }
+
+  async updateField(
+    params: OrderUpdInlineFieldRequest,
+  ): Promise<OrderUpdInlineFieldResponse> {
+    try {
+      const validatedParams = OrderUpdInlineFieldSchema.parse(params);
+      const requestBody = this.buildBasePayload(validatedParams);
+
+      const response = await this.post<OrderUpdInlineFieldResponse>(
+        ORDER_UPD_ENDPOINTS.UPD_INLINE_FIELD,
+        requestBody,
+      );
+
+      this.checkStoredProcedureError(response);
+      return response;
+    } catch (error) {
+      logger.error("Erro ao atualizar campo inline do pedido", error);
       throw error;
     }
   }

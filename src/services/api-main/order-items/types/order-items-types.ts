@@ -35,6 +35,16 @@ export interface OrderItemsDeleteRequest extends OrderItemsBaseRequest {
   pe_movement_id?: number;
 }
 
+export interface OrderItemsInlineFieldRequest extends OrderItemsBaseRequest {
+  pe_register_id: number;
+  pe_field_type: 1 | 2 | 3 | 4;
+  pe_field: string;
+  pe_value_str?: string;
+  pe_value_int?: number;
+  pe_value_numeric?: number;
+  pe_value_date?: string | null;
+}
+
 export interface OrderItemsDiscountRequest extends OrderItemsBaseRequest {
   pe_order_item_id: number;
   pe_discount_value: number;
@@ -211,6 +221,10 @@ export interface OrderItemsFindByIdResponse extends OrderItemsBaseResponse {
 }
 
 export interface OrderItemsDeleteResponse extends OrderItemsBaseResponse {
+  data: StoredProcedureResponse[];
+}
+
+export interface OrderItemsInlineFieldResponse extends OrderItemsBaseResponse {
   data: StoredProcedureResponse[];
 }
 

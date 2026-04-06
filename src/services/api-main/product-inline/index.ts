@@ -8,6 +8,8 @@ export type {
   StoredProcedureResponse,
   UpdateProductBrandInlineRequest,
   UpdateProductDescriptionInlineRequest,
+  UpdateProductFieldInlineRequest,
+  UpdateProductFieldInlineResponse,
   UpdateProductImagePathInlineRequest,
   UpdateProductNameInlineRequest,
   UpdateProductShortDescriptionInlineRequest,

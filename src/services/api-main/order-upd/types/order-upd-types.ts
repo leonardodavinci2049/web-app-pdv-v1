@@ -35,6 +35,16 @@ export interface OrderUpdCustomerRequest extends OrderUpdBaseRequest {
   pe_customer_id?: number;
 }
 
+export interface OrderUpdInlineFieldRequest extends OrderUpdBaseRequest {
+  pe_register_id: number;
+  pe_field_type: 1 | 2 | 3 | 4;
+  pe_field: string;
+  pe_value_str?: string;
+  pe_value_int?: number;
+  pe_value_numeric?: number;
+  pe_value_date?: string | null;
+}
+
 export interface OrderUpdDiscountRequest extends OrderUpdBaseRequest {
   pe_discount_value?: number;
 }
@@ -62,6 +72,10 @@ export interface OrderUpdStatusRequest extends OrderUpdBaseRequest {
 // === Response Interfaces ===
 
 export interface OrderUpdCustomerResponse extends OrderUpdBaseResponse {
+  data: StoredProcedureResponse[];
+}
+
+export interface OrderUpdInlineFieldResponse extends OrderUpdBaseResponse {
   data: StoredProcedureResponse[];
 }
 
