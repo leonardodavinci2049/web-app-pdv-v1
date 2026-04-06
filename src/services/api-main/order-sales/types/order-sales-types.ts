@@ -82,6 +82,7 @@ export interface OrderCustomerEntity {
   PAIS: string;
   COD_MUNICIPIO: number;
   COD_UF: number;
+  ANOTACOES: string;
 }
 
 /** Entidade entrega do pedido */
@@ -212,17 +213,24 @@ export interface OrderDashboardDetailsEntity {
   ID_CARRINHO: number;
   ID_TRANSPORTADORA: number;
   FLAG_VENDA_ATACADO: number;
-  ID_STATUS_ENTREGA: number;
+  VL_DESCONTO: string;
+  VL_FRETE: string;
+  ID_STATUS_ESTOQUE: number;
   ID_STATUS_PEDIDO: number;
   ID_STATUS_FINANCEIRO: number;
+  ID_STATUS_ENTREGA: number;
   STATUS_PEDIDO: string;
   STATUS_FINANCEIRO: string;
   STATUS_ENTREGA: string;
+  STATUS_ESTOQUE: string;
   DATA_PEDIDO: string | null;
   DATA_VENDA: string | null;
   DATA_RETIRADA: string | null;
+  DATA_ESTOQUE: string | null;
+  DATA_PAGAMENTO: string | null;
   DATA_ENTREGA: string | null;
   DATADOCADASTRO: string;
+  ANOTACOES: string;
 }
 
 /** Entidade item do pedido (dashboard) */
