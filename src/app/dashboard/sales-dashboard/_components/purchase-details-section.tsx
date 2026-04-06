@@ -25,11 +25,11 @@ const ORDER_STATUS_IDS = {
 } as const;
 
 const FINANCIAL_STATUS_IDS = {
-  PAGO: 18,
+  PAGO: 17,
 } as const;
 
 const DELIVERY_STATUS_IDS = {
-  ENTREGUE: 18,
+  ENTREGUE: 17,
 } as const;
 
 interface StepDefinition {
@@ -71,8 +71,8 @@ function formatDate(dateString: string | null | undefined): string | null {
  *   0 ─ Orçamento  (ID_STATUS_PEDIDO = 22)
  *   1 ─ Pedido     (ID_STATUS_PEDIDO = 12)
  *   2 ─ Venda      (ID_STATUS_PEDIDO = 14)
- *   3 ─ Pago       (ID_STATUS_FINANCEIRO = 18)
- *   4 ─ Entrega    (ID_STATUS_ENTREGA = 18)
+ *   3 ─ Pago       (ID_STATUS_FINANCEIRO = 17)
+ *   4 ─ Entrega    (ID_STATUS_ENTREGA = 17)
  */
 function deriveSteps(details: UIOrderDashboardDetails) {
   const { orderStatusId, financialStatusId, deliveryStatusId } = details;
