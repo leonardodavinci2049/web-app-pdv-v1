@@ -10,6 +10,8 @@ import type {
   StoredProcedureResponse,
   UpdateProductBrandInlineRequest,
   UpdateProductDescriptionInlineRequest,
+  UpdateProductFieldInlineRequest,
+  UpdateProductFieldInlineResponse,
   UpdateProductImagePathInlineRequest,
   UpdateProductNameInlineRequest,
   UpdateProductShortDescriptionInlineRequest,
@@ -22,6 +24,7 @@ import { ProductInlineError } from "./types/product-inline-types";
 import {
   UpdateProductBrandInlineSchema,
   UpdateProductDescriptionInlineSchema,
+  UpdateProductFieldInlineSchema,
   UpdateProductImagePathInlineSchema,
   UpdateProductNameInlineSchema,
   UpdateProductShortDescriptionInlineSchema,
@@ -60,6 +63,26 @@ export class ProductInlineServiceApi extends BaseApiService {
       return response;
     } catch (error) {
       logger.error("Erro ao atualizar marca do produto inline", error);
+      throw error;
+    }
+  }
+
+  async updateProductFieldInline(
+    params: UpdateProductFieldInlineRequest,
+  ): Promise<UpdateProductFieldInlineResponse> {
+    try {
+      const validatedParams = UpdateProductFieldInlineSchema.parse(params);
+      const requestBody = this.buildBasePayload(validatedParams);
+
+      const response = await this.post<UpdateProductFieldInlineResponse>(
+        PRODUCT_INLINE_ENDPOINTS.UPDATE_FIELD,
+        requestBody,
+      );
+
+      this.checkStoredProcedureError(response);
+      return response;
+    } catch (error) {
+      logger.error("Erro ao atualizar campo genérico do produto inline", error);
       throw error;
     }
   }

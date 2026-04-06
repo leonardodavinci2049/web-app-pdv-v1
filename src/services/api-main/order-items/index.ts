@@ -18,6 +18,8 @@ export type {
   OrderItemsFindByIdResponse,
   OrderItemsFreteVlRequest,
   OrderItemsFreteVlResponse,
+  OrderItemsInlineFieldRequest,
+  OrderItemsInlineFieldResponse,
   OrderItemsInsuranceVlRequest,
   OrderItemsInsuranceVlResponse,
   OrderItemsNotesRequest,

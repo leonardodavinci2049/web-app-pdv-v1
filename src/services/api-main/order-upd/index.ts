@@ -10,6 +10,8 @@ export type {
   OrderUpdDiscountResponse,
   OrderUpdFreteRequest,
   OrderUpdFreteResponse,
+  OrderUpdInlineFieldRequest,
+  OrderUpdInlineFieldResponse,
   OrderUpdNotesRequest,
   OrderUpdNotesResponse,
   OrderUpdPgMethodRequest,

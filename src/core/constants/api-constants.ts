@@ -47,6 +47,7 @@ export const PRODUCT_ENDPOINTS = {
 export const PRODUCT_INLINE_ENDPOINTS = {
   UPDATE_BRAND: "/product-inline/v3/product-upd-inl-brand",
   UPDATE_DESCRIPTION: "/product-inline/v3/product-upd-inl-description",
+  UPDATE_FIELD: "/product-inline/v3/product-upd-inl-field",
   UPDATE_NAME: "/product-inline/v3/product-upd-inl-name",
   UPDATE_IMAGE_PATH: "/product-inline/v3/product-upd-inl-path-image",
   UPDATE_SHORT_DESCRIPTION:
@@ -150,6 +151,7 @@ export const CUSTOMER_UPD_ENDPOINTS = {
 // Endpoints de Cliente (Inline Update - campo individual)
 export const CUSTOMER_INLINE_ENDPOINTS = {
   UPD_EMAIL: "/customer-inline/v2/customer-upd-inline-email",
+  UPD_FIELD: "/customer-inline/v2/customer-upd-inline-field",
   UPD_NAME: "/customer-inline/v2/customer-upd-inline-name",
   UPD_NOTES: "/customer-inline/v2/customer-upd-inline-notes",
   UPD_PHONE: "/customer-inline/v2/customer-upd-inline-phone",
@@ -273,6 +275,7 @@ export const ORDER_ITEMS_ENDPOINTS = {
   INSURANCE_VL: "/order-items/v2/order-items-insurance-vl",
   NOTES: "/order-items/v2/order-items-notes",
   QT: "/order-items/v2/order-items-qt",
+  UPD_INLINE_FIELD: "/order-items/v2/order-items-upd-inl-field",
   VALUE: "/order-items/v2/order-items-value",
 } as const;
 
@@ -316,6 +319,7 @@ export const ORDER_UPD_ENDPOINTS = {
   UPD_CUSTOMER_ID: "/order-upd/v2/order-upd-customer-id",
   UPD_DISCOUNT_ID: "/order-upd/v2/order-upd-discount-id",
   UPD_FRETE_ID: "/order-upd/v2/order-upd-frete-id",
+  UPD_INLINE_FIELD: "/order-upd/v2/order-upd-inl-field",
   UPD_NOTES_ID: "/order-upd/v2/order-upd-notes-id",
   UPD_PG_METHOD_ID: "/order-upd/v2/order-upd-pg-method-id",
   UPD_SELLER_ID: "/order-upd/v2/order-upd-seller-id",

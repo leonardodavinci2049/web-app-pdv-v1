@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+const inlineFieldTypeSchema = z.union([
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+]);
+
 // Schema base de contexto reutilizável
 const baseContextSchema = {
   pe_system_client_id: z.number().int().min(0).optional(),
@@ -9,6 +16,55 @@ const baseContextSchema = {
   pe_user_role: z.string().max(200).optional(),
   pe_person_id: z.number().optional(),
 };
+
+export const OrderItemsInlineFieldSchema = z
+  .object({
+    ...baseContextSchema,
+    pe_register_id: z.number().int().positive(),
+    pe_field_type: inlineFieldTypeSchema,
+    pe_field: z.string().max(200).min(1),
+    pe_value_str: z.string().optional(),
+    pe_value_int: z.number().int().optional(),
+    pe_value_numeric: z.number().optional(),
+    pe_value_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .nullable()
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.pe_field_type === 1 && typeof data.pe_value_str !== "string") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["pe_value_str"],
+        message: "pe_value_str é obrigatório quando pe_field_type = 1",
+      });
+    }
+
+    if (data.pe_field_type === 2 && typeof data.pe_value_int !== "number") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["pe_value_int"],
+        message: "pe_value_int é obrigatório quando pe_field_type = 2",
+      });
+    }
+
+    if (data.pe_field_type === 3 && typeof data.pe_value_numeric !== "number") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["pe_value_numeric"],
+        message: "pe_value_numeric é obrigatório quando pe_field_type = 3",
+      });
+    }
+
+    if (data.pe_field_type === 4 && typeof data.pe_value_date !== "string") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["pe_value_date"],
+        message: "pe_value_date é obrigatório quando pe_field_type = 4",
+      });
+    }
+  });
 
 export const OrderItemsFindAllSchema = z.object({
   ...baseContextSchema,
@@ -71,6 +127,9 @@ export const OrderItemsValueSchema = z.object({
 export type OrderItemsFindAllInput = z.infer<typeof OrderItemsFindAllSchema>;
 export type OrderItemsFindByIdInput = z.infer<typeof OrderItemsFindByIdSchema>;
 export type OrderItemsDeleteInput = z.infer<typeof OrderItemsDeleteSchema>;
+export type OrderItemsInlineFieldInput = z.infer<
+  typeof OrderItemsInlineFieldSchema
+>;
 export type OrderItemsDiscountInput = z.infer<typeof OrderItemsDiscountSchema>;
 export type OrderItemsDiscountAdmInput = z.infer<
   typeof OrderItemsDiscountAdmSchema

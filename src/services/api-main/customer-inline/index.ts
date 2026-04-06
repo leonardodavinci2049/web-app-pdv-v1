@@ -6,6 +6,8 @@ export {
 export type {
   CustomerInlineEmailRequest,
   CustomerInlineEmailResponse,
+  CustomerInlineFieldRequest,
+  CustomerInlineFieldResponse,
   CustomerInlineNameRequest,
   CustomerInlineNameResponse,
   CustomerInlineNotesRequest,
