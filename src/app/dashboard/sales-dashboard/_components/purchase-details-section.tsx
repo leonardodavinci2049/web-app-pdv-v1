@@ -77,6 +77,13 @@ function formatDate(dateString: string | null | undefined): string | null {
 function deriveSteps(details: UIOrderDashboardDetails) {
   const { orderStatusId, financialStatusId, deliveryStatusId } = details;
 
+  const hasPedidoStep =
+    orderStatusId === ORDER_STATUS_IDS.PEDIDO ||
+    orderStatusId === ORDER_STATUS_IDS.VENDA;
+  const hasVendaStep = orderStatusId === ORDER_STATUS_IDS.VENDA;
+  const hasPagoStep = financialStatusId === FINANCIAL_STATUS_IDS.PAGO;
+  const hasEntregaStep = deliveryStatusId === DELIVERY_STATUS_IDS.ENTREGUE;
+
   // Build a simple map of step → completed and its date
   const stepState: {
     completed: boolean;
@@ -89,25 +96,23 @@ function deriveSteps(details: UIOrderDashboardDetails) {
     },
     {
       // 1 – Pedido
-      completed:
-        orderStatusId === ORDER_STATUS_IDS.PEDIDO ||
-        orderStatusId === ORDER_STATUS_IDS.VENDA,
-      date: formatDate(details.orderDate),
+      completed: hasPedidoStep,
+      date: hasPedidoStep ? formatDate(details.orderDate) : null,
     },
     {
       // 2 – Venda
-      completed: orderStatusId === ORDER_STATUS_IDS.VENDA,
-      date: formatDate(details.saleDate),
+      completed: hasVendaStep,
+      date: hasVendaStep ? formatDate(details.saleDate) : null,
     },
     {
       // 3 – Pago
-      completed: financialStatusId === FINANCIAL_STATUS_IDS.PAGO,
-      date: formatDate(details.saleDate),
+      completed: hasPagoStep,
+      date: hasPagoStep ? formatDate(details.saleDate) : null,
     },
     {
       // 4 – Entrega
-      completed: deliveryStatusId === DELIVERY_STATUS_IDS.ENTREGUE,
-      date: formatDate(details.deliveryDate),
+      completed: hasEntregaStep,
+      date: hasEntregaStep ? formatDate(details.deliveryDate) : null,
     },
   ];
 
