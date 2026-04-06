@@ -249,6 +249,8 @@ export interface OrderDashboardItemEntity {
   VL_UNITARIO: string;
   VL_DESCONTO: string;
   VL_DESCONTO_ADM: string;
+  VL_ACRESCIMO: string;
+  VL_SEGURO: string;
   CODIGOP: string | null;
   PROMOCAO: number;
   ESTOQUE_LOJA1: number;

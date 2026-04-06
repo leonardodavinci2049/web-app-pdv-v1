@@ -8,6 +8,7 @@ import type { UIOrderDashboardItem } from "@/services/api-main/order-sales/trans
 import { formatCurrency } from "@/utils/common-utils";
 import { AddProductDialog } from "./add-product-dialog";
 import { DeleteItemButton } from "./delete-item-button";
+import { ItemDetailDialog } from "./item-detail-dialog";
 import { ItemImagePreview } from "./item-image-preview";
 import { QuantityControls } from "./quantity-controls";
 
@@ -34,7 +35,7 @@ export function OrderItemsSection({
 
   return (
     <Card className="border-border/60 bg-card/95 shadow-sm">
-      <CardHeader className="pb-3">
+      <CardHeader className="px-3 pb-3 sm:px-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="flex items-center gap-2 text-base">
             <Package className="h-5 w-5" />
@@ -61,7 +62,7 @@ export function OrderItemsSection({
         </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="px-3 sm:px-6">
         {items.length > 0 ? (
           <div className="space-y-2">
             {/* Table header - desktop only */}
@@ -83,25 +84,25 @@ export function OrderItemsSection({
             {items.map((item) => (
               <div
                 key={item.movementId}
-                className="grid grid-cols-12 items-center gap-x-2 gap-y-2 rounded-lg border p-3 text-sm sm:rounded-none sm:border-0 sm:p-1.5"
+                className="grid grid-cols-12 items-center gap-x-2 gap-y-2 rounded-lg border px-2 py-2.5 text-sm sm:rounded-none sm:border-0 sm:p-1.5"
               >
                 {/* Image + Product name */}
                 <div className="col-span-10 flex items-center gap-3 sm:col-span-5">
                   {item.imagePath ? (
                     <ItemImagePreview src={item.imagePath} alt={item.product}>
-                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-border/60 bg-muted/50 sm:h-9 sm:w-9">
+                      <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-border/60 bg-muted/50 sm:h-14 sm:w-14">
                         <Image
                           src={item.imagePath}
                           alt={item.product}
                           fill
-                          sizes="40px"
+                          sizes="64px"
                           className="object-cover"
                         />
                       </div>
                     </ItemImagePreview>
                   ) : (
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted sm:h-9 sm:w-9">
-                      <Package className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted sm:h-14 sm:w-14">
+                      <Package className="h-5 w-5 text-muted-foreground" />
                     </div>
                   )}
                   <div className="min-w-0">
@@ -116,7 +117,8 @@ export function OrderItemsSection({
 
                 {/* Delete button - mobile */}
                 {isEditable && (
-                  <div className="col-span-2 flex justify-end sm:hidden">
+                  <div className="col-span-2 flex items-center justify-end gap-1 sm:hidden">
+                    <ItemDetailDialog item={item} isEditable={isEditable} />
                     <DeleteItemButton
                       movementId={item.movementId}
                       productName={item.product}
@@ -154,7 +156,8 @@ export function OrderItemsSection({
 
                 {/* Delete button - desktop */}
                 {isEditable && (
-                  <div className="col-span-1 hidden justify-end sm:flex">
+                  <div className="col-span-1 hidden items-center justify-end gap-1 sm:flex">
+                    <ItemDetailDialog item={item} isEditable={isEditable} />
                     <DeleteItemButton
                       movementId={item.movementId}
                       productName={item.product}

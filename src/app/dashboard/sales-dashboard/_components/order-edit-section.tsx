@@ -14,7 +14,7 @@ export function OrderEditSection({ details }: OrderEditSectionProps) {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
             <PencilLine className="h-3.5 w-3.5" />
-            Edicao do pedido
+            Edicao do Orçamento
           </div>
         </div>
       </div>

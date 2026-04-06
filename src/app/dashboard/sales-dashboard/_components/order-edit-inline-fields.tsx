@@ -23,6 +23,7 @@ import { updateOrderInlineFieldAction } from "../actions/update-order-inline-fie
 type EditableFieldKey = "VL_FRETE" | "VL_DESCONTO" | "ANOTACOES";
 
 type FormValues = Record<EditableFieldKey, string>;
+const EDITABLE_ORDER_STATUS_ID = 22;
 
 const PRICE_FIELDS = [
   {
@@ -36,7 +37,7 @@ const PRICE_FIELDS = [
     icon: Banknote,
     label: "Valor do desconto",
     description:
-      "Ajuste o desconto geral do pedido com persistencia imediata por campo.",
+      "Ajuste o desconto geral do pedido com persistência imediata por campo.",
   },
 ] as const;
 
@@ -76,11 +77,19 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
   const [isPending, startTransition] = useTransition();
 
   const initialValues = getInitialValues(details);
-  const canEdit = Boolean(details?.orderId);
+  const canEdit = Boolean(
+    details?.orderId && details.orderStatusId === EDITABLE_ORDER_STATUS_ID,
+  );
 
   useEffect(() => {
     setValues(getInitialValues(details));
   }, [details]);
+
+  useEffect(() => {
+    if (!canEdit) {
+      setActiveField(null);
+    }
+  }, [canEdit]);
 
   function handleValueChange(field: EditableFieldKey, value: string) {
     setValues((currentValues) => ({
@@ -117,6 +126,11 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
   function handleSave(field: EditableFieldKey) {
     if (!details?.orderId) {
       toast.error("Pedido invalido para atualizacao inline");
+      return;
+    }
+
+    if (!canEdit) {
+      toast.error("Somente pedidos em orcamento podem ser editados");
       return;
     }
 
@@ -204,6 +218,13 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
 
   return (
     <div className="space-y-3 px-4 pb-4 pt-2 md:px-5 md:pb-5 md:pt-3">
+      {!canEdit && (
+        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/8 px-3 py-2 text-sm text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-300">
+          Edicao disponivel apenas quando o pedido estiver no status de
+          orcamento.
+        </div>
+      )}
+
       <div className="rounded-3xl border border-border/70 bg-background/75 p-3 shadow-sm dark:bg-white/3 md:p-4">
         <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
           <PencilLine className="h-4 w-4" />
@@ -257,7 +278,7 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
       <div className="rounded-3xl border border-border/70 bg-background/75 p-3 shadow-sm dark:bg-white/3 md:p-4">
         <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
           <FileText className="h-4 w-4" />
-          Anotacoes do pedido
+          Anotacoes do Orçamento
         </div>
 
         <div

@@ -218,6 +218,8 @@ export interface UIOrderDashboardItem {
   unitValue: string;
   discountValue: string;
   discountAdmValue: string;
+  additionValue: string;
+  insuranceValue: string;
   promoCode: string | null;
   promotion: number;
   storeStock: number;
@@ -489,6 +491,8 @@ export function transformDashboardItemEntity(
     unitValue: entity.VL_UNITARIO,
     discountValue: entity.VL_DESCONTO,
     discountAdmValue: entity.VL_DESCONTO_ADM,
+    additionValue: entity.VL_ACRESCIMO,
+    insuranceValue: entity.VL_SEGURO,
     promoCode: entity.CODIGOP,
     promotion: entity.PROMOCAO,
     storeStock: entity.ESTOQUE_LOJA1,
