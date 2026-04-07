@@ -92,6 +92,10 @@ export default async function SalesPanelPage({ searchParams }: PdvPageProps) {
                     customerDetailsContent={
                       <CustomerSection
                         customer={dashboardData?.customer ?? null}
+                        orderId={dashboardData?.details?.orderId ?? orderId}
+                        orderStatusId={
+                          dashboardData?.details?.orderStatusId ?? 0
+                        }
                       />
                     }
                     orderEditContent={

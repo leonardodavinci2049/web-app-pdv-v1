@@ -2,6 +2,7 @@
  * Serviço para busca de CEP via ViaCEP API
  */
 
+import { getStateByCode } from "@/core/constants/brazilian-states";
 import type { AddressData, ViaCepResponse } from "./types/cep.types";
 
 /**
@@ -78,13 +79,18 @@ export async function fetchAddressByCep(
       throw new Error("CEP não encontrado");
     }
 
+    const stateInfo = getStateByCode(data.uf || "");
+
     // Converter para formato normalizado
     return {
       street: data.logradouro || "",
+      complement: data.complemento || "",
       neighborhood: data.bairro || "",
       city: data.localidade || "",
       state: data.uf || "",
       cep: formatCep(data.cep) || "",
+      municipalityCode: data.ibge || "",
+      stateCode: stateInfo ? String(stateInfo.ibgeCode) : "",
     };
   } catch (error) {
     if (error instanceof Error) {
