@@ -14,8 +14,11 @@ export interface ViaCepResponse {
 }
 export interface AddressData {
   street: string;
+  complement?: string;
   neighborhood: string;
   city: string;
   state: string;
   cep: string;
+  municipalityCode?: string;
+  stateCode?: string;
 }
