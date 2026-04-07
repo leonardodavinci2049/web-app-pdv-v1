@@ -4,7 +4,6 @@ import {
   Calendar,
   Clock3,
   FileText,
-  Globe,
   Hash,
   Mail,
   MapPin,
@@ -22,10 +21,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { UIOrderCustomer } from "@/services/api-main/order-sales/transformers/transformers";
+import { CustomerAddressInlineSection } from "./customer-address-inline-section";
+import { CustomerNotesInlineField } from "./customer-notes-inline-field";
 
 interface CustomerSectionProps {
   customer: UIOrderCustomer | null;
+  orderId: number;
+  orderStatusId: number;
 }
+
+const EDITABLE_ORDER_STATUS_ID = 22;
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
@@ -75,11 +80,6 @@ function formatCpf(cpf: string): string {
 function formatCnpj(cnpj: string): string {
   if (!cnpj || cnpj.length !== 14) return cnpj || "Não informado";
   return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
-}
-
-function formatCep(cep: string): string {
-  if (!cep || cep.length !== 8) return cep || "Não informado";
-  return cep.replace(/(\d{5})(\d{3})/, "$1-$2");
 }
 
 function formatPhone(phone: string): string {
@@ -175,9 +175,14 @@ function SectionCard({
 
 // ── Main component ───────────────────────────────────────────────────
 
-export function CustomerSection({ customer }: CustomerSectionProps) {
+export function CustomerSection({
+  customer,
+  orderId,
+  orderStatusId,
+}: CustomerSectionProps) {
   const isPessoaFisica = customer?.personTypeId === 1;
   const isPessoaJuridica = customer?.personTypeId === 2;
+  const canEditCustomerInfo = orderStatusId === EDITABLE_ORDER_STATUS_ID;
 
   const displayLastPurchaseDate = customer
     ? getLastPurchaseDate(customer.lastPurchaseDate, customer.createdAt)
@@ -384,59 +389,26 @@ export function CustomerSection({ customer }: CustomerSectionProps) {
 
           {/* ── Card 5: Endereço ── */}
           <SectionCard icon={MapPin} title="Endereço" accentColor="sky">
-            <div className="space-y-4">
-              {/* Main address line */}
-              <div className="rounded-xl border border-sky-500/10 bg-sky-500/[0.03] px-4 py-3 dark:bg-sky-500/[0.06]">
-                <p className="text-sm font-medium text-foreground">
-                  {hasValue(customer.address) ? (
-                    <>
-                      {customer.address}
-                      {hasValue(customer.addressNumber) &&
-                        `, ${customer.addressNumber}`}
-                      {hasValue(customer.complement) &&
-                        ` - ${customer.complement}`}
-                    </>
-                  ) : (
-                    <span className="italic text-muted-foreground/60">
-                      Endereço não informado
-                    </span>
-                  )}
-                </p>
-                {hasValue(customer.neighborhood) && (
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    {customer.neighborhood}
-                  </p>
-                )}
+            {!canEditCustomerInfo && (
+              <div className="mb-4 rounded-2xl border border-amber-500/20 bg-amber-500/8 px-3 py-2 text-sm text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-300">
+                Edicao disponivel apenas quando o pedido estiver no status de
+                orcamento.
               </div>
+            )}
+            <CustomerAddressInlineSection
+              customer={customer}
+              orderId={orderId}
+              orderStatusId={orderStatusId}
+            />
+          </SectionCard>
 
-              {/* Address details grid */}
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <InfoField
-                  label="CEP"
-                  value={formatCep(customer.zipCode)}
-                  mono
-                />
-                <InfoField
-                  icon={MapPin}
-                  label="Cidade"
-                  value={
-                    hasValue(customer.city) && hasValue(customer.state)
-                      ? `${customer.city} - ${customer.state}`
-                      : customer.city || "Não informado"
-                  }
-                />
-                <InfoField icon={Globe} label="País" value={customer.country} />
-                <InfoField
-                  label="Cód. Município / UF"
-                  value={
-                    customer.municipalityCode
-                      ? `${customer.municipalityCode} / ${customer.stateCode}`
-                      : "Não informado"
-                  }
-                  mono
-                />
-              </div>
-            </div>
+          <SectionCard icon={FileText} title="Anotações" accentColor="primary">
+            <CustomerNotesInlineField
+              customerId={customer.customerId}
+              orderId={orderId}
+              orderStatusId={orderStatusId}
+              notes={customer.notes}
+            />
           </SectionCard>
         </div>
       ) : (
