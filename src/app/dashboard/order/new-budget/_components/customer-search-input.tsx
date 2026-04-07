@@ -2,7 +2,7 @@
 
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useRef, useTransition } from "react";
+import { useCallback, useEffect, useRef, useTransition } from "react";
 
 import { Input } from "@/components/ui/input";
 
@@ -19,6 +19,13 @@ export function CustomerSearchInput({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+  }, []);
 
   const handleSearch = useCallback(
     (value: string) => {
@@ -47,8 +54,9 @@ export function CustomerSearchInput({
       <div className="relative">
         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
+          ref={inputRef}
           id="customer-search"
-          placeholder="Buscar por nome, CPF, CNPJ, e-mail..."
+          // placeholder="Buscar por nome, CPF, CNPJ, e-mail..."
           defaultValue={defaultValue}
           onChange={(e) => handleSearch(e.target.value)}
           className={isPending ? "pl-10 opacity-60" : "pl-10"}

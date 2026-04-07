@@ -2,7 +2,7 @@
 
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useRef, useTransition } from "react";
+import { useCallback, useEffect, useRef, useTransition } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,13 @@ export function ProductSearchInput({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+  }, []);
 
   const buildParams = useCallback(
     (overrides?: { search?: string; flagStock?: number }) => {
@@ -90,8 +97,9 @@ export function ProductSearchInput({
       <div className="relative max-w-100 flex-1">
         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
+          ref={inputRef}
           id="product-search"
-          placeholder="Buscar por nome, referência, modelo, etiqueta..."
+          // placeholder="Buscar por nome, referência, modelo, etiqueta..."
           defaultValue={defaultValue}
           onChange={(e) => handleSearch(e.target.value)}
           className={isPending ? "pl-10 opacity-60" : "pl-10"}

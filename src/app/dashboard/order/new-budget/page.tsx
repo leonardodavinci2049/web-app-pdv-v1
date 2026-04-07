@@ -60,7 +60,7 @@ export default async function NewBudgetPage({
   let products: Awaited<ReturnType<typeof searchProductsPdv>> = [];
   let orderDashboard: Awaited<ReturnType<typeof getOrderDashboard>>;
 
-  if (step === BUDGET_FLOW_STEPS.customer) {
+  if (step === BUDGET_FLOW_STEPS.customer && search) {
     customers = await getCustomers({
       search,
       qtRegistros: customerLimit,
@@ -69,13 +69,15 @@ export default async function NewBudgetPage({
   }
 
   if (step === BUDGET_FLOW_STEPS.cart && customerId) {
-    products = await searchProductsPdv({
-      search: search || undefined,
-      customerId,
-      flagStock,
-      limit: search ? Math.max(50, productLimit) : productLimit,
-      ...apiContext,
-    });
+    if (search) {
+      products = await searchProductsPdv({
+        search,
+        customerId,
+        flagStock,
+        limit: Math.max(50, productLimit),
+        ...apiContext,
+      });
+    }
 
     if (orderId) {
       try {

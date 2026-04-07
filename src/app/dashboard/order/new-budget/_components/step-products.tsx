@@ -51,18 +51,26 @@ export function StepProducts({
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-4">
-          <div className="flex flex-col gap-4">
-            <ProductList
-              products={products}
-              orderId={orderId}
-              customerId={customerId}
-            />
+          {search ? (
+            <div className="flex flex-col gap-4">
+              <ProductList
+                products={products}
+                orderId={orderId}
+                customerId={customerId}
+              />
 
-            <ProductLoadMore
-              currentLimit={productLimit}
-              totalLoaded={products.length}
-            />
-          </div>
+              <ProductLoadMore
+                currentLimit={productLimit}
+                totalLoaded={products.length}
+              />
+            </div>
+          ) : (
+            <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[24px] border border-dashed border-border/70 bg-muted/15 px-6 text-center">
+              <p className="max-w-md text-sm text-muted-foreground">
+                Digite para buscar um produto e adicioná-lo ao orçamento.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Desktop cart sidebar - hidden on mobile */}

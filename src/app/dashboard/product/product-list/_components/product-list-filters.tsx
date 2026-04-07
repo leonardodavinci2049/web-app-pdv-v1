@@ -219,7 +219,7 @@ export function ProductListFilters({
               <Search className="h-4.5 w-4.5 text-muted-foreground transition-colors group-focus-within:text-primary" />
             </div>
             <Input
-              placeholder="Buscar por nome ou SKU..."
+              // placeholder="Buscar por nome ou SKU..."
               value={searchInputValue}
               onChange={(e) => setSearchInputValue(e.target.value)}
               onKeyDown={handleKeyDown}

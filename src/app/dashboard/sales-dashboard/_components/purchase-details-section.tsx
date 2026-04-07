@@ -365,7 +365,7 @@ export function PurchaseDetailsSection({
             </div>
 
             {/* ── Current status summary bar ── */}
-            <div className="mt-2 grid gap-3 md:grid-cols-3">
+            {/* <div className="mt-2 grid gap-3 md:grid-cols-3">
               <div className="rounded-2xl border border-border/70 bg-background/75 p-4 dark:bg-white/4">
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                   <Package2 className="h-4 w-4 text-primary" />
@@ -395,7 +395,7 @@ export function PurchaseDetailsSection({
                   {details.deliveryStatus || "Pendente"}
                 </p>
               </div>
-            </div>
+            </div> */}
           </>
         ) : (
           <div className="rounded-3xl border border-dashed border-border bg-background/70 p-8 text-center dark:bg-white/4">
