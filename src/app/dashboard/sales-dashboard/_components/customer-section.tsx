@@ -22,6 +22,7 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { UIOrderCustomer } from "@/services/api-main/order-sales/transformers/transformers";
 import { CustomerAddressInlineSection } from "./customer-address-inline-section";
+import { CustomerInlineTextField } from "./customer-inline-text-field";
 import { CustomerNotesInlineField } from "./customer-notes-inline-field";
 
 interface CustomerSectionProps {
@@ -109,12 +110,14 @@ function InfoField({
   value,
   mono = false,
   className,
+  children,
 }: {
   icon?: React.ElementType;
   label: string;
-  value: string;
+  value?: string;
   mono?: boolean;
   className?: string;
+  children?: React.ReactNode;
 }) {
   return (
     <div className={cn("space-y-1", className)}>
@@ -122,15 +125,17 @@ function InfoField({
         {Icon && <Icon className="h-3 w-3" />}
         {label}
       </div>
-      <p
-        className={cn(
-          "text-sm font-medium text-foreground",
-          mono && "font-mono tracking-wide",
-          !hasValue(value) && "italic text-muted-foreground/60",
-        )}
-      >
-        {hasValue(value) ? value : "Não informado"}
-      </p>
+      {children ?? (
+        <p
+          className={cn(
+            "text-sm font-medium text-foreground",
+            mono && "font-mono tracking-wide",
+            !hasValue(value) && "italic text-muted-foreground/60",
+          )}
+        >
+          {hasValue(value) ? value : "Não informado"}
+        </p>
+      )}
     </div>
   );
 }
@@ -151,7 +156,7 @@ function SectionCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border/70 bg-background/75 p-4 transition-all duration-200 hover:border-border hover:shadow-sm dark:bg-white/[0.03] dark:hover:bg-white/[0.05]",
+        "rounded-2xl border border-border/70 bg-background/75 p-4 transition-all duration-200 hover:border-border hover:shadow-sm dark:bg-white/3 dark:hover:bg-white/5",
         className,
       )}
     >
@@ -228,9 +233,14 @@ export function CustomerSection({
                     <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground/70">
                       ID #{customer.customerId}
                     </p>
-                    <h4 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-                      {customer.customerName}
-                    </h4>
+                    <CustomerInlineTextField
+                      customerId={customer.customerId}
+                      orderId={orderId}
+                      orderStatusId={orderStatusId}
+                      field="customerName"
+                      value={customer.customerName}
+                      variant="title"
+                    />
                   </div>
 
                   <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
@@ -287,21 +297,38 @@ export function CustomerSection({
           {/* ── Card 2: Contato ── */}
           <SectionCard icon={Phone} title="Contato" accentColor="emerald">
             <div className="grid gap-4 sm:grid-cols-3">
-              <InfoField
-                icon={Phone}
-                label="Telefone"
-                value={formatPhone(customer.phone)}
-              />
-              <InfoField
-                icon={MessageCircle}
-                label="WhatsApp"
-                value={
-                  hasValue(customer.whatsapp)
-                    ? formatPhone(customer.whatsapp)
-                    : "Não informado"
-                }
-              />
-              <InfoField icon={Mail} label="E-mail" value={customer.email} />
+              <InfoField icon={Phone} label="Telefone">
+                <CustomerInlineTextField
+                  customerId={customer.customerId}
+                  orderId={orderId}
+                  orderStatusId={orderStatusId}
+                  field="phone"
+                  value={customer.phone}
+                  displayValue={formatPhone(customer.phone)}
+                  emptyText="Não informado"
+                />
+              </InfoField>
+              <InfoField icon={MessageCircle} label="WhatsApp">
+                <CustomerInlineTextField
+                  customerId={customer.customerId}
+                  orderId={orderId}
+                  orderStatusId={orderStatusId}
+                  field="whatsapp"
+                  value={customer.whatsapp}
+                  displayValue={formatPhone(customer.whatsapp)}
+                  emptyText="Não informado"
+                />
+              </InfoField>
+              <InfoField icon={Mail} label="E-mail">
+                <CustomerInlineTextField
+                  customerId={customer.customerId}
+                  orderId={orderId}
+                  orderStatusId={orderStatusId}
+                  field="email"
+                  value={customer.email}
+                  emptyText="Não informado"
+                />
+              </InfoField>
             </div>
           </SectionCard>
 
@@ -315,18 +342,29 @@ export function CustomerSection({
               className={cn(!isPessoaFisica && "opacity-50")}
             >
               <div className="grid gap-4 sm:grid-cols-2">
-                <InfoField
-                  icon={Hash}
-                  label="CPF"
-                  value={formatCpf(customer.cpf)}
-                  mono
-                />
-                <InfoField
-                  icon={ShieldCheck}
-                  label="RG"
-                  value={hasValue(customer.rg) ? customer.rg : "Não informado"}
-                  mono
-                />
+                <InfoField icon={Hash} label="CPF" mono>
+                  <CustomerInlineTextField
+                    customerId={customer.customerId}
+                    orderId={orderId}
+                    orderStatusId={orderStatusId}
+                    isEditable={isPessoaFisica}
+                    field="cpf"
+                    value={customer.cpf}
+                    displayValue={formatCpf(customer.cpf)}
+                    emptyText="Não informado"
+                  />
+                </InfoField>
+                <InfoField icon={ShieldCheck} label="RG" mono>
+                  <CustomerInlineTextField
+                    customerId={customer.customerId}
+                    orderId={orderId}
+                    orderStatusId={orderStatusId}
+                    isEditable={isPessoaFisica}
+                    field="rg"
+                    value={customer.rg}
+                    emptyText="Não informado"
+                  />
+                </InfoField>
               </div>
               {isPessoaFisica && (
                 <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-violet-500/5 px-3 py-1.5 text-[11px] font-medium text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
@@ -345,19 +383,42 @@ export function CustomerSection({
             >
               <div className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <InfoField
-                    label="Razão Social"
-                    value={customer.companyName}
-                  />
-                  <InfoField label="Nome Fantasia" value={customer.tradeName} />
+                  <InfoField label="Razão Social">
+                    <CustomerInlineTextField
+                      customerId={customer.customerId}
+                      orderId={orderId}
+                      orderStatusId={orderStatusId}
+                      isEditable={isPessoaJuridica}
+                      field="companyName"
+                      value={customer.companyName}
+                      emptyText="Não informado"
+                    />
+                  </InfoField>
+                  <InfoField label="Nome Fantasia">
+                    <CustomerInlineTextField
+                      customerId={customer.customerId}
+                      orderId={orderId}
+                      orderStatusId={orderStatusId}
+                      isEditable={isPessoaJuridica}
+                      field="tradeName"
+                      value={customer.tradeName}
+                      emptyText="Não informado"
+                    />
+                  </InfoField>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-3">
-                  <InfoField
-                    icon={Hash}
-                    label="CNPJ"
-                    value={formatCnpj(customer.cnpj)}
-                    mono
-                  />
+                  <InfoField icon={Hash} label="CNPJ" mono>
+                    <CustomerInlineTextField
+                      customerId={customer.customerId}
+                      orderId={orderId}
+                      orderStatusId={orderStatusId}
+                      isEditable={isPessoaJuridica}
+                      field="cnpj"
+                      value={customer.cnpj}
+                      displayValue={formatCnpj(customer.cnpj)}
+                      emptyText="Não informado"
+                    />
+                  </InfoField>
                   <InfoField
                     label="Inscrição Estadual"
                     value={

@@ -5,11 +5,11 @@ import { z } from "zod";
 import { createLogger } from "@/core/logger";
 import { CACHE_TAGS } from "@/lib/cache-config";
 import { getAuthContext } from "@/server/auth-context";
-import { orderSalesServiceApi } from "@/services/api-main/order-sales/order-sales-service-api";
 import {
   CustomerInlineError,
   customerInlineServiceApi,
 } from "@/services/api-main/customer-inline";
+import { orderSalesServiceApi } from "@/services/api-main/order-sales/order-sales-service-api";
 
 const logger = createLogger("sales-dashboard-update-customer-notes-action");
 const EDITABLE_ORDER_STATUS_ID = 22;

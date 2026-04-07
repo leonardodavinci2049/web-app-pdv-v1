@@ -5,11 +5,11 @@ import {
   Globe,
   Hash,
   Loader2,
+  type LucideIcon,
   MapPin,
   PencilLine,
   Search,
   X,
-  type LucideIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
@@ -474,10 +474,6 @@ export function CustomerAddressInlineSection({
                 disabled
                 className="h-10 rounded-xl border-border/70 bg-muted/30 text-muted-foreground shadow-none"
               />
-              <p className="text-xs text-muted-foreground">
-                Campo apenas para leitura. O endpoint atual de endereço não
-                atualiza país.
-              </p>
             </div>
           </div>
         </div>
@@ -527,7 +523,7 @@ export function CustomerAddressInlineSection({
             />
           </div>
 
-          <div className="rounded-xl border border-sky-500/10 bg-sky-500/3 px-4 py-3 dark:bg-sky-500/6">
+          {/* <div className="rounded-xl border border-sky-500/10 bg-sky-500/3 px-4 py-3 dark:bg-sky-500/6">
             <p className="text-sm font-medium text-foreground">
               {hasValue(customer.address) ? (
                 <>
@@ -550,7 +546,7 @@ export function CustomerAddressInlineSection({
                 {customer.neighborhood}
               </p>
             )}
-          </div>
+          </div> */}
         </>
       )}
     </div>
