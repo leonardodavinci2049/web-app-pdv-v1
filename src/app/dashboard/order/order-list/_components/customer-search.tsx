@@ -22,7 +22,7 @@ export function CustomerSearch({
         type="number"
         min="0"
         inputMode="numeric"
-        placeholder="Buscar por ID do cliente..."
+        // placeholder="Buscar por ID do cliente..."
         value={value}
         onChange={(event) => onChange(event.target.value)}
         disabled={disabled}

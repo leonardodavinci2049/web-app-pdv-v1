@@ -24,20 +24,20 @@ export function ProductCard({
           <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
             {product.name}
           </p>
-          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            {product.valueType && (
-              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                {product.valueType}
+          <div className="mt-1 flex items-center justify-between gap-2">
+            <div className="min-w-0 flex items-center gap-2">
+              {product.valueType && (
+                <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                  {product.valueType}
+                </span>
+              )}
+              <span className="text-sm font-bold text-foreground">
+                {formatCurrency(Number(product.productValue))}
               </span>
-            )}
-            <span className="text-sm font-bold text-foreground">
-              {formatCurrency(Number(product.productValue))}
-            </span>
-          </div>
-          <div className="mt-1 flex items-center gap-2">
+            </div>
             {product.storeStock > 0 ? (
               <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
-                Estoque: {product.storeStock}
+                STQ: {product.storeStock}
               </span>
             ) : (
               <span className="text-[10px] font-medium text-red-500 dark:text-red-400">
