@@ -406,7 +406,7 @@ export function CustomerSection({
                     />
                   </InfoField>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-3">
+                <div className="space-y-4">
                   <InfoField icon={Hash} label="CNPJ" mono>
                     <CustomerInlineTextField
                       customerId={customer.customerId}
@@ -419,24 +419,30 @@ export function CustomerSection({
                       emptyText="Não informado"
                     />
                   </InfoField>
-                  <InfoField
-                    label="Inscrição Estadual"
-                    value={
-                      hasValue(customer.stateRegistration)
-                        ? customer.stateRegistration
-                        : "Não informado"
-                    }
-                    mono
-                  />
-                  <InfoField
-                    label="Inscrição Municipal"
-                    value={
-                      hasValue(customer.municipalRegistration)
-                        ? customer.municipalRegistration
-                        : "Não informado"
-                    }
-                    mono
-                  />
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <InfoField label="Inscrição Estadual" mono>
+                      <CustomerInlineTextField
+                        customerId={customer.customerId}
+                        orderId={orderId}
+                        orderStatusId={orderStatusId}
+                        isEditable={isPessoaJuridica}
+                        field="stateRegistration"
+                        value={customer.stateRegistration}
+                        emptyText="Não informado"
+                      />
+                    </InfoField>
+                    <InfoField label="Inscrição Municipal" mono>
+                      <CustomerInlineTextField
+                        customerId={customer.customerId}
+                        orderId={orderId}
+                        orderStatusId={orderStatusId}
+                        isEditable={isPessoaJuridica}
+                        field="municipalRegistration"
+                        value={customer.municipalRegistration}
+                        emptyText="Não informado"
+                      />
+                    </InfoField>
+                  </div>
                 </div>
               </div>
               {isPessoaJuridica && (

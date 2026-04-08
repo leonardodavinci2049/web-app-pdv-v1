@@ -62,6 +62,16 @@ const EDITABLE_CUSTOMER_FIELDS = {
     label: "CNPJ",
     normalizeValue: (value: string) => value.replace(/\D/g, ""),
   },
+  stateRegistration: {
+    apiField: "INSC_ESTADUAL",
+    label: "Inscricao estadual",
+    normalizeValue: (value: string) => value.trim(),
+  },
+  municipalRegistration: {
+    apiField: "INSC_MUNICIPAL",
+    label: "Inscricao municipal",
+    normalizeValue: (value: string) => value.trim(),
+  },
 } as const;
 
 const editableCustomerFieldKeys = Object.keys(EDITABLE_CUSTOMER_FIELDS) as [
