@@ -324,7 +324,7 @@ export function CustomerAddressInlineSection({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="group/address-field space-y-4">
       <div className="flex justify-end gap-2">
         {isEditing ? (
           <>
@@ -360,17 +360,17 @@ export function CustomerAddressInlineSection({
             </Button>
           </>
         ) : (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={!canEdit || isCepLookupLoading}
-            className="rounded-full"
-            onClick={() => setIsEditing(true)}
-          >
-            <PencilLine className="h-4 w-4" />
-            Editar endereço
-          </Button>
+          canEdit && (
+            <button
+              type="button"
+              className="flex items-center gap-1.5 text-xs text-muted-foreground opacity-40 transition-opacity hover:text-foreground [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/address-field:opacity-100"
+              onClick={() => setIsEditing(true)}
+              title="Editar endereço"
+            >
+              <PencilLine className="h-3.5 w-3.5" />
+              Editar
+            </button>
+          )
         )}
       </div>
 

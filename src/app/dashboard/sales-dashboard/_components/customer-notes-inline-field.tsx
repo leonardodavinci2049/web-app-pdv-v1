@@ -2,7 +2,7 @@
 
 import { Check, Loader2, PencilLine, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,6 +29,7 @@ export function CustomerNotesInlineField({
   notes,
 }: CustomerNotesInlineFieldProps) {
   const router = useRouter();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(notes ?? "");
   const [isPending, startTransition] = useTransition();
@@ -46,6 +47,12 @@ export function CustomerNotesInlineField({
       setIsEditing(false);
     }
   }, [canEdit]);
+
+  useEffect(() => {
+    if (isEditing) {
+      textareaRef.current?.focus();
+    }
+  }, [isEditing]);
 
   function handleCancel() {
     setValue(initialValue);
@@ -87,12 +94,13 @@ export function CustomerNotesInlineField({
   return (
     <div
       className={cn(
-        "rounded-xl border border-dashed border-border/70 bg-muted/20 p-4 transition-colors",
+        "group/notes-field rounded-xl border border-dashed border-border/70 bg-muted/20 p-4 transition-colors",
         isEditing && "border-primary/40 bg-primary/4 dark:bg-primary/10",
       )}
     >
       {isEditing ? (
         <Textarea
+          ref={textareaRef}
           id="customer-inline-notes"
           value={value}
           placeholder="Nenhuma anotacao cadastrada"
@@ -146,17 +154,16 @@ export function CustomerNotesInlineField({
             </Button>
           </>
         ) : (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={!canEdit}
-            className="rounded-full"
-            onClick={() => setIsEditing(true)}
-          >
-            <PencilLine className="h-4 w-4" />
-            Editar
-          </Button>
+          canEdit && (
+            <button
+              type="button"
+              className="opacity-40 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/notes-field:opacity-100"
+              onClick={() => setIsEditing(true)}
+              title="Editar anotações"
+            >
+              <PencilLine className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+          )
         )}
       </div>
     </div>

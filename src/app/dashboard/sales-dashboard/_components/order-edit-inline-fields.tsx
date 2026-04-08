@@ -91,6 +91,15 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
     }
   }, [canEdit]);
 
+  useEffect(() => {
+    if (!activeField) return;
+    const id =
+      activeField === "ANOTACOES"
+        ? "order-inline-notes"
+        : `order-inline-${activeField.toLowerCase()}`;
+    document.getElementById(id)?.focus();
+  }, [activeField]);
+
   function handleValueChange(field: EditableFieldKey, value: string) {
     setValues((currentValues) => ({
       ...currentValues,
@@ -165,23 +174,21 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
     const isSaving = isPending && pendingField === field;
 
     if (!isEditing) {
+      if (!canEdit || isPending) return null;
       return (
-        <Button
+        <button
           type="button"
-          variant="outline"
-          size="sm"
-          disabled={!canEdit || isPending}
-          className="rounded-full"
+          className="shrink-0 opacity-40 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/order-field:opacity-100"
           onClick={() => handleEdit(field)}
+          title="Editar"
         >
-          <PencilLine className="h-4 w-4" />
-          Editar
-        </Button>
+          <PencilLine className="h-3 w-3 text-muted-foreground" />
+        </button>
       );
     }
 
     return (
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="flex gap-2">
         <Button
           type="button"
           variant="outline"
@@ -241,7 +248,7 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
               <div
                 key={field.key}
                 className={cn(
-                  "rounded-2xl border border-border/70 bg-muted/30 p-3 dark:bg-white/2",
+                  "group/order-field rounded-2xl border border-border/70 bg-muted/30 p-3 dark:bg-white/2",
                   isEditing &&
                     "border-primary/40 bg-primary/4 dark:bg-primary/10",
                 )}
@@ -254,21 +261,26 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
                   {field.label}
                 </Label>
 
-                <Input
-                  id={inputId}
-                  type="text"
-                  inputMode="decimal"
-                  readOnly={!isEditing}
-                  value={values[field.key]}
-                  placeholder="Sem valor informado"
-                  className="mt-2 h-10 rounded-xl border-border/70 bg-background/80 text-sm shadow-none dark:bg-background/40"
-                  onChange={(event) =>
-                    handleValueChange(field.key, event.target.value)
-                  }
-                />
-                <div className="mt-2 flex justify-end">
-                  {renderActions(field.key)}
+                <div className="mt-2 flex items-center gap-2">
+                  <Input
+                    id={inputId}
+                    type="text"
+                    inputMode="decimal"
+                    readOnly={!isEditing}
+                    value={values[field.key]}
+                    placeholder="Sem valor informado"
+                    className="h-10 rounded-xl border-border/70 bg-background/80 text-sm shadow-none dark:bg-background/40"
+                    onChange={(event) =>
+                      handleValueChange(field.key, event.target.value)
+                    }
+                  />
+                  {!isEditing && renderActions(field.key)}
                 </div>
+                {isEditing && (
+                  <div className="mt-2 flex justify-end">
+                    {renderActions(field.key)}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -283,7 +295,7 @@ export function OrderEditInlineFields({ details }: OrderEditInlineFieldsProps) {
 
         <div
           className={cn(
-            "rounded-2xl border border-border/70 bg-muted/30 p-3 dark:bg-white/2",
+            "group/order-field rounded-2xl border border-border/70 bg-muted/30 p-3 dark:bg-white/2",
             activeField === ORDER_NOTES.key &&
               "border-primary/40 bg-primary/4 dark:bg-primary/10",
           )}

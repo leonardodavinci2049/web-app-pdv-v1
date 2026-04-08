@@ -2,7 +2,7 @@
 
 import { Check, Loader2, PencilLine, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -206,6 +206,7 @@ export function CustomerInlineTextField({
   className,
 }: CustomerInlineTextFieldProps) {
   const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(() =>
     formatInputValue(field, value ?? ""),
@@ -230,6 +231,12 @@ export function CustomerInlineTextField({
       setIsEditing(false);
     }
   }, [canEdit]);
+
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+    }
+  }, [isEditing]);
 
   function handleCancel() {
     setInputValue(formatInputValue(field, value ?? ""));
@@ -273,23 +280,21 @@ export function CustomerInlineTextField({
 
   function renderActions() {
     if (!isEditing) {
+      if (!canEdit) return null;
       return (
-        <Button
+        <button
           type="button"
-          variant="outline"
-          size="sm"
-          disabled={!canEdit}
-          className="rounded-full"
+          className="shrink-0 opacity-40 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/inline-field:opacity-100"
           onClick={() => setIsEditing(true)}
+          title="Editar"
         >
-          <PencilLine className="h-4 w-4" />
-          Editar
-        </Button>
+          <PencilLine className="h-3 w-3 text-muted-foreground" />
+        </button>
       );
     }
 
     return (
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="flex gap-2">
         <Button
           type="button"
           variant="outline"
@@ -326,67 +331,77 @@ export function CustomerInlineTextField({
 
   if (variant === "title") {
     return (
-      <div className={cn("space-y-3", className)}>
+      <div className={cn("group/inline-field", className)}>
         {isEditing ? (
-          <Input
-            value={inputValue}
-            inputMode={config.inputMode}
-            autoComplete={config.autoComplete}
-            maxLength={config.maxLength}
-            disabled={isPending}
-            className="h-11 rounded-2xl border-border/70 bg-background/80 text-lg font-semibold tracking-tight shadow-none md:text-xl dark:bg-background/40"
-            onChange={(event) =>
-              setInputValue(formatInputValue(field, event.target.value))
-            }
-          />
+          <div className="space-y-3">
+            <Input
+              ref={inputRef}
+              value={inputValue}
+              inputMode={config.inputMode}
+              autoComplete={config.autoComplete}
+              maxLength={config.maxLength}
+              disabled={isPending}
+              className="h-11 rounded-2xl border-border/70 bg-background/80 text-lg font-semibold tracking-tight shadow-none md:text-xl dark:bg-background/40"
+              onChange={(event) =>
+                setInputValue(formatInputValue(field, event.target.value))
+              }
+            />
+            <div className="flex flex-wrap gap-2">{renderActions()}</div>
+          </div>
         ) : (
-          <h4
-            className={cn(
-              "text-xl font-semibold tracking-tight text-foreground md:text-2xl",
-              !hasCurrentValue && "italic text-muted-foreground/60",
-            )}
-          >
-            {hasCurrentValue ? (displayValue ?? value) : emptyText}
-          </h4>
+          <div className="flex items-center gap-2">
+            <h4
+              className={cn(
+                "text-xl font-semibold tracking-tight text-foreground md:text-2xl",
+                !hasCurrentValue && "italic text-muted-foreground/60",
+              )}
+            >
+              {hasCurrentValue ? (displayValue ?? value) : emptyText}
+            </h4>
+            {renderActions()}
+          </div>
         )}
-
-        <div className="flex flex-wrap gap-2">{renderActions()}</div>
       </div>
     );
   }
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("group/inline-field", className)}>
       {isEditing ? (
-        <Input
-          value={inputValue}
-          inputMode={config.inputMode}
-          autoComplete={config.autoComplete}
-          maxLength={config.maxLength}
-          disabled={isPending}
-          className="h-10 rounded-xl border-border/70 bg-background/80 text-sm font-medium shadow-none dark:bg-background/40"
-          onChange={(event) =>
-            setInputValue(formatInputValue(field, event.target.value))
-          }
-        />
+        <div className="space-y-2">
+          <Input
+            ref={inputRef}
+            value={inputValue}
+            inputMode={config.inputMode}
+            autoComplete={config.autoComplete}
+            maxLength={config.maxLength}
+            disabled={isPending}
+            className="h-10 rounded-xl border-border/70 bg-background/80 text-sm font-medium shadow-none dark:bg-background/40"
+            onChange={(event) =>
+              setInputValue(formatInputValue(field, event.target.value))
+            }
+          />
+          <div className="flex flex-wrap gap-2">{renderActions()}</div>
+        </div>
       ) : (
-        <p
-          className={cn(
-            "text-sm font-medium text-foreground",
-            (field === "cpf" ||
-              field === "cnpj" ||
-              field === "rg" ||
-              field === "stateRegistration" ||
-              field === "municipalRegistration") &&
-              "font-mono tracking-wide",
-            !hasCurrentValue && "italic text-muted-foreground/60",
-          )}
-        >
-          {hasCurrentValue ? (displayValue ?? value) : emptyText}
-        </p>
+        <div className="flex items-center gap-1.5">
+          <p
+            className={cn(
+              "text-sm font-medium text-foreground",
+              (field === "cpf" ||
+                field === "cnpj" ||
+                field === "rg" ||
+                field === "stateRegistration" ||
+                field === "municipalRegistration") &&
+                "font-mono tracking-wide",
+              !hasCurrentValue && "italic text-muted-foreground/60",
+            )}
+          >
+            {hasCurrentValue ? (displayValue ?? value) : emptyText}
+          </p>
+          {renderActions()}
+        </div>
       )}
-
-      <div className="flex flex-wrap gap-2">{renderActions()}</div>
     </div>
   );
 }
