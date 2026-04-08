@@ -4,7 +4,10 @@ import { revalidateTag } from "next/cache";
 import { createLogger } from "@/core/logger";
 import { CACHE_TAGS } from "@/lib/cache-config";
 import { getAuthContext } from "@/server/auth-context";
-import { customerGeneralServiceApi } from "@/services/api-main/customer-general";
+import {
+  customerGeneralServiceApi,
+  CustomerError,
+} from "@/services/api-main/customer-general";
 import type { ActionState } from "@/types/action-types";
 
 const logger = createLogger("createCustomerAction");
@@ -24,6 +27,13 @@ export async function createCustomerAction(
     const pePhone = (formData.get("pe_phone") as string) || "";
     const peWhatsapp = (formData.get("pe_whatsapp") as string) || "";
     const peNotes = (formData.get("pe_notes") as string) || "";
+    const peZipCode = (formData.get("pe_zip_code") as string) || "";
+    const peAddress = (formData.get("pe_address") as string) || "";
+    const peAddressNumber = (formData.get("pe_address_number") as string) || "";
+    const peComplement = (formData.get("pe_complement") as string) || "";
+    const peNeighborhood = (formData.get("pe_neighborhood") as string) || "";
+    const peCity = (formData.get("pe_city") as string) || "";
+    const peState = (formData.get("pe_state") as string) || "";
 
     const fieldValues = {
       pe_name: peName,
@@ -34,6 +44,13 @@ export async function createCustomerAction(
       pe_phone: pePhone,
       pe_whatsapp: peWhatsapp,
       pe_notes: peNotes,
+      pe_zip_code: peZipCode,
+      pe_address: peAddress,
+      pe_address_number: peAddressNumber,
+      pe_complement: peComplement,
+      pe_neighborhood: peNeighborhood,
+      pe_city: peCity,
+      pe_state: peState,
     };
 
     if (!peName.trim() || !peEmail.trim()) {
@@ -55,26 +72,18 @@ export async function createCustomerAction(
       pe_notes: peNotes,
       pe_company_name: "",
       pe_image: "",
-      pe_zip_code: "",
-      pe_address: "",
-      pe_address_number: "",
-      pe_complement: "",
-      pe_neighborhood: "",
-      pe_city: "",
-      pe_state: "",
+      pe_zip_code: peZipCode,
+      pe_address: peAddress,
+      pe_address_number: peAddressNumber,
+      pe_complement: peComplement,
+      pe_neighborhood: peNeighborhood,
+      pe_city: peCity,
+      pe_state: peState,
       ...apiContext,
     };
 
     const response = await customerGeneralServiceApi.createCustomer(rawData);
     const result = response.data?.[0];
-
-    if (result?.sp_error_id !== 0) {
-      return {
-        success: false,
-        message: result?.sp_message || "Erro ao criar cliente.",
-        fieldValues,
-      };
-    }
 
     revalidateTag(CACHE_TAGS.customers, "seconds");
 
@@ -87,9 +96,17 @@ export async function createCustomerAction(
     };
   } catch (error) {
     logger.error("Erro ao criar cliente:", error);
+
+    const apiMessage =
+      error instanceof CustomerError
+        ? error.message
+        : error instanceof Error
+          ? error.message
+          : "Erro ao criar cliente. Tente novamente.";
+
     return {
       success: false,
-      message: "Erro ao criar cliente. Tente novamente.",
+      message: apiMessage,
       fieldValues: Object.fromEntries(
         [
           "pe_name",
@@ -100,6 +117,13 @@ export async function createCustomerAction(
           "pe_phone",
           "pe_whatsapp",
           "pe_notes",
+          "pe_zip_code",
+          "pe_address",
+          "pe_address_number",
+          "pe_complement",
+          "pe_neighborhood",
+          "pe_city",
+          "pe_state",
         ].map((key) => [key, (formData.get(key) as string) || ""]),
       ),
     };
