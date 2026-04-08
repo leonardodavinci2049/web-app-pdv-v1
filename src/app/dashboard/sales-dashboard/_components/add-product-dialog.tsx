@@ -2,7 +2,16 @@
 
 import { Loader2, Package, Plus, Search } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,7 +20,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -109,61 +117,69 @@ export function AddProductDialog({
     });
   }
 
-  return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent
-        className="flex max-h-[85vh] flex-col gap-0 overflow-hidden rounded-[20px] p-0 sm:max-w-lg"
-        showCloseButton
-      >
-        <DialogHeader className="space-y-4 border-b border-border/60 px-5 pt-5 pb-4">
-          <DialogTitle className="text-xl font-semibold tracking-tight">
-            Buscar Produto
-          </DialogTitle>
-          <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              ref={inputRef}
-              placeholder="Buscar por nome, referência, modelo, etiqueta..."
-              value={search}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className={
-                isSearching ? "rounded-xl pl-9 opacity-60" : "rounded-xl pl-9"
-              }
-            />
-          </div>
-        </DialogHeader>
+  const trigger = isValidElement(children)
+    ? cloneElement(children as ReactElement<{ onClick?: () => void }>, {
+        onClick: () => handleOpenChange(true),
+      })
+    : children;
 
-        <ScrollArea className="flex-1 overflow-auto">
-          <div className="flex flex-col divide-y divide-border/50 px-2 py-2">
-            {isSearching ? (
-              <div className="flex items-center justify-center py-16">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : products.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
-                <Package className="h-10 w-10 text-muted-foreground/50" />
-                <p className="text-sm font-medium text-muted-foreground">
-                  {search
-                    ? "Nenhum produto encontrado"
-                    : "Busque por nome, código ou categoria"}
-                </p>
-              </div>
-            ) : (
-              products.map((product) => (
-                <ProductSearchItem
-                  key={product.id}
-                  product={product}
-                  onAdd={handleAddProduct}
-                  isAdding={isAdding && addingProductId === product.id}
-                  disabled={isAdding}
-                />
-              ))
-            )}
-          </div>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+  return (
+    <>
+      {trigger}
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent
+          className="flex max-h-[85vh] flex-col gap-0 overflow-hidden rounded-[20px] p-0 sm:max-w-lg"
+          showCloseButton
+        >
+          <DialogHeader className="space-y-4 border-b border-border/60 px-5 pt-5 pb-4">
+            <DialogTitle className="text-xl font-semibold tracking-tight">
+              Buscar Produto
+            </DialogTitle>
+            <div className="relative">
+              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                ref={inputRef}
+                placeholder="Buscar por nome, referência, modelo, etiqueta..."
+                value={search}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className={
+                  isSearching ? "rounded-xl pl-9 opacity-60" : "rounded-xl pl-9"
+                }
+              />
+            </div>
+          </DialogHeader>
+
+          <ScrollArea className="flex-1 overflow-auto">
+            <div className="flex flex-col divide-y divide-border/50 px-2 py-2">
+              {isSearching ? (
+                <div className="flex items-center justify-center py-16">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : products.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
+                  <Package className="h-10 w-10 text-muted-foreground/50" />
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {search
+                      ? "Nenhum produto encontrado"
+                      : "Busque por nome, código ou categoria"}
+                  </p>
+                </div>
+              ) : (
+                products.map((product) => (
+                  <ProductSearchItem
+                    key={product.id}
+                    product={product}
+                    onAdd={handleAddProduct}
+                    isAdding={isAdding && addingProductId === product.id}
+                    disabled={isAdding}
+                  />
+                ))
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
