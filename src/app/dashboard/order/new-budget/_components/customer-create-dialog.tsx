@@ -172,10 +172,7 @@ export function CustomerCreateDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <Form
-          action={formAction}
-          className="flex min-h-0 flex-1 flex-col"
-        >
+        <Form action={formAction} className="flex min-h-0 flex-1 flex-col">
           <div className="flex-1 space-y-5 overflow-y-auto px-5 py-4">
             {state?.success === false && (
               <Alert variant="destructive">
@@ -205,7 +202,11 @@ export function CustomerCreateDialog() {
 
               <div className="space-y-1.5">
                 <Label>Tipo de Pessoa *</Label>
-                <input type="hidden" name="pe_person_type_id" value={personType} />
+                <input
+                  type="hidden"
+                  name="pe_person_type_id"
+                  value={personType}
+                />
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
@@ -236,30 +237,31 @@ export function CustomerCreateDialog() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              {personType === "1" ? (
                 <div className="space-y-1.5">
                   <Label htmlFor="pe_cpf">CPF</Label>
                   <Input
                     id="pe_cpf"
                     name="pe_cpf"
                     placeholder="000.000.000-00"
-                    disabled={isPending || personType === "2"}
+                    disabled={isPending}
                     defaultValue={state?.fieldValues?.pe_cpf}
-                    className={cn("h-9", personType === "2" && "opacity-50")}
+                    className="h-9 max-w-60"
                   />
                 </div>
+              ) : (
                 <div className="space-y-1.5">
                   <Label htmlFor="pe_cnpj">CNPJ</Label>
                   <Input
                     id="pe_cnpj"
                     name="pe_cnpj"
                     placeholder="00.000.000/0000-00"
-                    disabled={isPending || personType === "1"}
+                    disabled={isPending}
                     defaultValue={state?.fieldValues?.pe_cnpj}
-                    className={cn("h-9", personType === "1" && "opacity-50")}
+                    className="h-9 max-w-60"
                   />
                 </div>
-              </div>
+              )}
             </fieldset>
 
             {/* Seção 2: Contato */}

@@ -187,6 +187,7 @@ export function CustomerSection({
 }: CustomerSectionProps) {
   const isPessoaFisica = customer?.personTypeId === 1;
   const isPessoaJuridica = customer?.personTypeId === 2;
+  const shouldShowPersonTypeSection = isPessoaFisica || isPessoaJuridica;
   const canEditCustomerInfo = orderStatusId === EDITABLE_ORDER_STATUS_ID;
 
   const displayLastPurchaseDate = customer
@@ -332,127 +333,125 @@ export function CustomerSection({
             </div>
           </SectionCard>
 
-          {/* ── Card 3 & 4: Pessoa Física / Jurídica side by side ── */}
-          <div className="grid gap-4 md:grid-cols-2">
-            {/* Card 3: Pessoa Física */}
-            <SectionCard
-              icon={FileText}
-              title="Pessoa Física"
-              accentColor="violet"
-              className={cn(!isPessoaFisica && "opacity-50")}
-            >
-              <div className="grid gap-4 sm:grid-cols-2">
-                <InfoField icon={Hash} label="CPF" mono>
-                  <CustomerInlineTextField
-                    customerId={customer.customerId}
-                    orderId={orderId}
-                    orderStatusId={orderStatusId}
-                    isEditable={isPessoaFisica}
-                    field="cpf"
-                    value={customer.cpf}
-                    displayValue={formatCpf(customer.cpf)}
-                    emptyText="Não informado"
-                  />
-                </InfoField>
-                <InfoField icon={ShieldCheck} label="RG" mono>
-                  <CustomerInlineTextField
-                    customerId={customer.customerId}
-                    orderId={orderId}
-                    orderStatusId={orderStatusId}
-                    isEditable={isPessoaFisica}
-                    field="rg"
-                    value={customer.rg}
-                    emptyText="Não informado"
-                  />
-                </InfoField>
-              </div>
+          {/* ── Card 3 & 4: Pessoa Física / Jurídica ── */}
+          {shouldShowPersonTypeSection && (
+            <div className="grid gap-4">
               {isPessoaFisica && (
-                <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-violet-500/5 px-3 py-1.5 text-[11px] font-medium text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
-                  <BadgeCheck className="h-3.5 w-3.5" />
-                  Tipo de conta ativa: Pessoa Física
-                </div>
-              )}
-            </SectionCard>
-
-            {/* Card 4: Pessoa Jurídica */}
-            <SectionCard
-              icon={Building2}
-              title="Pessoa Jurídica"
-              accentColor="amber"
-              className={cn(!isPessoaJuridica && "opacity-50")}
-            >
-              <div className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <InfoField label="Razão Social">
-                    <CustomerInlineTextField
-                      customerId={customer.customerId}
-                      orderId={orderId}
-                      orderStatusId={orderStatusId}
-                      isEditable={isPessoaJuridica}
-                      field="companyName"
-                      value={customer.companyName}
-                      emptyText="Não informado"
-                    />
-                  </InfoField>
-                  <InfoField label="Nome Fantasia">
-                    <CustomerInlineTextField
-                      customerId={customer.customerId}
-                      orderId={orderId}
-                      orderStatusId={orderStatusId}
-                      isEditable={isPessoaJuridica}
-                      field="tradeName"
-                      value={customer.tradeName}
-                      emptyText="Não informado"
-                    />
-                  </InfoField>
-                </div>
-                <div className="space-y-4">
-                  <InfoField icon={Hash} label="CNPJ" mono>
-                    <CustomerInlineTextField
-                      customerId={customer.customerId}
-                      orderId={orderId}
-                      orderStatusId={orderStatusId}
-                      isEditable={isPessoaJuridica}
-                      field="cnpj"
-                      value={customer.cnpj}
-                      displayValue={formatCnpj(customer.cnpj)}
-                      emptyText="Não informado"
-                    />
-                  </InfoField>
+                <SectionCard
+                  icon={FileText}
+                  title="Pessoa Física"
+                  accentColor="violet"
+                >
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <InfoField label="Inscrição Estadual" mono>
+                    <InfoField icon={Hash} label="CPF" mono>
                       <CustomerInlineTextField
                         customerId={customer.customerId}
                         orderId={orderId}
                         orderStatusId={orderStatusId}
-                        isEditable={isPessoaJuridica}
-                        field="stateRegistration"
-                        value={customer.stateRegistration}
+                        isEditable={isPessoaFisica}
+                        field="cpf"
+                        value={customer.cpf}
+                        displayValue={formatCpf(customer.cpf)}
                         emptyText="Não informado"
                       />
                     </InfoField>
-                    <InfoField label="Inscrição Municipal" mono>
+                    <InfoField icon={ShieldCheck} label="RG" mono>
                       <CustomerInlineTextField
                         customerId={customer.customerId}
                         orderId={orderId}
                         orderStatusId={orderStatusId}
-                        isEditable={isPessoaJuridica}
-                        field="municipalRegistration"
-                        value={customer.municipalRegistration}
+                        isEditable={isPessoaFisica}
+                        field="rg"
+                        value={customer.rg}
                         emptyText="Não informado"
                       />
                     </InfoField>
                   </div>
-                </div>
-              </div>
-              {isPessoaJuridica && (
-                <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-amber-500/5 px-3 py-1.5 text-[11px] font-medium text-amber-600 dark:bg-amber-500/10 dark:text-amber-400">
-                  <BadgeCheck className="h-3.5 w-3.5" />
-                  Tipo de conta ativa: Pessoa Jurídica
-                </div>
+                  <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-violet-500/5 px-3 py-1.5 text-[11px] font-medium text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+                    <BadgeCheck className="h-3.5 w-3.5" />
+                    Tipo de conta ativa: Pessoa Física
+                  </div>
+                </SectionCard>
               )}
-            </SectionCard>
-          </div>
+
+              {isPessoaJuridica && (
+                <SectionCard
+                  icon={Building2}
+                  title="Pessoa Jurídica"
+                  accentColor="amber"
+                >
+                  <div className="space-y-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <InfoField label="Razão Social">
+                        <CustomerInlineTextField
+                          customerId={customer.customerId}
+                          orderId={orderId}
+                          orderStatusId={orderStatusId}
+                          isEditable={isPessoaJuridica}
+                          field="companyName"
+                          value={customer.companyName}
+                          emptyText="Não informado"
+                        />
+                      </InfoField>
+                      <InfoField label="Nome Fantasia">
+                        <CustomerInlineTextField
+                          customerId={customer.customerId}
+                          orderId={orderId}
+                          orderStatusId={orderStatusId}
+                          isEditable={isPessoaJuridica}
+                          field="tradeName"
+                          value={customer.tradeName}
+                          emptyText="Não informado"
+                        />
+                      </InfoField>
+                    </div>
+                    <div className="space-y-4">
+                      <InfoField icon={Hash} label="CNPJ" mono>
+                        <CustomerInlineTextField
+                          customerId={customer.customerId}
+                          orderId={orderId}
+                          orderStatusId={orderStatusId}
+                          isEditable={isPessoaJuridica}
+                          field="cnpj"
+                          value={customer.cnpj}
+                          displayValue={formatCnpj(customer.cnpj)}
+                          emptyText="Não informado"
+                        />
+                      </InfoField>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <InfoField label="Inscrição Estadual" mono>
+                          <CustomerInlineTextField
+                            customerId={customer.customerId}
+                            orderId={orderId}
+                            orderStatusId={orderStatusId}
+                            isEditable={isPessoaJuridica}
+                            field="stateRegistration"
+                            value={customer.stateRegistration}
+                            emptyText="Não informado"
+                          />
+                        </InfoField>
+                        <InfoField label="Inscrição Municipal" mono>
+                          <CustomerInlineTextField
+                            customerId={customer.customerId}
+                            orderId={orderId}
+                            orderStatusId={orderStatusId}
+                            isEditable={isPessoaJuridica}
+                            field="municipalRegistration"
+                            value={customer.municipalRegistration}
+                            emptyText="Não informado"
+                          />
+                        </InfoField>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-amber-500/5 px-3 py-1.5 text-[11px] font-medium text-amber-600 dark:bg-amber-500/10 dark:text-amber-400">
+                    <BadgeCheck className="h-3.5 w-3.5" />
+                    Tipo de conta ativa: Pessoa Jurídica
+                  </div>
+                </SectionCard>
+              )}
+            </div>
+          )}
 
           {/* ── Card 5: Endereço ── */}
           <SectionCard icon={MapPin} title="Endereço" accentColor="sky">
