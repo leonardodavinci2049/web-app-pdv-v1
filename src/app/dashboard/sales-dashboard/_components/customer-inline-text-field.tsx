@@ -18,7 +18,9 @@ type EditableCustomerFieldKey =
   | "rg"
   | "companyName"
   | "tradeName"
-  | "cnpj";
+  | "cnpj"
+  | "stateRegistration"
+  | "municipalRegistration";
 
 type CustomerInlineTextFieldProps = {
   customerId: number;
@@ -79,6 +81,16 @@ const FIELD_CONFIG = {
   cnpj: {
     inputMode: "numeric" as const,
     maxLength: 18,
+    autoComplete: "off",
+  },
+  stateRegistration: {
+    inputMode: "text" as const,
+    maxLength: 50,
+    autoComplete: "off",
+  },
+  municipalRegistration: {
+    inputMode: "text" as const,
+    maxLength: 50,
     autoComplete: "off",
   },
 } as const;
@@ -361,7 +373,11 @@ export function CustomerInlineTextField({
         <p
           className={cn(
             "text-sm font-medium text-foreground",
-            (field === "cpf" || field === "cnpj" || field === "rg") &&
+            (field === "cpf" ||
+              field === "cnpj" ||
+              field === "rg" ||
+              field === "stateRegistration" ||
+              field === "municipalRegistration") &&
               "font-mono tracking-wide",
             !hasCurrentValue && "italic text-muted-foreground/60",
           )}

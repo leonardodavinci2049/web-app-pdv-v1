@@ -38,6 +38,7 @@ export function ProductCard({
             {product.storeStock > 0 ? (
               <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
                 STQ: {product.storeStock}
+                
               </span>
             ) : (
               <span className="text-[10px] font-medium text-red-500 dark:text-red-400">

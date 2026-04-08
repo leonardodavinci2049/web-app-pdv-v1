@@ -419,24 +419,28 @@ export function CustomerSection({
                       emptyText="Não informado"
                     />
                   </InfoField>
-                  <InfoField
-                    label="Inscrição Estadual"
-                    value={
-                      hasValue(customer.stateRegistration)
-                        ? customer.stateRegistration
-                        : "Não informado"
-                    }
-                    mono
-                  />
-                  <InfoField
-                    label="Inscrição Municipal"
-                    value={
-                      hasValue(customer.municipalRegistration)
-                        ? customer.municipalRegistration
-                        : "Não informado"
-                    }
-                    mono
-                  />
+                  <InfoField label="Inscrição Estadual" mono>
+                    <CustomerInlineTextField
+                      customerId={customer.customerId}
+                      orderId={orderId}
+                      orderStatusId={orderStatusId}
+                      isEditable={isPessoaJuridica}
+                      field="stateRegistration"
+                      value={customer.stateRegistration}
+                      emptyText="Não informado"
+                    />
+                  </InfoField>
+                  <InfoField label="Inscrição Municipal" mono>
+                    <CustomerInlineTextField
+                      customerId={customer.customerId}
+                      orderId={orderId}
+                      orderStatusId={orderStatusId}
+                      isEditable={isPessoaJuridica}
+                      field="municipalRegistration"
+                      value={customer.municipalRegistration}
+                      emptyText="Não informado"
+                    />
+                  </InfoField>
                 </div>
               </div>
               {isPessoaJuridica && (
