@@ -1,13 +1,7 @@
 "use client";
 
-import { Filter, RotateCcw, SlidersHorizontal } from "lucide-react";
+import { Filter, RotateCcw } from "lucide-react";
 import { useState } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -223,42 +217,42 @@ export function OrderListFilters({
   onApplyFilters,
   onClearFilters,
 }: OrderListFiltersProps) {
-  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   const handleApply = () => {
     onApplyFilters();
-    setIsMobileFiltersOpen(false);
+    setIsFiltersOpen(false);
   };
 
   const handleClear = () => {
     onClearFilters();
-    setIsMobileFiltersOpen(false);
+    setIsFiltersOpen(false);
   };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
             <h2 className="text-lg font-semibold tracking-tight">Filtros</h2>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="rounded-full border border-border/70 bg-muted/40 px-3 py-1 text-sm font-medium">
+          <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
+            <div className="whitespace-nowrap rounded-full border border-border/70 bg-muted/40 px-3 py-1 text-sm font-medium">
               {activeFiltersCount} ativo{activeFiltersCount === 1 ? "" : "s"}
             </div>
 
-            <Sheet
-              open={isMobileFiltersOpen}
-              onOpenChange={setIsMobileFiltersOpen}
-            >
+            <Sheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
               <SheetTrigger asChild>
-                <Button type="button" variant="outline" className="md:hidden">
+                <Button type="button" variant="outline">
                   <Filter className="size-4" />
                   Filtros
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-full max-w-md">
+              <SheetContent
+                side="right"
+                className="w-[80vw] max-w-[80vw] sm:max-w-md"
+              >
                 <SheetHeader>
                   <SheetTitle>Filtros da listagem</SheetTitle>
                   <SheetDescription>
@@ -266,94 +260,45 @@ export function OrderListFilters({
                   </SheetDescription>
                 </SheetHeader>
 
-                <div className="flex-1 space-y-6 overflow-y-auto px-4 pb-4">
-                  <QuickFilters
-                    filters={filters}
-                    orderStatusOptions={orderStatusOptions}
-                    onFilterChange={onFilterChange}
-                  />
-                  <AdvancedFilters
-                    filters={filters}
-                    financialStatusOptions={financialStatusOptions}
-                    onFilterChange={onFilterChange}
-                  />
-                </div>
+                <form
+                  className="flex h-full flex-col"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    handleApply();
+                  }}
+                >
+                  <div className="flex-1 space-y-6 overflow-y-auto px-4 pb-4">
+                    <QuickFilters
+                      filters={filters}
+                      orderStatusOptions={orderStatusOptions}
+                      onFilterChange={onFilterChange}
+                    />
+                    <AdvancedFilters
+                      filters={filters}
+                      financialStatusOptions={financialStatusOptions}
+                      onFilterChange={onFilterChange}
+                    />
+                  </div>
 
-                <SheetFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleClear}
-                    disabled={isLoading}
-                  >
-                    <RotateCcw className="size-4" />
-                    Limpar
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={handleApply}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Filtrando..." : "Filtrar"}
-                  </Button>
-                </SheetFooter>
+                  <SheetFooter>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleClear}
+                      disabled={isLoading}
+                    >
+                      <RotateCcw className="size-4" />
+                      Limpar
+                    </Button>
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading ? "Filtrando..." : "Filtrar"}
+                    </Button>
+                  </SheetFooter>
+                </form>
               </SheetContent>
             </Sheet>
           </div>
         </div>
-
-        <div className="hidden md:block">
-          <QuickFilters
-            filters={filters}
-            orderStatusOptions={orderStatusOptions}
-            onFilterChange={onFilterChange}
-          />
-        </div>
-
-        <Accordion
-          type="single"
-          collapsible
-          className="hidden md:block border-none"
-        >
-          <AccordionItem value="advanced-filters" className="border-none">
-            <AccordionTrigger className="py-2 text-muted-foreground hover:text-foreground hover:no-underline">
-              <span className="flex items-center gap-2 text-sm">
-                <SlidersHorizontal className="size-4" />
-                Filtros avançados
-              </span>
-            </AccordionTrigger>
-            <AccordionContent>
-              <AdvancedFilters
-                filters={filters}
-                financialStatusOptions={financialStatusOptions}
-                onFilterChange={onFilterChange}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-
-        <form
-          className="hidden md:flex md:flex-col"
-          onSubmit={(event) => {
-            event.preventDefault();
-            handleApply();
-          }}
-        >
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClear}
-              disabled={isLoading}
-            >
-              <RotateCcw className="size-4" />
-              Limpar
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Filtrando..." : "Filtrar"}
-            </Button>
-          </div>
-        </form>
       </div>
     </div>
   );

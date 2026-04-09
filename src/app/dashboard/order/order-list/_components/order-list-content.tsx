@@ -195,24 +195,27 @@ export function OrderListContent({
 
   return (
     <div className="space-y-6">
-      <section className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between py-1">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Listagem de pedidos
-          </h1>
-        </div>
+      <section className="space-y-2 py-1">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Listagem de pedidos
+            </h1>
+          </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="rounded-lg border border-border/70 bg-card px-3 py-1.5 text-xs font-medium shadow-sm">
+          <div className="shrink-0 whitespace-nowrap rounded-lg border border-border/70 bg-card px-3 py-1.5 text-xs font-medium shadow-sm">
             {orders.length} pedido{orders.length === 1 ? "" : "s"}
           </div>
-          {activeFiltersCount > 0 && (
-            <div className="rounded-lg border border-border/70 bg-card px-3 py-1.5 text-xs font-medium shadow-sm">
+        </div>
+
+        {activeFiltersCount > 0 && (
+          <div className="flex justify-end">
+            <div className="whitespace-nowrap rounded-lg border border-border/70 bg-card px-3 py-1.5 text-xs font-medium shadow-sm">
               {activeFiltersCount} filtro{activeFiltersCount === 1 ? "" : "s"}{" "}
               ativo{activeFiltersCount === 1 ? "" : "s"}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </section>
 
       <OrderListFilters
