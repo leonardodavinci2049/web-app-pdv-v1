@@ -176,15 +176,27 @@ export function OrderTable({ orders }: OrderTableProps) {
                   Cliente
                 </TableHead>
                 <TableHead className="font-semibold">Status</TableHead>
+                <TableHead className="font-semibold hidden lg:table-cell">
+                  Financeiro
+                </TableHead>
+                <TableHead className="font-semibold hidden lg:table-cell">
+                  Tipo
+                </TableHead>
                 <TableHead className="font-semibold">Itens</TableHead>
+                <TableHead className="font-semibold text-right">
+                  Desconto
+                </TableHead>
+                <TableHead className="font-semibold text-right">
+                  Frete
+                </TableHead>
                 <TableHead className="font-semibold text-right">
                   Total
                 </TableHead>
                 <TableHead className="font-semibold hidden lg:table-cell">
                   Pagamento
                 </TableHead>
-                <TableHead className="font-semibold hidden lg:table-cell">
-                  Vendedor
+                <TableHead className="font-semibold hidden lg:table-cell text-right">
+                  Comissão
                 </TableHead>
                 <TableHead className="font-semibold text-right w-24">
                   Ações
@@ -231,9 +243,29 @@ export function OrderTable({ orders }: OrderTableProps) {
                       {order.orderStatus || "Venda"}
                     </Badge>
                   </TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    <span className="text-sm text-muted-foreground">
+                      {order.financialStatus || "-"}
+                    </span>
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    <span className="text-sm text-muted-foreground">
+                      {order.rateType || "-"}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     <span className="text-sm text-muted-foreground">
                       {order.itemCount}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <span className="text-sm text-muted-foreground">
+                      {toCurrency(order.discountValue)}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <span className="text-sm text-muted-foreground">
+                      {toCurrency(order.freightValue)}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
@@ -246,9 +278,9 @@ export function OrderTable({ orders }: OrderTableProps) {
                       {order.paymentForm || "-"}
                     </span>
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell">
+                  <TableCell className="hidden lg:table-cell text-right">
                     <span className="text-sm text-muted-foreground">
-                      {order.sellerName || "-"}
+                      {toCurrency(order.sellerCommissionValue)}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">

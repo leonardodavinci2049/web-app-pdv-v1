@@ -47,7 +47,7 @@ export default async function OrderListPage(props: OrderListPageProps) {
     orders = await getSaleOrders({
       orderId: toOptionalNumber(currentFilters.orderId),
       customerId: toOptionalNumber(currentFilters.customerId),
-      sellerId: toOptionalNumber(currentFilters.sellerId),
+      sellerId: apiContext.pe_person_id,
       orderStatusId: toOptionalNumber(currentFilters.orderStatusId),
       financialStatusId: toOptionalNumber(currentFilters.financialStatusId),
       locationId: toOptionalNumber(currentFilters.locationId),

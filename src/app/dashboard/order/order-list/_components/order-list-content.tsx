@@ -5,15 +5,14 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import type { UIOrderReportListItem } from "@/services/api-main/order-reports/transformers/transformers";
 import {
-  DEFAULT_ORDER_LIST_ID,
   DEFAULT_ORDER_LIST_LIMIT,
   normalizeOrderListFilters,
   type OrderListFiltersValues,
   type OrderListSearchParams,
-  type OrderListStatusOption,
 } from "../order-list.types";
 import { OrderListFilters } from "./order-list-filters";
 import { OrderListGrid } from "./order-list-grid";
+import { OrderLoadMore } from "./order-load-more";
 
 interface OrderListContentProps {
   orders: UIOrderReportListItem[];
@@ -29,7 +28,6 @@ function getFiltersFromSearchParams(
     {
       orderId: searchParams.get("orderId") ?? undefined,
       customerId: searchParams.get("customerId") ?? undefined,
-      sellerId: searchParams.get("sellerId") ?? undefined,
       orderStatusId: searchParams.get("orderStatusId") ?? undefined,
       financialStatusId: searchParams.get("financialStatusId") ?? undefined,
       locationId: searchParams.get("locationId") ?? undefined,
@@ -41,37 +39,6 @@ function getFiltersFromSearchParams(
   );
 }
 
-function buildStatusOptions(
-  orders: UIOrderReportListItem[],
-  type: "order" | "financial",
-  selectedValue: string,
-): OrderListStatusOption[] {
-  const optionsMap = new Map<string, string>();
-
-  for (const order of orders) {
-    const value =
-      type === "order"
-        ? String(order.orderStatusId || "")
-        : String(order.financialStatusId || "");
-    const label = type === "order" ? order.orderStatus : order.financialStatus;
-
-    if (value && label) {
-      optionsMap.set(value, label);
-    }
-  }
-
-  if (
-    selectedValue !== DEFAULT_ORDER_LIST_ID &&
-    !optionsMap.has(selectedValue)
-  ) {
-    optionsMap.set(selectedValue, `ID ${selectedValue}`);
-  }
-
-  return Array.from(optionsMap.entries())
-    .map(([value, label]) => ({ value, label }))
-    .sort((left, right) => left.label.localeCompare(right.label, "pt-BR"));
-}
-
 function countActiveFilters(
   filters: OrderListFiltersValues,
   defaultFilters: OrderListFiltersValues,
@@ -79,7 +46,6 @@ function countActiveFilters(
   return [
     filters.orderId !== defaultFilters.orderId ? filters.orderId : "",
     filters.customerId !== defaultFilters.customerId ? filters.customerId : "",
-    filters.sellerId !== defaultFilters.sellerId ? filters.sellerId : "",
     filters.orderStatusId !== defaultFilters.orderStatusId
       ? filters.orderStatusId
       : "",
@@ -113,16 +79,6 @@ export function OrderListContent({
     setFilters(getFiltersFromSearchParams(searchParams, defaultFilters));
   }, [searchParams, defaultFilters]);
 
-  const orderStatusOptions = buildStatusOptions(
-    orders,
-    "order",
-    filters.orderStatusId,
-  );
-  const financialStatusOptions = buildStatusOptions(
-    orders,
-    "financial",
-    filters.financialStatusId,
-  );
   const activeFiltersCount = countActiveFilters(filters, defaultFilters);
 
   const updateFilters = (nextFilters: OrderListFiltersValues) => {
@@ -134,10 +90,6 @@ export function OrderListContent({
 
     if (nextFilters.customerId !== defaultFilters.customerId) {
       params.set("customerId", nextFilters.customerId);
-    }
-
-    if (nextFilters.sellerId !== defaultFilters.sellerId) {
-      params.set("sellerId", nextFilters.sellerId);
     }
 
     if (nextFilters.orderStatusId !== defaultFilters.orderStatusId) {
@@ -220,8 +172,6 @@ export function OrderListContent({
 
       <OrderListFilters
         filters={filters}
-        orderStatusOptions={orderStatusOptions}
-        financialStatusOptions={financialStatusOptions}
         activeFiltersCount={activeFiltersCount}
         isLoading={isPending}
         onFilterChange={handleFilterChange}
@@ -244,6 +194,11 @@ export function OrderListContent({
         >
           <OrderListGrid orders={orders} onClearFilters={handleClearFilters} />
         </div>
+
+        <OrderLoadMore
+          currentLimit={Number(filters.limit) || 20}
+          totalLoaded={orders.length}
+        />
       </section>
     </div>
   );
