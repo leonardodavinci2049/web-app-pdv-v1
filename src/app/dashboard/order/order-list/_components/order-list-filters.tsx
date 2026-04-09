@@ -35,9 +35,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import type {
-  OrderListFiltersValues,
-} from "../order-list.types";
+import type { OrderListFiltersValues } from "../order-list.types";
 import { CustomerSearch } from "./customer-search";
 
 interface OrderListFiltersProps {
@@ -206,7 +204,8 @@ function DatePickerField({
                 root: "w-full",
                 months: "flex w-full flex-col",
                 month: "w-full space-y-4",
-                month_caption: "relative flex items-center justify-center pt-1 pb-1",
+                month_caption:
+                  "relative flex items-center justify-center pt-1 pb-1",
                 caption_label: "text-sm font-semibold capitalize",
                 nav: "absolute inset-x-0 top-0 flex items-center justify-between",
                 button_previous: cn(
@@ -312,9 +311,7 @@ function OrderStatusSelect({
             !selectedLabel && "text-muted-foreground",
           )}
         >
-          <span className="truncate">
-            {selectedLabel ?? "Todos os status"}
-          </span>
+          <span className="truncate">{selectedLabel ?? "Todos os status"}</span>
           <ChevronRight className="size-4 rotate-90 text-muted-foreground" />
         </Button>
       </PopoverPrimitive.Trigger>
@@ -458,9 +455,7 @@ function FinancialStatusSelect({
             !selectedLabel && "text-muted-foreground",
           )}
         >
-          <span className="truncate">
-            {selectedLabel ?? "Todos os status"}
-          </span>
+          <span className="truncate">{selectedLabel ?? "Todos os status"}</span>
           <ChevronRight className="size-4 rotate-90 text-muted-foreground" />
         </Button>
       </PopoverPrimitive.Trigger>

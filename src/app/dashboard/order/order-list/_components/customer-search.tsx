@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
-  searchCustomersAction,
   type CustomerSearchResult,
+  searchCustomersAction,
 } from "../actions/search-customers-action";
 
 interface CustomerSearchProps {
