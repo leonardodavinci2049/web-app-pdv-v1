@@ -206,16 +206,16 @@ function DatePickerField({
                 root: "w-full",
                 months: "flex w-full flex-col",
                 month: "w-full space-y-4",
-                month_caption: "relative flex items-center justify-center pb-1",
+                month_caption: "relative flex items-center justify-center pt-1 pb-1",
                 caption_label: "text-sm font-semibold capitalize",
                 nav: "absolute inset-x-0 top-0 flex items-center justify-between",
                 button_previous: cn(
-                  buttonVariants({ variant: "ghost", size: "icon-sm" }),
-                  "h-8 w-8 rounded-xl p-0 text-muted-foreground hover:text-foreground",
+                  buttonVariants({ variant: "ghost", size: "icon" }),
+                  "size-10 rounded-xl p-0 text-muted-foreground hover:text-foreground",
                 ),
                 button_next: cn(
-                  buttonVariants({ variant: "ghost", size: "icon-sm" }),
-                  "h-8 w-8 rounded-xl p-0 text-muted-foreground hover:text-foreground",
+                  buttonVariants({ variant: "ghost", size: "icon" }),
+                  "size-10 rounded-xl p-0 text-muted-foreground hover:text-foreground",
                 ),
                 weekdays: "mb-1 grid grid-cols-7",
                 weekday:
