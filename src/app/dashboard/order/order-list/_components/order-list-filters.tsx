@@ -753,6 +753,7 @@ export function OrderListFilters({
               <SheetContent
                 side="right"
                 showCloseButton={false}
+                aria-describedby={undefined}
                 className="flex h-full w-[80vw] max-w-[80vw] flex-col gap-0 border-l border-border/60 bg-background p-0 shadow-2xl sm:max-w-xl"
               >
                 <SheetHeader className="gap-4 border-b border-border/60 bg-linear-to-b from-background via-background to-muted/30 px-4 py-5 sm:px-6">
