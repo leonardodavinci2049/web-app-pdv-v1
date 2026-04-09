@@ -1,408 +1,57 @@
-# Agent Guidelines for web-app-pdv-v1
+# Project Guidelines
 
-This document provides essential conventions for code agents in this repository.
-
-## Critical Rules
-
-**These rules are mandatory and must always be followed:**
-
-1. **Server First**: Always prioritize server-side components. When you need interactivity (hooks, event listeners), create a subcomponent and isolate the functionality.
-
-2. **Route Pages**: MUST be Server Components (page.tsx, layout.tsx).
-
-3. **Cache Invalidation**: All create, update, and delete operations must revalidate cache with `revalidateTag()`.
-
-4. **Server Actions with Auth**: For security, server action functions must always check if a user session exists.
-
-5. **Next.js 16+**: Project uses Next.js version 16+ with React Compiler (component cache enabled).
-
-6. **Mobile-first**: Project is mobile-first with light and dark themes.
-
-## Overview
-
-**PDV WinERP** - Point of Sale system with product catalog, inventory management, sales, reports, and multi-tenancy.
+These instructions apply across the repository. If a subdirectory contains its own `AGENTS.md`, follow the closest file instead of this root guide.
 
 ## Architecture
 
-**Server-First** with Next.js 16 + React Compiler:
-
-- **Server Components**: Default pattern
-- **Server Actions**: Exclusively for mutations
-- **Client Components**: Isolated only where necessary
-- **Services Layer**: Separation API Service ↔ Cached Service
-- **Entity → DTO**: Data transformation between layers
-
-## Stack
-
-- **Framework**: Next.js 16+ with **React 19** and **React Compiler** (component cache enabled)
-- **UI**: Radix UI + Tailwind CSS + Shadcn
-- **Design**: Mobile-first with light and dark themes
-- **Database**: MySQL with mysql2 (raw queries)
-- **Auth**: Better Auth (OAuth: Google, GitHub)
-- **Forms**: Next Form + Server Actions
-- **Validation**: Zod
-- **HTTP**: Axios (server-only)
-- **Cache**: Next.js 16 `use cache` directive
-- **Email**: React Email + Resend
-- **Charts**: Recharts
-
-## Commands
-
-```bash
-pnpm dev    # Start dev server (requires .env)
-pnpm build  # Production build
-pnpm lint   # Biome check
-pnpm format # Biome format
-```
-
-## Project Structure
-
-```
-src/
-├── app/                    # App Router pages (Server Components)
-├── components/
-│   ├── ui/                 # Shadcn components
-│   └── dashboard/          # Dashboard components
-├── core/                   # Config, constants, logger
-├── db/                     # DB schema types
-├── lib/                    # Utils, auth, axios, cache config
-├── server/                 # Server Actions (mutations only)
-├── services/
-│   ├── db/                 # MySQL services (mysql2)
-│   └── api-main/           # External API services
-│       └── [feature]/
-│           ├── *-service-api.ts       # API integration
-│           ├── *-cached-service.ts    # Cache + transform
-│           ├── types/                 # TypeScript types
-│           ├── validation/            # Zod schemas
-│           └── transformers/          # Entity→DTO
-└── types/                  # Shared types
-```
-
-## Code Style
-
-### Essential Rules
-
-- **Server First**: Always Server Component by default
-- **Route Pages/Layouts**: MUST be Server Components
-- **Client Components**: Isolate in `components/` of parent directory only when needed for interactivity
-- **Priority**: Always prioritize server-side components. When you need interactivity (hooks, event listeners), create a subcomponent and isolate the functionality
-- **Imports**: Absolute with `@/` (no relative for src)
-- **Biome**: 2 spaces, no trailing semicolons
-- **TypeScript**: Strict, `unknown` instead of `any`
-
-### Naming
-
-- **Files**: kebab-case (`submit-button.tsx`, `auth.service.ts`)
-- **Components**: PascalCase (`SubmitButton`)
-- **Functions**: camelCase (`useIsMobile`, `findById`)
-- **Constants**: UPPER_SNAKE_CASE (`API_TIMEOUTS`)
-
-## UI/UX Layout Patterns
-
-### Dashboard Content Width
-
-For internal dashboard pages, the dashboard shell must remain full width. Only the content area inside the page may change width.
-
-Use only these two content-width patterns for internal dashboard pages:
-
-- **Default content width**: `1400px` maximum width
-- **Full content width**: full available width of the content area
-
-Important rules:
-
-- Do not create additional content-width variants for internal dashboard pages
-- When a page is not explicitly designed as full-width, use the `1400px` max-width pattern
-- Full-width pages should be used only when the screen needs maximum horizontal space (for example: dense data tables, operational panels, complex side-by-side layouts)
-- When developing a new internal dashboard page, always ask whether the page should use `1400px` max-width content or full-width content
-
-## Service Patterns
-
-### API Service Pattern (External API Integration)
-
-**Structure in `src/services/api-main/[feature]/`:**
-
-```
-[feature]/
-├── *-service-api.ts       # Class extending BaseApiService
-├── *-cached-service.ts    # Functions with 'use cache'
-├── types/                 # Request/Response types, Error classes
-├── validation/            # Zod schemas
-├── transformers/          # Entity→DTO (API→UI)
-└── index.ts               # Public exports
-```
-
-**Service API (`*service-api.ts`):**
-
-```typescript
-import "server-only";
-import { BaseApiService } from "@/lib/axios/base-api-service";
-import * as schemas from "./validation/*-schemas";
-
-export class FeatureServiceApi extends BaseApiService {
-  async findFeatureById(
-    params: FindByIdRequest,
-  ): Promise<ApiResponse<FeatureResponse>> {
-    schemas.FindByIdSchema.parse(params); // Validate with Zod
-    return this.post<FeatureResponse>("/endpoint", params);
-  }
-  // Helper methods: extract*, transform*, validate*
-}
-
-export const featureServiceApi = new FeatureServiceApi();
-```
-
-**Cached Service (`*-cached-service.ts`):**
-
-```typescript
-import "server-only";
-import { cacheLife, cacheTag } from "next/cache";
-import { CACHE_TAGS } from "@/lib/cache-config";
-import { featureServiceApi } from "./feature-service-api";
-import { transformFeature } from "./transformers/transformers";
-
-export async function getFeatureById(id: string): Promise<UIFeature> {
-  "use cache";
-  cacheLife("hours"); // hours, frequent, daily, seconds
-  cacheTag(CACHE_TAGS.feature(id));
-
-  const response = await featureServiceApi.findFeatureById({ id });
-  return transformFeature(response.data);
-}
-```
-
-### DB Service Pattern (Direct MySQL)
-
-**Location:** `src/services/db/`
-
-```typescript
-import "server-only";
-import dbService from "@/database/dbConnection";
-import { z } from "zod";
-
-async function findById(params: {
-  id: string;
-}): Promise<ServiceResponse<User>> {
-  try {
-    z.string().min(1).parse(params.id);
-    const query = "SELECT id, name FROM user WHERE id = ? LIMIT 1";
-    const results = await dbService.selectExecute<UserEntity>(query, [
-      params.id,
-    ]);
-    return { success: true, data: mapEntityToDto(results[0]) };
-  } catch (error) {
-    return { success: false, error: "Error message" };
-  }
-}
-```
-
-## Cache Patterns
-
-**Next.js 16 `use cache` directive:**
-
-```typescript
-import { cacheLife, cacheTag } from "next/cache";
-import { CACHE_TAGS } from "@/lib/cache-config";
-
-export async function getData(params: { id: string }): Promise<Data> {
-  "use cache";
-  cacheLife("hours"); // hours=1h, frequent=5m, daily=24h, seconds
-  cacheTag(CACHE_TAGS.feature(params.id)); // Individual tag
-  cacheTag(CACHE_TAGS.features); // Global tag
-  // fetch logic
-}
-```
-
-**Profiles defined in `next.config.ts`:**
-
-- `hours`: 1 hour (navigation, categories)
-- `frequent`: 5 minutes (products, listings)
-- `daily`: 24 hours (footer, static content)
-
-### Cache Invalidation (Mandatory in Mutations)
-
-**All create, update, and delete operations must revalidate cache:**
-
-```typescript
-"use server";
-import { revalidateTag, revalidatePath } from "next/cache";
-import { CACHE_TAGS } from "@/lib/cache-config";
-
-export async function createFeature(params: CreateParams) {
-  // mutation logic (create)
-
-  // Revalidate individual cache
-  revalidateTag(CACHE_TAGS.feature(newId));
-
-  // Revalidate global list cache
-  revalidateTag(CACHE_TAGS.features);
-
-  // Optional: revalidate full path
-  revalidatePath("/dashboard/feature");
-}
-
-export async function updateFeature(params: UpdateParams) {
-  // mutation logic (update)
-
-  // Revalidate individual cache
-  revalidateTag(CACHE_TAGS.feature(params.id));
-  revalidateTag(CACHE_TAGS.features);
-}
-
-export async function deleteFeature(params: DeleteParams) {
-  // mutation logic (delete)
-
-  // Revalidate individual and global cache
-  revalidateTag(CACHE_TAGS.feature(params.id));
-  revalidateTag(CACHE_TAGS.features);
-}
-```
-
-## Authentication Patterns
-
-**Better Auth with Organization Roles:**
-
-```typescript
-import { auth } from "@/lib/auth/auth";
-import { headers } from "next/headers";
-
-const session = await auth.api.getSession({ headers: await headers() });
-if (!session) redirect("/sign-in");
-
-// Organization roles: owner, manager, salesperson, operator, cashier, finance, shipping, customer
-// Platform roles: superAdmin, user
-```
-
-### Server Actions with Authentication (Mandatory)
-
-**For security, server action functions must always check if a user session exists:**
-
-```typescript
-"use server";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth/auth";
-
-export async function myAction(formData: FormData) {
-  // MANDATORY: Check user session
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/sign-in");
-
-  // mutation logic
-}
-```
-
-## Form Patterns
-
-**Next Form + Server Actions:**
-
-```typescript
-"use client";
-import Form from "next/form";
-import { useActionState } from "react";
-
-export function MyForm() {
-  const [state, formAction] = useActionState(serverAction, null);
-
-  return (
-    <Form action={formAction}>
-      <Input name="field" required />
-      <Button type="submit">Submit</Button>
-    </Form>
-  );
-}
-```
-
-**Server Action for Form:**
-
-```typescript
-"use server";
-import { z } from "zod";
-
-const FormSchema = z.object({
-  field: z.string().min(1),
-});
-
-export async function serverAction(_prevState: unknown, formData: FormData) {
-  const data = Object.fromEntries(formData.entries());
-  const validated = FormSchema.parse(data);
-  // mutation logic
-  return { success: true, message: "Success" };
-}
-```
-
-## Client Component Patterns
-
-**Isolate interactivity:**
-
-```typescript
-"use client";
-// hooks, event listeners, useState
-import { useState } from "react";
-
-export function InteractiveComponent() {
-  const [value, setValue] = useState("");
-  // interactive logic
-}
-```
-
-**Use in Server Component:**
-
-```typescript
-// src/app/page.tsx (Server Component)
-import { InteractiveComponent } from "./components/interactive-component";
-
-export default function Page() {
-  return <InteractiveComponent />;
-}
-```
-
-**Important:**
-
-- Always prioritize server-side components
-- When you need interactivity (hooks, event listeners), create a subcomponent and isolate the functionality
-- Keep client component as lean as possible, transferring fetch logic to parent component (Server Component)
-
-## Error Handling
-
-**Response pattern:**
-
-```typescript
-type ServiceResponse<T> = {
-  success: boolean;
-  data?: T;
-  error?: string;
-};
-```
-
-**Log:**
-
-```typescript
-import { createLogger } from "@/core/logger";
-
-const logger = createLogger("context");
-logger.debug("debug message", data);
-logger.info("info message");
-logger.warn("warning message");
-logger.error("error message", error);
-```
-
-## Cache Tags
-
-Defined in `src/lib/cache-config.ts`:
-
-**Dynamic tags:**
-
-- `CACHE_TAGS.product(id)`, `CACHE_TAGS.category(id)`, etc.
-
-**Static tags:**
-
-- `CACHE_TAGS.products`, `CACHE_TAGS.categories`, etc.
-
-## Before Committing
-
-1. Run `pnpm lint`
-2. Run `pnpm format`
-3. Check absolute imports (no relative for src)
-4. Check TypeScript types (no `any`)
-5. Test build: `pnpm build`
+- This is a server-first Next.js 16.2 / React 19 application with React Compiler enabled.
+- Route `page.tsx` and `layout.tsx` files must remain Server Components. Isolate interactivity in small client subcomponents.
+- The codebase uses two service families. Stay inside the family already used by the feature you are editing:
+  - `src/services/api-main/`: external API integration modules with `*-service-api.ts`, optional `*-cached-service.ts`, `validation/`, `types/`, and `transformers/`
+  - `src/services/db/`: direct MySQL and CRM services
+- Many service modules under `src/services/api-main/*` have their own `AGENTS.md` with endpoint, payload, and cache details. Read the nearest one before changing a service contract.
+
+## Core Conventions
+
+- Prefer existing local patterns over introducing new abstractions. Start from the component, action, or service that already controls the behavior.
+- Use absolute `@/` imports for code under `src/`.
+- Follow Biome formatting: 2 spaces, no trailing semicolons.
+- Keep TypeScript strict. Use `unknown` instead of `any` unless there is a proven need.
+- Preserve the existing Entity -> DTO and schema-validation layers. Extend the current transformer or Zod schema rather than bypassing it.
+
+## Mutations, Auth, and Cache
+
+- Every create, update, or delete path must enforce authentication or auth context before mutating data.
+- Reuse the area's existing helper when one already owns auth and API context. In dashboard flows, `getAuthContext()` is often the correct entry point instead of hand-rolled session logic.
+- All mutations must revalidate the affected cache tags with `revalidateTag()`. Add `revalidatePath()` only when the page path also needs a refresh.
+- Do not add client-side data mutations when the feature already uses Server Actions.
+
+## UI and Form Patterns
+
+- Internal dashboard pages use only two content widths: default `max-w-[1400px]` or full-width. Do not invent extra width variants.
+- The project is mobile-first and supports both light and dark themes. Preserve the established Radix/Shadcn/Tailwind patterns in the area you touch.
+- Prefer the current form flow: `next/form` plus `useActionState`, with a thin client form component and an authenticated Server Action.
+- Recent dashboard work favors sectioned forms and reusable server actions over large monolithic client screens. Extend the existing flow before creating a parallel one.
+
+## Build and Validation
+
+- `pnpm dev`: start the development server with `.env`
+- `pnpm build`: production build
+- `pnpm start`: start the production server with `.env`
+- `pnpm lint`: run Biome checks
+- `pnpm format`: apply Biome formatting
+- `pnpm generate:schema`: regenerate schema artifacts when database schema types change
+- There is no dedicated test script in `package.json`. Use the narrowest available validation for the slice you changed, then run `pnpm lint` or `pnpm build` when the scope justifies it.
+
+## Documentation Index
+
+- Project overview and setup: [README.md](README.md)
+- API endpoint references: [docs/api-reference/prompt.md](docs/api-reference/prompt.md) and the feature folders under `docs/api-reference/`
+- CRM planning and schema notes: [docs/CRM/crm-brainstorm.md](docs/CRM/crm-brainstorm.md) and [docs/CRM/plano-acao-implementacao-crm.md](docs/CRM/plano-acao-implementacao-crm.md)
+- Inline field update workflow: [.github/agents/inline-update-field.agent.md](.github/agents/inline-update-field.agent.md)
+
+## Current Feature Pointers
+
+- CRM is an active dashboard area under `src/app/dashboard/crm/` backed by `src/services/db/crm-*` services.
+- Budget and order flows include customer creation via sectioned dialogs and authenticated Server Actions under `src/app/dashboard/order/new-budget/`.
+- If you are editing inline update behavior, use the dedicated agent instructions in `.github/agents/inline-update-field.agent.md` and the nearest service-level `AGENTS.md`.
