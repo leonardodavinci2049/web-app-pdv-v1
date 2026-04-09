@@ -249,9 +249,17 @@ export function OrderTable({ orders }: OrderTableProps) {
                     </span>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">
-                    <span className="text-sm text-muted-foreground">
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "rounded-md px-2 py-0.5 text-[10px] uppercase font-semibold tracking-wider",
+                        order.rateType === "VAREJO"
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
+                          : "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300",
+                      )}
+                    >
                       {order.rateType || "-"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <span className="text-sm text-muted-foreground">
