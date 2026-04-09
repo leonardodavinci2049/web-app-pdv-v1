@@ -11,7 +11,6 @@ import {
   Phone,
   Search,
   ShieldCheck,
-  Sparkles,
   User,
   UserPlus,
 } from "lucide-react";
