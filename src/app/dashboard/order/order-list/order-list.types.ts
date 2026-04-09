@@ -20,7 +20,6 @@ function getTomorrow(referenceDate: Date): Date {
 export interface OrderListSearchParams {
   orderId?: string;
   customerId?: string;
-  sellerId?: string;
   orderStatusId?: string;
   financialStatusId?: string;
   locationId?: string;
@@ -32,7 +31,6 @@ export interface OrderListSearchParams {
 export interface OrderListFiltersValues {
   orderId: string;
   customerId: string;
-  sellerId: string;
   orderStatusId: string;
   financialStatusId: string;
   locationId: string;
@@ -55,9 +53,8 @@ export function getDefaultOrderListFilters(
   return {
     orderId: "",
     customerId: "",
-    sellerId: DEFAULT_ORDER_LIST_ID,
     orderStatusId: DEFAULT_ORDER_LIST_ID,
-    financialStatusId: DEFAULT_ORDER_LIST_ID,
+    financialStatusId: "-1",
     locationId: DEFAULT_ORDER_LIST_ID,
     initialDate: formatDateForInput(getPreviousMonthStart(referenceDate)),
     finalDate: formatDateForInput(getTomorrow(referenceDate)),
@@ -72,7 +69,6 @@ export function normalizeOrderListFilters(
   return {
     orderId: filters.orderId ?? defaults.orderId,
     customerId: filters.customerId ?? defaults.customerId,
-    sellerId: filters.sellerId ?? defaults.sellerId,
     orderStatusId: filters.orderStatusId ?? defaults.orderStatusId,
     financialStatusId: filters.financialStatusId ?? defaults.financialStatusId,
     locationId: filters.locationId ?? defaults.locationId,
