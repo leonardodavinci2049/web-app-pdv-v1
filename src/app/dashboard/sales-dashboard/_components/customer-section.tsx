@@ -197,23 +197,13 @@ export function CustomerSection({
   return (
     <Card className="overflow-hidden rounded-[28px] border-border/70 bg-linear-to-b from-card via-card to-muted/40 p-0 shadow-xl shadow-black/10 dark:shadow-black/30">
       {/* Header */}
-      <div className="border-b border-border/60 px-5 py-4 md:px-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Informações do cliente
-            </div>
-          </div>
-        </div>
-      </div>
 
       {customer ? (
-        <div className="space-y-4 px-5 py-5 md:px-6 md:py-6">
+        <div className="space-y-4 p-2 md:p-3">
           {/* ── Card 1: Informações Gerais ── */}
           <SectionCard
             icon={User}
-            title="Informações Gerais"
+            title="Informações do cliente"
             accentColor="primary"
           >
             <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
