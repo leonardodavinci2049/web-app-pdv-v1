@@ -1,16 +1,19 @@
 "use client";
 
-import { Filter, Loader2, Search, X } from "lucide-react";
-import { useEffect, useState } from "react";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
+  ArrowUpDown,
+  Filter,
+  Layers,
+  Loader2,
+  type LucideIcon,
+  RotateCcw,
+  Search,
+  Shapes,
+  Tag,
+  X,
+} from "lucide-react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -19,6 +22,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import type { UIBrand } from "@/services/api-main/brand/transformers/transformers";
 import type { UIPtype } from "@/services/api-main/ptype/transformers/transformers";
@@ -38,8 +49,6 @@ interface ProductListFiltersProps {
   ptypes: UIPtype[];
   onFiltersChange: (filters: FilterOptions) => void;
   onResetFilters: () => void;
-  totalProducts: number;
-  displayedProducts: number;
   isLoading?: boolean;
 }
 
@@ -51,6 +60,34 @@ const sortOptions = [
   { value: "price-desc" as SortOption, label: "Maior Preço" },
 ];
 
+function FilterSection({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: LucideIcon;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="rounded-3xl border border-border/60 bg-card/80 p-4 shadow-sm backdrop-blur-sm sm:p-5">
+      <div className="mb-4 flex items-start gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-muted/70 text-foreground shadow-sm">
+          <Icon className="size-4" aria-hidden="true" />
+        </div>
+
+        <div className="min-w-0">
+          <h3 className="text-sm font-semibold tracking-tight text-foreground">
+            {title}
+          </h3>
+        </div>
+      </div>
+
+      {children}
+    </section>
+  );
+}
+
 export function ProductListFilters({
   filters,
   categories,
@@ -58,11 +95,10 @@ export function ProductListFilters({
   ptypes,
   onFiltersChange,
   onResetFilters,
-  totalProducts,
-  displayedProducts,
   isLoading = false,
 }: ProductListFiltersProps) {
   const [searchInputValue, setSearchInputValue] = useState(filters.searchTerm);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   useEffect(() => {
     setSearchInputValue(filters.searchTerm);
@@ -119,37 +155,6 @@ export function ProductListFilters({
       ...filters,
       selectedPtype: ptypeId === "all" ? undefined : ptypeId,
     });
-  };
-
-  const removeFilter = (
-    filterType: "category" | "search" | "stock" | "brand" | "ptype",
-  ) => {
-    switch (filterType) {
-      case "category":
-        onFiltersChange({
-          ...filters,
-          selectedCategory: "all",
-        });
-        break;
-      case "search":
-        handleClearSearch();
-        break;
-      case "stock":
-        updateFilter("onlyInStock", false);
-        break;
-      case "brand":
-        onFiltersChange({
-          ...filters,
-          selectedBrand: undefined,
-        });
-        break;
-      case "ptype":
-        onFiltersChange({
-          ...filters,
-          selectedPtype: undefined,
-        });
-        break;
-    }
   };
 
   const getActiveFilters = () => {
@@ -255,33 +260,127 @@ export function ProductListFilters({
         </div>
       </div>
 
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="filters" className="border rounded-lg px-4">
-          <AccordionTrigger className="text-base font-medium hover:no-underline">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              Filtro
-              {hasActiveFilters && (
-                <Badge variant="secondary" className="ml-2 text-xs">
-                  {activeFilters.length}
-                </Badge>
-              )}
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="pt-4">
-            <Card>
-              <CardContent className="space-y-4 pt-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-                  <div className="space-y-2">
-                    <div className="text-sm font-medium text-muted-foreground">
-                      Categoria
+      <div className="flex items-start justify-between gap-3 rounded-3xl border border-border/60 bg-card/60 p-4 shadow-sm backdrop-blur-sm">
+        <div className="min-w-0 space-y-1">
+          <h2 className="text-lg font-semibold tracking-tight">Filtros</h2>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
+          <div className="whitespace-nowrap rounded-full border border-border/70 bg-muted/50 px-3 py-1 text-sm font-medium tabular-nums">
+            {activeFilters.length} ativo{activeFilters.length === 1 ? "" : "s"}
+          </div>
+
+          <Sheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+            <SheetTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full border-border/70 bg-background/90 px-4 shadow-sm hover:bg-muted/60"
+              >
+                <Filter className="size-4" />
+                Filtros
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="right"
+              showCloseButton={false}
+              aria-describedby={undefined}
+              className="flex h-full w-[80vw] max-w-[80vw] flex-col gap-0 border-l border-border/60 bg-background p-0 shadow-2xl sm:max-w-xl"
+            >
+              <SheetHeader className="gap-4 border-b border-border/60 bg-linear-to-b from-background via-background to-muted/30 px-4 py-5 sm:px-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-muted/70 shadow-sm">
+                      <Filter className="size-5" aria-hidden="true" />
                     </div>
+
+                    <div className="min-w-0 space-y-1">
+                      <SheetTitle className="text-lg tracking-tight">
+                        Filtros de produtos
+                      </SheetTitle>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 shrink-0 rounded-full"
+                    onClick={() => setIsFiltersOpen(false)}
+                    aria-label="Fechar filtros"
+                  >
+                    <X className="size-4" aria-hidden="true" />
+                  </Button>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/85 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                    {hasActiveFilters
+                      ? `${activeFilters.length} filtro${activeFilters.length === 1 ? "" : "s"} ativo${activeFilters.length === 1 ? "" : "s"}`
+                      : "Nenhum filtro aplicado"}
+                  </div>
+                </div>
+              </SheetHeader>
+
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6">
+                <div className="space-y-5 pb-4">
+                  <FilterSection
+                    icon={ArrowUpDown}
+                    title="Exibição e ordenação"
+                  >
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <label
+                          htmlFor="stock-filter"
+                          className="cursor-pointer text-sm font-medium"
+                        >
+                          Apenas em estoque
+                        </label>
+                        <Switch
+                          checked={filters.onlyInStock}
+                          onCheckedChange={(checked) =>
+                            updateFilter("onlyInStock", checked)
+                          }
+                          id="stock-filter"
+                          disabled={isLoading}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <span className="text-sm font-medium">Ordenar por</span>
+                        <Select
+                          value={filters.sortBy}
+                          onValueChange={(value) =>
+                            updateFilter("sortBy", value as SortOption)
+                          }
+                          disabled={isLoading}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Ordenar" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {sortOptions.map((option) => (
+                              <SelectItem
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </FilterSection>
+
+                  <FilterSection icon={Layers} title="Categoria">
                     <Select
                       value={filters.selectedCategory}
                       onValueChange={handleCategoryChange}
                       disabled={isLoading}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger id="category" className="w-full">
                         <SelectValue placeholder="Selecione uma categoria" />
                       </SelectTrigger>
                       <SelectContent>
@@ -296,18 +395,15 @@ export function ProductListFilters({
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
+                  </FilterSection>
 
-                  <div className="space-y-2">
-                    <div className="text-sm font-medium text-muted-foreground">
-                      Marca
-                    </div>
+                  <FilterSection icon={Tag} title="Marca">
                     <Select
                       value={filters.selectedBrand || "all"}
                       onValueChange={handleBrandChange}
                       disabled={isLoading}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger id="brand" className="w-full">
                         <SelectValue placeholder="Selecione uma marca" />
                       </SelectTrigger>
                       <SelectContent>
@@ -322,18 +418,15 @@ export function ProductListFilters({
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
+                  </FilterSection>
 
-                  <div className="space-y-2">
-                    <div className="text-sm font-medium text-muted-foreground">
-                      Tipo
-                    </div>
+                  <FilterSection icon={Shapes} title="Tipo">
                     <Select
                       value={filters.selectedPtype || "all"}
                       onValueChange={handlePtypeChange}
                       disabled={isLoading}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger id="ptype" className="w-full">
                         <SelectValue placeholder="Selecione um tipo" />
                       </SelectTrigger>
                       <SelectContent>
@@ -348,133 +441,29 @@ export function ProductListFilters({
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  <div></div>
-
-                  <div className="flex justify-end">
-                    {(filters.selectedCategory !== "all" ||
-                      filters.selectedBrand ||
-                      filters.selectedPtype) && (
-                      <Button
-                        variant="outline"
-                        size="default"
-                        onClick={handleResetFilters}
-                        className="w-full sm:w-auto"
-                        disabled={isLoading}
-                      >
-                        <X className="h-4 w-4 mr-2" />
-                        Limpar Filtros
-                      </Button>
-                    )}
-                  </div>
+                  </FilterSection>
                 </div>
-
-                {hasActiveFilters && (
-                  <div className="space-y-2">
-                    <div className="text-sm font-medium text-muted-foreground">
-                      Filtros ativos
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {activeFilters.map((filter) => (
-                        <Badge
-                          key={filter.type}
-                          variant="secondary"
-                          className="flex items-center gap-1.5 px-2.5 py-1 text-xs"
-                        >
-                          <span>{filter.label}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeFilter(filter.type)}
-                            className="h-3 w-3 p-0 hover:bg-transparent"
-                            disabled={isLoading}
-                          >
-                            <X className="h-2.5 w-2.5" />
-                          </Button>
-                        </Badge>
-                      ))}
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleResetFilters}
-                        className="h-6 px-2 text-xs"
-                        disabled={isLoading}
-                      >
-                        <X className="h-3 w-3 mr-1" />
-                        Limpar Filtros
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-
-      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-lg p-4 sm:relative">
-        <div className="flex flex-col gap-4 sm:gap-0">
-          <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
-            <div className="flex flex-col gap-1 sm:flex-1">
-              <span className="text-sm font-medium">
-                {displayedProducts} de {totalProducts} produtos
-              </span>
-              {hasActiveFilters && (
-                <span className="text-xs text-muted-foreground">
-                  {activeFilters.length} filtro
-                  {activeFilters.length !== 1 ? "s" : ""} ativo
-                  {activeFilters.length !== 1 ? "s" : ""}
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between gap-2 sm:gap-3 sm:justify-end">
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={filters.onlyInStock}
-                  onCheckedChange={(checked) =>
-                    updateFilter("onlyInStock", checked)
-                  }
-                  id="stock-filter"
-                  disabled={isLoading}
-                />
-                <label
-                  htmlFor="stock-filter"
-                  className="cursor-pointer text-sm font-medium whitespace-nowrap"
-                >
-                  Estoque
-                </label>
-                {filters.onlyInStock && (
-                  <Badge variant="secondary" className="text-xs sm:hidden">
-                    Ativo
-                  </Badge>
-                )}
               </div>
 
-              <div className="flex items-center gap-2">
-                <Select
-                  value={filters.sortBy}
-                  onValueChange={(value) =>
-                    updateFilter("sortBy", value as SortOption)
-                  }
-                  disabled={isLoading}
-                >
-                  <SelectTrigger className="w-[120px] sm:w-[160px]">
-                    <SelectValue placeholder="Ordenar" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sortOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
+              <SheetFooter className="mt-0 shrink-0 border-t border-border/60 bg-background/95 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-sm sm:px-6">
+                <div className="flex flex-col-reverse gap-2 sm:flex-row">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-11 rounded-xl px-5"
+                    onClick={() => {
+                      handleResetFilters();
+                      setIsFiltersOpen(false);
+                    }}
+                    disabled={isLoading}
+                  >
+                    <RotateCcw className="size-4" />
+                    Limpar
+                  </Button>
+                </div>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </div>

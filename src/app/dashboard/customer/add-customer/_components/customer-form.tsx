@@ -11,13 +11,7 @@ import {
 import Form from "next/form";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -136,9 +130,6 @@ export function CustomerForm() {
               <User className="h-4 w-4" />
               Tipo de Cadastro
             </CardTitle>
-            <CardDescription>
-              Selecione se o cliente é pessoa física ou jurídica
-            </CardDescription>
           </CardHeader>
           <CardContent>
             <PersonTypeSelector
@@ -162,7 +153,6 @@ export function CustomerForm() {
                 ? "Dados da Empresa"
                 : "Dados Pessoais"}
             </CardTitle>
-            <CardDescription>Informações principais do cliente</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Nome */}
@@ -268,7 +258,6 @@ export function CustomerForm() {
               <Phone className="h-4 w-4" />
               Contato
             </CardTitle>
-            <CardDescription>Telefone e WhatsApp do cliente</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -307,9 +296,6 @@ export function CustomerForm() {
               <MapPin className="h-4 w-4" />
               Endereço
             </CardTitle>
-            <CardDescription>
-              Informe o CEP para preencher automaticamente
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* CEP */}
@@ -397,9 +383,6 @@ export function CustomerForm() {
               <StickyNote className="h-4 w-4" />
               Observações
             </CardTitle>
-            <CardDescription>
-              Anotações internas sobre o cliente
-            </CardDescription>
           </CardHeader>
           <CardContent>
             <Textarea
