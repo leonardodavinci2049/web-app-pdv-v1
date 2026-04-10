@@ -95,8 +95,6 @@ export function ProductListContent({
         ptypes={ptypes}
         onFiltersChange={updateFilters}
         onResetFilters={resetFilters}
-        totalProducts={products.length}
-        displayedProducts={products.length}
         isLoading={isLoading}
       />
 
