@@ -253,7 +253,7 @@ export default async function ProductListPage(props: ProductListPageProps) {
           <div className="space-y-4">
             <div className="rounded-2xl border border-border/60 bg-card/95 p-4 shadow-sm sm:rounded-[28px] sm:p-5">
               <div>
-                <h1 className="text-3xl font-bold">Lista de Produtos</h1>
+                <h1 className="text-2xl font-bold">Lista de Produtos</h1>
               </div>
 
               <ProductListContent

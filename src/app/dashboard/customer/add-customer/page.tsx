@@ -19,9 +19,7 @@ const AddCustomerPage = () => {
             <h2 className="text-xl font-semibold tracking-tight">
               Novo Cliente
             </h2>
-            <p className="text-sm text-muted-foreground">
-              Preencha os dados abaixo para cadastrar um novo cliente no sistema
-            </p>
+      
           </div>
           <CustomerForm />
         </div>
