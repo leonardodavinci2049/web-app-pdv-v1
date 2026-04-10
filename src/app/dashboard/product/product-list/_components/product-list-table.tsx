@@ -149,11 +149,12 @@ export function ProductListTable({ products }: ProductListTableProps) {
             <TableRow>
               <TableHead className="w-20">Imagem</TableHead>
               <TableHead className="w-20">ID</TableHead>
-              <TableHead className="w-100">Produto</TableHead>
-              <TableHead className="w-36">Marca / Tipo</TableHead>
-              <TableHead className="w-60">Categorias</TableHead>
+              <TableHead className="w-[40ch]">Produto</TableHead>
+              <TableHead className="w-52">Categorias</TableHead>
               <TableHead className="w-24">Estoque</TableHead>
-              <TableHead className="w-28">Preço</TableHead>
+              <TableHead className="w-24">Varejo</TableHead>
+              <TableHead className="w-24">Atacado</TableHead>
+              <TableHead className="w-24">Corp.</TableHead>
               <TableHead className="w-24 text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -168,25 +169,19 @@ export function ProductListTable({ products }: ProductListTableProps) {
                     #{product.id}
                   </span>
                 </TableCell>
-                <TableCell className="overflow-hidden">
+                <TableCell className="w-[40ch]">
                   <div className="space-y-0.5">
                     <p className="font-medium text-foreground wrap-break-word">
                       {product.name}
                     </p>
-                    {(product.ref || product.label) && (
+                    {(product.ref || product.brand || product.type) && (
                       <p className="text-xs text-muted-foreground">
                         {product.ref && `Ref: ${product.ref}`}
-                        {product.ref && product.label && " • "}
-                        {product.label && product.label}
-                      </p>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-0.5">
-                    <p className="text-sm">{product.brand}</p>
-                    {product.type && (
-                      <p className="text-xs text-muted-foreground">
+                        {product.ref &&
+                          (product.brand || product.type) &&
+                          " • "}
+                        {product.brand}
+                        {product.brand && product.type && " / "}
                         {product.type}
                       </p>
                     )}
@@ -194,10 +189,10 @@ export function ProductListTable({ products }: ProductListTableProps) {
                 </TableCell>
                 <TableCell>
                   <p
-                    className="text-sm text-muted-foreground truncate"
+                    className="text-sm text-muted-foreground wrap-break-word"
                     title={getCategoryNames(product.categories)}
                   >
-                    {truncateCategories(product.categories)}
+                    {getCategoryNames(product.categories)}
                   </p>
                 </TableCell>
                 <TableCell>
@@ -220,8 +215,18 @@ export function ProductListTable({ products }: ProductListTableProps) {
                   )}
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm font-medium">
+                  <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
                     {formatPrice(product.retailPrice)}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                    {formatPrice(product.wholesalePrice)}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm font-medium text-orange-600 dark:text-orange-400">
+                    {formatPrice(product.corporatePrice)}
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
