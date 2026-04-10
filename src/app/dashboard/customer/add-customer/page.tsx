@@ -19,7 +19,6 @@ const AddCustomerPage = () => {
             <h2 className="text-xl font-semibold tracking-tight">
               Novo Cliente
             </h2>
-      
           </div>
           <CustomerForm />
         </div>

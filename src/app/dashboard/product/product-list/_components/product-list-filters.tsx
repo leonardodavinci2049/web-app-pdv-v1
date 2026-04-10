@@ -31,7 +31,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 import type { UIBrand } from "@/services/api-main/brand/transformers/transformers";
 import type { UIPtype } from "@/services/api-main/ptype/transformers/transformers";
 import type { FilterOptions, SortOption } from "@/types/types";
@@ -50,8 +49,6 @@ interface ProductListFiltersProps {
   ptypes: UIPtype[];
   onFiltersChange: (filters: FilterOptions) => void;
   onResetFilters: () => void;
-  totalProducts: number;
-  displayedProducts: number;
   isLoading?: boolean;
 }
 
@@ -98,8 +95,6 @@ export function ProductListFilters({
   ptypes,
   onFiltersChange,
   onResetFilters,
-  totalProducts,
-  displayedProducts,
   isLoading = false,
 }: ProductListFiltersProps) {
   const [searchInputValue, setSearchInputValue] = useState(filters.searchTerm);
@@ -160,37 +155,6 @@ export function ProductListFilters({
       ...filters,
       selectedPtype: ptypeId === "all" ? undefined : ptypeId,
     });
-  };
-
-  const removeFilter = (
-    filterType: "category" | "search" | "stock" | "brand" | "ptype",
-  ) => {
-    switch (filterType) {
-      case "category":
-        onFiltersChange({
-          ...filters,
-          selectedCategory: "all",
-        });
-        break;
-      case "search":
-        handleClearSearch();
-        break;
-      case "stock":
-        updateFilter("onlyInStock", false);
-        break;
-      case "brand":
-        onFiltersChange({
-          ...filters,
-          selectedBrand: undefined,
-        });
-        break;
-      case "ptype":
-        onFiltersChange({
-          ...filters,
-          selectedPtype: undefined,
-        });
-        break;
-    }
   };
 
   const getActiveFilters = () => {
