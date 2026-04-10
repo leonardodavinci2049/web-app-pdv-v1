@@ -53,16 +53,6 @@ function getCategoryNames(categories: string | undefined): string {
   }
 }
 
-function truncateCategories(
-  categories: string | undefined,
-  maxLength = 50,
-): string {
-  const categoryNames = getCategoryNames(categories);
-  if (categoryNames === "-") return "-";
-  if (categoryNames.length <= maxLength) return categoryNames;
-  return `${categoryNames.substring(0, maxLength)}...`;
-}
-
 export function ProductListTable({ products }: ProductListTableProps) {
   if (products.length === 0) return null;
 
@@ -149,8 +139,10 @@ export function ProductListTable({ products }: ProductListTableProps) {
             <TableRow>
               <TableHead className="w-20">Imagem</TableHead>
               <TableHead className="w-20">ID</TableHead>
-              <TableHead className="w-[40ch]">Produto</TableHead>
-              <TableHead className="w-52">Categorias</TableHead>
+              <TableHead>Produto</TableHead>
+              <TableHead className="w-[250px] max-w-[250px]">
+                Categorias
+              </TableHead>
               <TableHead className="w-24">Estoque</TableHead>
               <TableHead className="w-24">Varejo</TableHead>
               <TableHead className="w-24">Atacado</TableHead>
@@ -169,13 +161,13 @@ export function ProductListTable({ products }: ProductListTableProps) {
                     #{product.id}
                   </span>
                 </TableCell>
-                <TableCell className="w-[40ch]">
+                <TableCell className="align-top whitespace-normal">
                   <div className="space-y-0.5">
-                    <p className="font-medium text-foreground wrap-break-word">
+                    <p className="font-medium leading-5 text-foreground whitespace-normal wrap-break-word">
                       {product.name}
                     </p>
                     {(product.ref || product.brand || product.type) && (
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs leading-5 text-muted-foreground whitespace-normal wrap-break-word">
                         {product.ref && `Ref: ${product.ref}`}
                         {product.ref &&
                           (product.brand || product.type) &&
@@ -187,9 +179,9 @@ export function ProductListTable({ products }: ProductListTableProps) {
                     )}
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="w-[250px] max-w-[250px] align-top whitespace-normal">
                   <p
-                    className="text-sm text-muted-foreground wrap-break-word"
+                    className="text-sm leading-5 text-muted-foreground whitespace-normal wrap-break-word"
                     title={getCategoryNames(product.categories)}
                   >
                     {getCategoryNames(product.categories)}
