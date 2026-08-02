@@ -54,7 +54,7 @@ These instructions apply across the repository. If a subdirectory contains its o
 - `pnpm start`: start production server (loads `.env` via `dotenv-cli`)
 - `pnpm lint`: Biome checks
 - `pnpm format`: apply Biome formatting
-- `pnpm generate:schema`: regenerate `src/database/schema.ts` from a live MySQL database. Requires `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD` in `.env`.
+- `pnpm generate:schema`: regenerate `src/database/schema.ts` from a live MySQL database. Requires `DATABASE_ADMIN_HOST`, `DATABASE_ADMIN_PORT`, `DATABASE_ADMIN_NAME`, `DATABASE_ADMIN_USER`, `DATABASE_ADMIN_PASSWORD` in `.env`.
 - There is no test script. Use `pnpm lint` or `pnpm build` for validation after changes.
 
 ## Service Module Pattern (api-main)
