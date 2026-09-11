@@ -1,3 +1,5 @@
 allowBuilds:
   msw: true
   sharp: false
+overrides:
+  fast-uri: 3.1.5
